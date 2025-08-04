@@ -122,7 +122,8 @@
                                                         <label for="NamaKry" class="form-label fw-bold">Nama <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user"></i></span>
                                                             <input type="text" class="form-control" id="NamaKry"
                                                                 name="NamaKry"
                                                                 value="{{ old('NamaKry', $karyawan->NamaKry) }}" required>
@@ -304,6 +305,19 @@
                                             </div>
 
                                             <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="WargaNegaraKry"
+                                                            class="form-label fw-bold">Kewarganegaraan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-flag"></i></span>
+                                                            <input type="text" class="form-control"
+                                                                id="WargaNegaraKry" name="WargaNegaraKry"
+                                                                value="{{ old('WargaNegaraKry', $karyawan->WargaNegaraKry) }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
                                                         <label for="Telpon1Kry" class="form-label fw-bold">Telepon 1 <span
@@ -376,7 +390,8 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-home"></i></span>
-                                                    <textarea class="form-control" id="AlamatKry" name="AlamatKry" rows="3" required>{{ old('AlamatKry', $karyawan->AlamatKry) }}</textarea>
+                                                    <input class="form-control" id="AlamatKry" name="AlamatKry"
+                                                        value="{{ old('AlamatKry', $karyawan->AlamatKry) }}" required />
                                                 </div>
                                             </div>
 
@@ -457,13 +472,12 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="DomisiliKry" class="form-label fw-bold">Domisili</label>
+                                                        <label for="DomisiliKry"
+                                                            class="form-label fw-bold">Domisili</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-map-marked-alt"></i></span>
-                                                            <input type="text" class="form-control" id="DomisiliKry"
-                                                                name="DomisiliKry"
-                                                                value="{{ old('DomisiliKry', $karyawan->DomisiliKry) }}">
+                                                            <textarea class="form-control" id="DomisiliKry" name="DomisiliKry" rows="3" required>{{ old('DomisiliKry', $karyawan->DomisiliKry) }}</textarea>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -473,7 +487,8 @@
                                 </div>
 
                                 <!-- Pendidikan -->
-                                <div class="tab-pane fade" id="pendidikan" role="tabpanel" aria-labelledby="pendidikan-tab">
+                                <div class="tab-pane fade" id="pendidikan" role="tabpanel"
+                                    aria-labelledby="pendidikan-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
                                             <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi
@@ -664,6 +679,40 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            @if ($karyawan->FileDokKry)
+                                                @php
+                                                    $fileExtension = pathinfo(
+                                                        storage_path(
+                                                            'app/public/' . $karyawan->FileDokKry,
+                                                        ),
+                                                        PATHINFO_EXTENSION,
+                                                    );
+                                                    $isImage = in_array(strtolower($fileExtension), [
+                                                        'jpg',
+                                                        'jpeg',
+                                                        'png',
+                                                        'gif',
+                                                    ]);
+                                                @endphp
+
+                                                @if ($isImage)
+                                                    <div class="col-md-12">
+                                                        <div class="form-group mb-4">
+                                                            <label class="form-label fw-bold">Foto Karyawan Saat Ini</label>
+                                                            <div class="card">
+                                                                <div class="card-body text-center">
+                                                                    <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                                         alt="Foto {{ $karyawan->NamaKry }}"
+                                                                         class="img-fluid img-thumbnail"
+                                                                         style="max-height: 250px;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
+
                                             <div class="col-md-12">
                                                 <div class="form-group mb-3">
                                                     <label for="FileDokKry" class="form-label fw-bold">Unggah
@@ -978,6 +1027,65 @@
 
             statusSelect.addEventListener('change', toggleNonActiveFields);
             toggleNonActiveFields(); // Initial state
+
+            // Preview uploaded image file before submission
+            document.getElementById('FileDokKry').addEventListener('change', function(e) {
+                const fileInput = e.target;
+                if (fileInput.files && fileInput.files[0]) {
+                    const fileType = fileInput.files[0].type;
+
+                    // Check if the file is an image
+                    if (fileType.match('image.*')) {
+                        const reader = new FileReader();
+
+                        reader.onload = function(e) {
+                            // Find existing preview or create new one
+                            let previewContainer = document.querySelector('.preview-container');
+
+                            if (!previewContainer) {
+                                previewContainer = document.createElement('div');
+                                previewContainer.className = 'preview-container form-group mb-4 mt-3';
+
+                                const label = document.createElement('label');
+                                label.className = 'form-label fw-bold';
+                                label.textContent = 'Preview Foto Baru:';
+
+                                const card = document.createElement('div');
+                                card.className = 'card';
+
+                                const cardBody = document.createElement('div');
+                                cardBody.className = 'card-body text-center';
+
+                                const img = document.createElement('img');
+                                img.className = 'img-fluid img-thumbnail preview-image';
+                                img.style.maxHeight = '250px';
+                                img.alt = 'Preview';
+
+                                cardBody.appendChild(img);
+                                card.appendChild(cardBody);
+                                previewContainer.appendChild(label);
+                                previewContainer.appendChild(card);
+
+                                // Insert after the file input container
+                                const fileInputContainer = fileInput.closest('.form-group');
+                                fileInputContainer.parentNode.insertBefore(previewContainer, fileInputContainer.nextSibling);
+                            }
+
+                            // Update the image
+                            const previewImage = previewContainer.querySelector('.preview-image');
+                            previewImage.src = e.target.result;
+                        }
+
+                        reader.readAsDataURL(fileInput.files[0]);
+                    } else {
+                        // Remove preview if exists when a non-image file is selected
+                        const previewContainer = document.querySelector('.preview-container');
+                        if (previewContainer) {
+                            previewContainer.remove();
+                        }
+                    }
+                }
+            });
         });
     </script>
 @endpush
