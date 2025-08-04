@@ -37,6 +37,7 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>Nama</th>
+                                        <th>Singkatan</th>
                                         <th>Bidang Usaha</th>
                                         <th>Telepon</th>
                                         <th>Email</th>
@@ -49,6 +50,7 @@
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $perusahaan->NamaPrsh }}</td>
+                                            <td>{{ $perusahaan->SingkatanPrsh }}</td>
                                             <td>{{ $perusahaan->BidangUsh }}</td>
                                             <td>{{ $perusahaan->TelpPrsh }}</td>
                                             <td>{{ $perusahaan->EmailPrsh }}</td>

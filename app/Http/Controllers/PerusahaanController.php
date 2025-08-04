@@ -54,6 +54,7 @@ class PerusahaanController extends Controller
         $perusahaan = Perusahaan::create([
             'IdKode' => $IdKode,
             'NamaPrsh' => $request->NamaPrsh,
+            'SingkatanPrsh' => $request->SingkatanPrsh,
             'AlamatPrsh' => $request->AlamatPrsh,
             'TelpPrsh' => $request->TelpPrsh,
             'TelpPrsh2' => $request->TelpPrsh2,
@@ -102,6 +103,7 @@ class PerusahaanController extends Controller
 
         $data = [
             'NamaPrsh' => $request->NamaPrsh,
+            'SingkatanPrsh' => $request->SingkatanPrsh,
             'AlamatPrsh' => $request->AlamatPrsh,
             'TelpPrsh' => $request->TelpPrsh,
             'TelpPrsh2' => $request->TelpPrsh2,

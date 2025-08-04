@@ -36,6 +36,16 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Singkatan Perusahaan</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-house"></i></span>
+                                                    <div class="form-control">{{ $perusahaan->SingkatanPrsh }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Alamat</label>
