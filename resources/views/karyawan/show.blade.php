@@ -188,7 +188,7 @@
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">RT/RW</label>
                                                     <div class="info-value">
@@ -201,7 +201,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Kelurahan</label>
                                                     <div class="info-value">
@@ -217,7 +217,7 @@
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Kecamatan</label>
                                                     <div class="info-value">
@@ -230,7 +230,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Kota</label>
                                                     <div class="info-value">
@@ -245,7 +245,7 @@
                                         </div>
 
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Provinsi</label>
                                                     <div class="info-value">
