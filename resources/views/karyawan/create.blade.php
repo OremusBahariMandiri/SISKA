@@ -453,7 +453,8 @@
                                                                 <option value="" selected disabled>Pilih Pendidikan</option>
                                                                 <option value="SD" {{ old('PendidikanTrhKry') == 'SD' ? 'selected' : '' }}>SD</option>
                                                                 <option value="SMP" {{ old('PendidikanTrhKry') == 'SMP' ? 'selected' : '' }}>SMP</option>
-                                                                <option value="SMA/SMK" {{ old('PendidikanTrhKry') == 'SMA/SMK' ? 'selected' : '' }}>SMA/SMK</option>
+                                                                <option value="SMA" {{ old('PendidikanTrhKry') == 'SMA' ? 'selected' : '' }}>SMA</option>
+                                                                <option value="SMK" {{ old('PendidikanTrhKry') == 'SMK' ? 'selected' : '' }}>SMK</option>
                                                                 <option value="D1" {{ old('PendidikanTrhKry') == 'D1' ? 'selected' : '' }}>D1</option>
                                                                 <option value="D2" {{ old('PendidikanTrhKry') == 'D2' ? 'selected' : '' }}>D2</option>
                                                                 <option value="D3" {{ old('PendidikanTrhKry') == 'D3' ? 'selected' : '' }}>D3</option>
