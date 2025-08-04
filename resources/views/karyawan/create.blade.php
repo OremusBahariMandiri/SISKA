@@ -199,7 +199,7 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="RtRwKry" class="form-label fw-bold">RT/RW</label>
                                                         <div class="input-group">
@@ -209,7 +209,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="KelurahanKry" class="form-label fw-bold">Kelurahan</label>
                                                         <div class="input-group">
@@ -222,7 +222,7 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="KecamatanKry" class="form-label fw-bold">Kecamatan</label>
                                                         <div class="input-group">
@@ -232,7 +232,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="KotaKry" class="form-label fw-bold">Kota <span
                                                                 class="text-danger">*</span></label>
@@ -246,7 +246,7 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="ProvinsiKry" class="form-label fw-bold">Provinsi <span
                                                                 class="text-danger">*</span></label>
@@ -457,7 +457,8 @@
                                                                 <option value="D1" {{ old('PendidikanTrhKry') == 'D1' ? 'selected' : '' }}>D1</option>
                                                                 <option value="D2" {{ old('PendidikanTrhKry') == 'D2' ? 'selected' : '' }}>D2</option>
                                                                 <option value="D3" {{ old('PendidikanTrhKry') == 'D3' ? 'selected' : '' }}>D3</option>
-                                                                <option value="D4/S1" {{ old('PendidikanTrhKry') == 'D4/S1' ? 'selected' : '' }}>D4/S1</option>
+                                                                <option value="D4" {{ old('PendidikanTrhKry') == 'D4' ? 'selected' : '' }}>D4</option>
+                                                                <option value="S1" {{ old('PendidikanTrhKry') == 'S1' ? 'selected' : '' }}>S1</option>
                                                                 <option value="S2" {{ old('PendidikanTrhKry') == 'S2' ? 'selected' : '' }}>S2</option>
                                                                 <option value="S3" {{ old('PendidikanTrhKry') == 'S3' ? 'selected' : '' }}>S3</option>
                                                             </select>
