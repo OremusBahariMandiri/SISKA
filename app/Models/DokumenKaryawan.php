@@ -9,7 +9,7 @@ class DokumenKaryawan extends Model
 {
     use HasFactory;
 
-    protected $table = 'B01DmDokumenKry';
+    protected $table = 'B01DmDokKaryawan';
 
     protected $fillable = [
         'IdKode',
