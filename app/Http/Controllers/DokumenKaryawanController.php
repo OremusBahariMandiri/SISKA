@@ -53,7 +53,7 @@ class DokumenKaryawanController extends Controller
         }
 
         // Generate ID otomatis
-        $newId = $this->generateId('B01', 'B01DmDokumenKry');
+        $newId = $this->generateId('B01', 'B01DmDokKaryawan');
 
         return view('dokumen-karyawan.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
     }
@@ -61,7 +61,7 @@ class DokumenKaryawanController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'NoRegDok' => 'required|unique:B01DmDokumenKry,NoRegDok',
+            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
@@ -70,7 +70,7 @@ class DokumenKaryawanController extends Controller
 
         // Generate ID if not present
         if (empty($request->IdKode)) {
-            $IdKode = $this->generateId('B01', 'B01DmDokumenKry');
+            $IdKode = $this->generateId('B01', 'B01DmDokKaryawan');
         } else {
             $IdKode = $request->IdKode;
         }
@@ -171,7 +171,7 @@ class DokumenKaryawanController extends Controller
     public function update(Request $request, DokumenKaryawan $dokumenKaryawan)
     {
         $request->validate([
-            'NoRegDok' => 'required|unique:B01DmDokumenKry,NoRegDok,' . $dokumenKaryawan->id,
+            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok,' . $dokumenKaryawan->id,
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
