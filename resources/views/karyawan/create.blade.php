@@ -47,19 +47,20 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab"
-                                        data-bs-target="#tambahan" type="button" role="tab"
-                                        aria-controls="tambahan" aria-selected="false">
-                                        <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="pendidikan-tab" data-bs-toggle="tab"
                                         data-bs-target="#pendidikan" type="button" role="tab"
                                         aria-controls="pendidikan" aria-selected="false">
                                         <i class="fas fa-graduation-cap me-1"></i> Pendidikan
                                     </button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab"
+                                        data-bs-target="#tambahan" type="button" role="tab"
+                                        aria-controls="tambahan" aria-selected="false">
+                                        <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
+                                    </button>
+                                </li>
+
                             </ul>
 
                             <!-- Tab panes -->
@@ -71,15 +72,6 @@
                                             <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Biodata Karyawan</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <label for="NamaKry" class="form-label fw-bold">Nama <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <input type="text" class="form-control" id="NamaKry" name="NamaKry"
-                                                        value="{{ old('NamaKry') }}" required>
-                                                </div>
-                                            </div>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
@@ -94,6 +86,16 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
+                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal Masuk</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
+                                                            <input type="date" class="form-control" id="TglMsk" name="TglMsk"
+                                                                value="{{ old('TglMsk') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
                                                         <label for="NikKtp" class="form-label fw-bold">NIK KTP <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
@@ -102,6 +104,15 @@
                                                                 value="{{ old('NikKtp') }}" minlength="16" maxlength="16" required>
                                                         </div>
                                                         <div class="form-text text-muted"><i class="fas fa-info-circle me-1"></i>16 digit angka NIK KTP</div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="NamaKry" class="form-label fw-bold">Nama <span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                        <input type="text" class="form-control" id="NamaKry" name="NamaKry"
+                                                            value="{{ old('NamaKry') }}" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -259,7 +270,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="StsKaryawan" class="form-label fw-bold">Status Karyawan <span
                                                                 class="text-danger">*</span></label>
@@ -273,16 +284,6 @@
                                                                 <option value="Dikeluarkan" {{ old('StsKaryawan') == 'Dikeluarkan' ? 'selected' : '' }}>Dikeluarkan</option>
                                                                 <option value="Meninggal" {{ old('StsKaryawan') == 'Meninggal' ? 'selected' : '' }}>Meninggal</option>
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-3">
-                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal Masuk</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
-                                                            <input type="date" class="form-control" id="TglMsk" name="TglMsk"
-                                                                value="{{ old('TglMsk') }}">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -314,6 +315,16 @@
                                             </div>
 
                                             <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="DomisiliKry" class="form-label fw-bold">Domisili</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-map-marked-alt"></i></span>
+                                                            <input type="text" class="form-control" id="DomisiliKry" name="DomisiliKry"
+                                                                value="{{ old('DomisiliKry') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
                                                         <label for="StsKawinKry" class="form-label fw-bold">Status Perkawinan <span
@@ -368,6 +379,10 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <div class="row">
+
                                             </div>
 
                                             <div class="row">
@@ -630,7 +645,7 @@
             const form = document.getElementById('karyawanForm');
 
             // Tab navigation variables
-            const tabs = ['biodata', 'alamat', 'tambahan', 'pendidikan'];
+            const tabs = ['biodata', 'alamat', 'pendidikan', 'tambahan'];
             let currentTabIndex = 0;
 
             const prevTabBtn = document.getElementById('prevTabBtn');

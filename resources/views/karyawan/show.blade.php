@@ -30,53 +30,45 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="alamat-tab" data-bs-toggle="tab"
-                                    data-bs-target="#alamat" type="button" role="tab"
-                                    aria-controls="alamat" aria-selected="false">
+                                <button class="nav-link" id="alamat-tab" data-bs-toggle="tab" data-bs-target="#alamat"
+                                    type="button" role="tab" aria-controls="alamat" aria-selected="false">
                                     <i class="fas fa-home me-1"></i> Alamat
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab"
-                                    data-bs-target="#tambahan" type="button" role="tab"
-                                    aria-controls="tambahan" aria-selected="false">
-                                    <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="pendidikan-tab" data-bs-toggle="tab"
-                                    data-bs-target="#pendidikan" type="button" role="tab"
-                                    aria-controls="pendidikan" aria-selected="false">
+                                    data-bs-target="#pendidikan" type="button" role="tab" aria-controls="pendidikan"
+                                    aria-selected="false">
                                     <i class="fas fa-graduation-cap me-1"></i> Pendidikan
                                 </button>
                             </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab" data-bs-target="#tambahan"
+                                    type="button" role="tab" aria-controls="tambahan" aria-selected="false">
+                                    <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
+                                </button>
+                            </li>
+
                         </ul>
 
                         <!-- Tab content -->
                         <div class="tab-content">
                             <!-- Biodata Tab -->
-                            <div class="tab-pane fade show active" id="biodata" role="tabpanel" aria-labelledby="biodata-tab">
+                            <div class="tab-pane fade show active" id="biodata" role="tabpanel"
+                                aria-labelledby="biodata-tab">
                                 <div class="card border-secondary mb-4">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
                                         <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Biodata Karyawan</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">Nama</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <div class="form-control">{{ $karyawan->NamaKry }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">NRK</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
                                                             <div class="form-control">{{ $karyawan->NrkKry }}</div>
                                                         </div>
                                                     </div>
@@ -84,17 +76,40 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tanggal Masuk</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-plus"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">NIK KTP</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
                                                             <div class="form-control">{{ $karyawan->NikKtp }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="info-group mb-3">
+                                                <label class="info-label fw-bold">Nama</label>
+                                                <div class="info-value">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                        <div class="form-control">{{ $karyawan->NamaKry }}</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
-
 
                                         <div class="row">
                                             <div class="col-md-6">
@@ -102,7 +117,8 @@
                                                     <label class="info-label fw-bold">Tempat Lahir</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marker-alt"></i></span>
                                                             <div class="form-control">{{ $karyawan->TempatLhrKry }}</div>
                                                         </div>
                                                     </div>
@@ -113,7 +129,8 @@
                                                     <label class="info-label fw-bold">Tanggal Lahir</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar"></i></span>
                                                             <div class="form-control">
                                                                 {{ $karyawan->TanggalLhrKry ? date('d-m-Y', strtotime($karyawan->TanggalLhrKry)) : '-' }}
                                                             </div>
@@ -129,7 +146,8 @@
                                                     <label class="info-label fw-bold">Jenis Kelamin</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-venus-mars"></i></span>
                                                             <div class="form-control">{{ $karyawan->SexKry }}</div>
                                                         </div>
                                                     </div>
@@ -137,36 +155,12 @@
                                             </div>
                                             <div class="col-md-6">
                                                 <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Umur</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user-clock"></i></span>
-                                                            <div class="form-control">{{ $karyawan->umur ?? '-' }} Tahun</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Agama</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-pray"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-pray"></i></span>
                                                             <div class="form-control">{{ $karyawan->AgamaKry }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Kewarganegaraan</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-flag"></i></span>
-                                                            <div class="form-control">{{ $karyawan->WargaNegaraKry ?? 'Indonesia' }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -199,8 +193,10 @@
                                                     <label class="info-label fw-bold">RT/RW</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map-signs"></i></span>
-                                                            <div class="form-control">{{ $karyawan->RtRwKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-signs"></i></span>
+                                                            <div class="form-control">{{ $karyawan->RtRwKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -210,8 +206,10 @@
                                                     <label class="info-label fw-bold">Kelurahan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                            <div class="form-control">{{ $karyawan->KelurahanKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <div class="form-control">{{ $karyawan->KelurahanKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -224,8 +222,10 @@
                                                     <label class="info-label fw-bold">Kecamatan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                            <div class="form-control">{{ $karyawan->KecamatanKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <div class="form-control">{{ $karyawan->KecamatanKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -235,7 +235,8 @@
                                                     <label class="info-label fw-bold">Kota</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-city"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-city"></i></span>
                                                             <div class="form-control">{{ $karyawan->KotaKry }}</div>
                                                         </div>
                                                     </div>
@@ -243,12 +244,17 @@
                                             </div>
                                         </div>
 
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">Provinsi</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                    <div class="form-control">{{ $karyawan->ProvinsiKry }}</div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Provinsi</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <div class="form-control">{{ $karyawan->ProvinsiKry }}</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -264,12 +270,13 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Status Karyawan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user-check"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-check"></i></span>
                                                             <div class="form-control">
                                                                 @if ($karyawan->StsKaryawan == 'Aktif')
                                                                     <span class="badge bg-success">Aktif</span>
@@ -282,21 +289,9 @@
                                                                 @elseif ($karyawan->StsKaryawan == 'Meninggal')
                                                                     <span class="badge bg-secondary">Meninggal</span>
                                                                 @else
-                                                                    <span class="badge bg-dark">{{ $karyawan->StsKaryawan }}</span>
+                                                                    <span
+                                                                        class="badge bg-dark">{{ $karyawan->StsKaryawan }}</span>
                                                                 @endif
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Tanggal Masuk</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
-                                                            <div class="form-control">
-                                                                {{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -311,7 +306,8 @@
                                                         <label class="info-label fw-bold">Tanggal Non-Aktif</label>
                                                         <div class="info-value">
                                                             <div class="input-group">
-                                                                <span class="input-group-text"><i class="fas fa-calendar-minus"></i></span>
+                                                                <span class="input-group-text"><i
+                                                                        class="fas fa-calendar-minus"></i></span>
                                                                 <div class="form-control">
                                                                     {{ $karyawan->TglOffKry ? date('d-m-Y', strtotime($karyawan->TglOffKry)) : '-' }}
                                                                 </div>
@@ -324,8 +320,10 @@
                                                         <label class="info-label fw-bold">Keterangan</label>
                                                         <div class="info-value">
                                                             <div class="input-group">
-                                                                <span class="input-group-text"><i class="fas fa-comment"></i></span>
-                                                                <div class="form-control">{{ $karyawan->KetOffKry ?? '-' }}</div>
+                                                                <span class="input-group-text"><i
+                                                                        class="fas fa-comment"></i></span>
+                                                                <div class="form-control">
+                                                                    {{ $karyawan->KetOffKry ?? '-' }}</div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -334,12 +332,26 @@
                                         @endif
 
                                         <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Domisili</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marked-alt"></i></span>
+                                                            <div class="form-control">{{ $karyawan->DomisiliKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Status Perkawinan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-ring"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-ring"></i></span>
                                                             <div class="form-control">{{ $karyawan->StsKawinKry }}</div>
                                                         </div>
                                                     </div>
@@ -350,8 +362,10 @@
                                                     <label class="info-label fw-bold">Status Keluarga</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                                            <div class="form-control">{{ $karyawan->StsKeluargaKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-users"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->StsKeluargaKry ?? '-' }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -364,8 +378,10 @@
                                                     <label class="info-label fw-bold">Jumlah Anak</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-child"></i></span>
-                                                            <div class="form-control">{{ $karyawan->JumlahAnakKry ?? '0' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-child"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->JumlahAnakKry ?? '0' }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -375,12 +391,18 @@
                                                     <label class="info-label fw-bold">Pekerjaan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                                            <div class="form-control">{{ $karyawan->PekerjaanKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-briefcase"></i></span>
+                                                            <div class="form-control">{{ $karyawan->PekerjaanKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
+
+                                        <div class="row">
+
                                         </div>
 
                                         <div class="row">
@@ -389,7 +411,8 @@
                                                     <label class="info-label fw-bold">Telepon 1</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone"></i></span>
                                                             <div class="form-control">{{ $karyawan->Telpon1Kry }}</div>
                                                         </div>
                                                     </div>
@@ -400,8 +423,10 @@
                                                     <label class="info-label fw-bold">Telepon 2</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
-                                                            <div class="form-control">{{ $karyawan->Telpon2Kry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone-alt"></i></span>
+                                                            <div class="form-control">{{ $karyawan->Telpon2Kry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -414,8 +439,10 @@
                                                     <label class="info-label fw-bold">Email</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                                            <div class="form-control">{{ $karyawan->EmailKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-envelope"></i></span>
+                                                            <div class="form-control">{{ $karyawan->EmailKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -425,8 +452,10 @@
                                                     <label class="info-label fw-bold">Instagram</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
-                                                            <div class="form-control">{{ $karyawan->InstagramKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fab fa-instagram"></i></span>
+                                                            <div class="form-control">{{ $karyawan->InstagramKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -440,7 +469,8 @@
                             <div class="tab-pane fade" id="pendidikan" role="tabpanel" aria-labelledby="pendidikan-tab">
                                 <div class="card border-secondary mb-4">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan</h5>
+                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
@@ -449,8 +479,10 @@
                                                     <label class="info-label fw-bold">Pendidikan Terakhir</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
-                                                            <div class="form-control">{{ $karyawan->PendidikanTrhKry }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-graduate"></i></span>
+                                                            <div class="form-control">{{ $karyawan->PendidikanTrhKry }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -460,8 +492,10 @@
                                                     <label class="info-label fw-bold">Institusi</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-university"></i></span>
-                                                            <div class="form-control">{{ $karyawan->InstitusiPdkKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-university"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->InstitusiPdkKry ?? '-' }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -474,8 +508,10 @@
                                                     <label class="info-label fw-bold">Jurusan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-book"></i></span>
-                                                            <div class="form-control">{{ $karyawan->JurusanPdkKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-book"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->JurusanPdkKry ?? '-' }}</div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -485,8 +521,10 @@
                                                     <label class="info-label fw-bold">Tahun Lulus</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
-                                                            <div class="form-control">{{ $karyawan->TahunLlsKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-check"></i></span>
+                                                            <div class="form-control">{{ $karyawan->TahunLlsKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -499,8 +537,10 @@
                                                     <label class="info-label fw-bold">Gelar</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-award"></i></span>
-                                                            <div class="form-control">{{ $karyawan->GelarPdkKry ?? '-' }}</div>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-award"></i></span>
+                                                            <div class="form-control">{{ $karyawan->GelarPdkKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -510,7 +550,8 @@
                                                     <label class="info-label fw-bold">Dokumen</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-file-pdf"></i></span>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-file-pdf"></i></span>
                                                             <div class="form-control">
                                                                 @if ($karyawan->FileDokKry)
                                                                     @php
