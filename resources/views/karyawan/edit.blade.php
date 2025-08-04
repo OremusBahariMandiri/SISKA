@@ -25,9 +25,12 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('karyawan.update', $karyawan->id) }}" method="POST" id="karyawanForm" enctype="multipart/form-data">
+                        <form action="{{ route('karyawan.update', $karyawan->id) }}" method="POST" id="karyawanForm"
+                            enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
+                            <input type="text" class="form-control" id="IdKode" name="IdKode"
+                                value="{{ old('IdKode', $karyawan->IdKode) }}" hidden readonly>
 
                             <!-- Nav tabs for form sections -->
                             <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
@@ -39,68 +42,89 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="alamat-tab" data-bs-toggle="tab"
-                                        data-bs-target="#alamat" type="button" role="tab"
-                                        aria-controls="alamat" aria-selected="false">
+                                    <button class="nav-link" id="alamat-tab" data-bs-toggle="tab" data-bs-target="#alamat"
+                                        type="button" role="tab" aria-controls="alamat" aria-selected="false">
                                         <i class="fas fa-home me-1"></i> Alamat
                                     </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab"
-                                        data-bs-target="#tambahan" type="button" role="tab"
-                                        aria-controls="tambahan" aria-selected="false">
-                                        <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
+                                </li>  <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="pendidikan-tab" data-bs-toggle="tab"
                                         data-bs-target="#pendidikan" type="button" role="tab"
                                         aria-controls="pendidikan" aria-selected="false">
                                         <i class="fas fa-graduation-cap me-1"></i> Pendidikan
                                     </button>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="tambahan-tab" data-bs-toggle="tab"
+                                        data-bs-target="#tambahan" type="button" role="tab" aria-controls="tambahan"
+                                        aria-selected="false">
+                                        <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
+                                    </button>
+                                </li>
+
                             </ul>
 
                             <!-- Tab panes -->
                             <div class="tab-content">
                                 <!-- Biodata Karyawan -->
-                                <div class="tab-pane fade show active" id="biodata" role="tabpanel" aria-labelledby="biodata-tab">
+                                <div class="tab-pane fade show active" id="biodata" role="tabpanel"
+                                    aria-labelledby="biodata-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
                                             <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Biodata Karyawan</h5>
                                         </div>
                                         <div class="card-body">
-                                            <div class="form-group mb-3">
-                                                <label for="NamaKry" class="form-label fw-bold">Nama <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <input type="text" class="form-control" id="NamaKry" name="NamaKry"
-                                                        value="{{ old('NamaKry', $karyawan->NamaKry) }}" required>
-                                                </div>
-                                            </div>
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
                                                         <label for="NrkKry" class="form-label fw-bold">NRK <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                                            <input type="text" class="form-control" id="NrkKry" name="NrkKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
+                                                            <input type="text" class="form-control" id="NrkKry"
+                                                                name="NrkKry"
                                                                 value="{{ old('NrkKry', $karyawan->NrkKry) }}" required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
+                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal
+                                                            Masuk</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-plus"></i></span>
+                                                            <input type="date" class="form-control" id="TglMsk"
+                                                                name="TglMsk"
+                                                                value="{{ old('TglMsk', $karyawan->TglMsk ? $karyawan->TglMsk->format('Y-m-d') : '') }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
                                                         <label for="NikKtp" class="form-label fw-bold">NIK KTP <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                                            <input type="text" class="form-control" id="NikKtp" name="NikKtp"
-                                                                value="{{ old('NikKtp', $karyawan->NikKtp) }}" minlength="16" maxlength="16" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
+                                                            <input type="text" class="form-control" id="NikKtp"
+                                                                name="NikKtp"
+                                                                value="{{ old('NikKtp', $karyawan->NikKtp) }}"
+                                                                minlength="16" maxlength="16" required>
                                                         </div>
-                                                        <div class="form-text text-muted"><i class="fas fa-info-circle me-1"></i>16 digit angka NIK KTP</div>
+                                                        <div class="form-text text-muted"><i
+                                                                class="fas fa-info-circle me-1"></i>16 digit angka NIK KTP
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3">
+                                                    <label for="NamaKry" class="form-label fw-bold">Nama <span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                        <input type="text" class="form-control" id="NamaKry"
+                                                            name="NamaKry"
+                                                            value="{{ old('NamaKry', $karyawan->NamaKry) }}" required>
                                                     </div>
                                                 </div>
                                             </div>
@@ -108,23 +132,29 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="TempatLhrKry" class="form-label fw-bold">Tempat Lahir <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="TempatLhrKry" class="form-label fw-bold">Tempat Lahir
+                                                            <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                                            <input type="text" class="form-control" id="TempatLhrKry" name="TempatLhrKry"
-                                                                value="{{ old('TempatLhrKry', $karyawan->TempatLhrKry) }}" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marker-alt"></i></span>
+                                                            <input type="text" class="form-control" id="TempatLhrKry"
+                                                                name="TempatLhrKry"
+                                                                value="{{ old('TempatLhrKry', $karyawan->TempatLhrKry) }}"
+                                                                required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="TanggalLhrKry" class="form-label fw-bold">Tanggal Lahir <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="TanggalLhrKry" class="form-label fw-bold">Tanggal
+                                                            Lahir <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                                                            <input type="date" class="form-control" id="TanggalLhrKry" name="TanggalLhrKry"
-                                                                value="{{ old('TanggalLhrKry', $karyawan->TanggalLhrKry ? $karyawan->TanggalLhrKry->format('Y-m-d') : '') }}" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar"></i></span>
+                                                            <input type="date" class="form-control" id="TanggalLhrKry"
+                                                                name="TanggalLhrKry"
+                                                                value="{{ old('TanggalLhrKry', $karyawan->TanggalLhrKry ? $karyawan->TanggalLhrKry->format('Y-m-d') : '') }}"
+                                                                required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -133,14 +163,21 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="SexKry" class="form-label fw-bold">Jenis Kelamin <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="SexKry" class="form-label fw-bold">Jenis Kelamin
+                                                            <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
-                                                            <select class="form-select" id="SexKry" name="SexKry" required>
-                                                                <option value="" disabled>Pilih Jenis Kelamin</option>
-                                                                <option value="Laki-laki" {{ old('SexKry', $karyawan->SexKry) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                                                <option value="Perempuan" {{ old('SexKry', $karyawan->SexKry) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-venus-mars"></i></span>
+                                                            <select class="form-select" id="SexKry" name="SexKry"
+                                                                required>
+                                                                <option value="" disabled>Pilih Jenis Kelamin
+                                                                </option>
+                                                                <option value="Laki-laki"
+                                                                    {{ old('SexKry', $karyawan->SexKry) == 'Laki-laki' ? 'selected' : '' }}>
+                                                                    Laki-laki</option>
+                                                                <option value="Perempuan"
+                                                                    {{ old('SexKry', $karyawan->SexKry) == 'Perempuan' ? 'selected' : '' }}>
+                                                                    Perempuan</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -150,16 +187,32 @@
                                                         <label for="AgamaKry" class="form-label fw-bold">Agama <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-pray"></i></span>
-                                                            <select class="form-select" id="AgamaKry" name="AgamaKry" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-pray"></i></span>
+                                                            <select class="form-select" id="AgamaKry" name="AgamaKry"
+                                                                required>
                                                                 <option value="" disabled>Pilih Agama</option>
-                                                                <option value="Islam" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Islam' ? 'selected' : '' }}>Islam</option>
-                                                                <option value="Kristen" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Kristen' ? 'selected' : '' }}>Kristen</option>
-                                                                <option value="Katolik" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-                                                                <option value="Hindu" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                                                                <option value="Buddha" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Buddha' ? 'selected' : '' }}>Buddha</option>
-                                                                <option value="Konghucu" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Konghucu' ? 'selected' : '' }}>Konghucu</option>
-                                                                <option value="Lainnya" {{ old('AgamaKry', $karyawan->AgamaKry) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                                                <option value="Islam"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Islam' ? 'selected' : '' }}>
+                                                                    Islam</option>
+                                                                <option value="Kristen"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Kristen' ? 'selected' : '' }}>
+                                                                    Kristen</option>
+                                                                <option value="Katolik"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Katolik' ? 'selected' : '' }}>
+                                                                    Katolik</option>
+                                                                <option value="Hindu"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Hindu' ? 'selected' : '' }}>
+                                                                    Hindu</option>
+                                                                <option value="Buddha"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Buddha' ? 'selected' : '' }}>
+                                                                    Buddha</option>
+                                                                <option value="Konghucu"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Konghucu' ? 'selected' : '' }}>
+                                                                    Konghucu</option>
+                                                                <option value="Lainnya"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Lainnya' ? 'selected' : '' }}>
+                                                                    Lainnya</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -181,8 +234,7 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-home"></i></span>
-                                                    <textarea class="form-control" id="AlamatKry" name="AlamatKry" rows="3"
-                                                        required>{{ old('AlamatKry', $karyawan->AlamatKry) }}</textarea>
+                                                    <textarea class="form-control" id="AlamatKry" name="AlamatKry" rows="3" required>{{ old('AlamatKry', $karyawan->AlamatKry) }}</textarea>
                                                 </div>
                                             </div>
 
@@ -191,18 +243,24 @@
                                                     <div class="form-group mb-3">
                                                         <label for="RtRwKry" class="form-label fw-bold">RT/RW</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map-signs"></i></span>
-                                                            <input type="text" class="form-control" id="RtRwKry" name="RtRwKry"
-                                                                value="{{ old('RtRwKry', $karyawan->RtRwKry) }}" placeholder="000/000">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-signs"></i></span>
+                                                            <input type="text" class="form-control" id="RtRwKry"
+                                                                name="RtRwKry"
+                                                                value="{{ old('RtRwKry', $karyawan->RtRwKry) }}"
+                                                                placeholder="000/000">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="KelurahanKry" class="form-label fw-bold">Kelurahan</label>
+                                                        <label for="KelurahanKry"
+                                                            class="form-label fw-bold">Kelurahan</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                            <input type="text" class="form-control" id="KelurahanKry" name="KelurahanKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <input type="text" class="form-control" id="KelurahanKry"
+                                                                name="KelurahanKry"
                                                                 value="{{ old('KelurahanKry', $karyawan->KelurahanKry) }}">
                                                         </div>
                                                     </div>
@@ -212,10 +270,13 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="KecamatanKry" class="form-label fw-bold">Kecamatan</label>
+                                                        <label for="KecamatanKry"
+                                                            class="form-label fw-bold">Kecamatan</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                            <input type="text" class="form-control" id="KecamatanKry" name="KecamatanKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <input type="text" class="form-control" id="KecamatanKry"
+                                                                name="KecamatanKry"
                                                                 value="{{ old('KecamatanKry', $karyawan->KecamatanKry) }}">
                                                         </div>
                                                     </div>
@@ -225,8 +286,10 @@
                                                         <label for="KotaKry" class="form-label fw-bold">Kota <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-city"></i></span>
-                                                            <input type="text" class="form-control" id="KotaKry" name="KotaKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-city"></i></span>
+                                                            <input type="text" class="form-control" id="KotaKry"
+                                                                name="KotaKry"
                                                                 value="{{ old('KotaKry', $karyawan->KotaKry) }}" required>
                                                         </div>
                                                     </div>
@@ -239,9 +302,12 @@
                                                         <label for="ProvinsiKry" class="form-label fw-bold">Provinsi <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
-                                                            <input type="text" class="form-control" id="ProvinsiKry" name="ProvinsiKry"
-                                                                value="{{ old('ProvinsiKry', $karyawan->ProvinsiKry) }}" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <input type="text" class="form-control" id="ProvinsiKry"
+                                                                name="ProvinsiKry"
+                                                                value="{{ old('ProvinsiKry', $karyawan->ProvinsiKry) }}"
+                                                                required>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -251,60 +317,71 @@
                                 </div>
 
                                 <!-- Informasi Tambahan -->
-                                <div class="tab-pane fade" id="tambahan" role="tabpanel" aria-labelledby="tambahan-tab">
+                                <div class="tab-pane fade" id="tambahan" role="tabpanel"
+                                    aria-labelledby="tambahan-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Tambahan</h5>
+                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Tambahan
+                                            </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="StsKaryawan" class="form-label fw-bold">Status Karyawan <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="StsKaryawan" class="form-label fw-bold">Status
+                                                            Karyawan <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user-check"></i></span>
-                                                            <select class="form-select" id="StsKaryawan" name="StsKaryawan" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-check"></i></span>
+                                                            <select class="form-select" id="StsKaryawan"
+                                                                name="StsKaryawan" required>
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Aktif" {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
-                                                                <option value="Pensiun" {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Pensiun' ? 'selected' : '' }}>Pensiun</option>
-                                                                <option value="Mengundurkan Diri" {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Mengundurkan Diri' ? 'selected' : '' }}>Mengundurkan Diri</option>
-                                                                <option value="Dikeluarkan" {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Dikeluarkan' ? 'selected' : '' }}>Dikeluarkan</option>
-                                                                <option value="Meninggal" {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Meninggal' ? 'selected' : '' }}>Meninggal</option>
+                                                                <option value="Aktif"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Aktif' ? 'selected' : '' }}>
+                                                                    Aktif</option>
+                                                                <option value="Pensiun"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Pensiun' ? 'selected' : '' }}>
+                                                                    Pensiun</option>
+                                                                <option value="Mengundurkan Diri"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Mengundurkan Diri' ? 'selected' : '' }}>
+                                                                    Mengundurkan Diri</option>
+                                                                <option value="Dikeluarkan"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Dikeluarkan' ? 'selected' : '' }}>
+                                                                    Dikeluarkan</option>
+                                                                <option value="Meninggal"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Meninggal' ? 'selected' : '' }}>
+                                                                    Meninggal</option>
                                                             </select>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-3">
-                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal Masuk</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
-                                                            <input type="date" class="form-control" id="TglMsk" name="TglMsk"
-                                                                value="{{ old('TglMsk', $karyawan->TglMsk ? $karyawan->TglMsk->format('Y-m-d') : '') }}">
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div id="nonActiveFields" class="{{ $karyawan->StsKaryawan != 'Aktif' ? '' : 'd-none' }}">
+                                            <div id="nonActiveFields"
+                                                class="{{ $karyawan->StsKaryawan != 'Aktif' ? '' : 'd-none' }}">
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group mb-3">
-                                                            <label for="TglOffKry" class="form-label fw-bold">Tanggal Non-Aktif</label>
+                                                            <label for="TglOffKry" class="form-label fw-bold">Tanggal
+                                                                Non-Aktif</label>
                                                             <div class="input-group">
-                                                                <span class="input-group-text"><i class="fas fa-calendar-minus"></i></span>
-                                                                <input type="date" class="form-control" id="TglOffKry" name="TglOffKry"
+                                                                <span class="input-group-text"><i
+                                                                        class="fas fa-calendar-minus"></i></span>
+                                                                <input type="date" class="form-control" id="TglOffKry"
+                                                                    name="TglOffKry"
                                                                     value="{{ old('TglOffKry', $karyawan->TglOffKry ? $karyawan->TglOffKry->format('Y-m-d') : '') }}">
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="form-group mb-3">
-                                                            <label for="KetOffKry" class="form-label fw-bold">Keterangan</label>
+                                                            <label for="KetOffKry"
+                                                                class="form-label fw-bold">Keterangan</label>
                                                             <div class="input-group">
-                                                                <span class="input-group-text"><i class="fas fa-comment"></i></span>
-                                                                <input type="text" class="form-control" id="KetOffKry" name="KetOffKry"
+                                                                <span class="input-group-text"><i
+                                                                        class="fas fa-comment"></i></span>
+                                                                <input type="text" class="form-control" id="KetOffKry"
+                                                                    name="KetOffKry"
                                                                     value="{{ old('KetOffKry', $karyawan->KetOffKry) }}">
                                                             </div>
                                                         </div>
@@ -313,33 +390,67 @@
                                             </div>
 
                                             <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="DomisiliKry" class="form-label fw-bold">Domisili
+                                                            Karyawan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marked-alt"></i></span>
+                                                            <input type="text" class="form-control" id="DomisiliKry"
+                                                                name="DomisiliKry"
+                                                                value="{{ old('DomisiliKry', $karyawan->DomisiliKry) }}">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="StsKawinKry" class="form-label fw-bold">Status Perkawinan <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="StsKawinKry" class="form-label fw-bold">Status
+                                                            Perkawinan <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-ring"></i></span>
-                                                            <select class="form-select" id="StsKawinKry" name="StsKawinKry" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-ring"></i></span>
+                                                            <select class="form-select" id="StsKawinKry"
+                                                                name="StsKawinKry" required>
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Belum Kawin" {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Belum Kawin' ? 'selected' : '' }}>Belum Kawin</option>
-                                                                <option value="Kawin" {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Kawin' ? 'selected' : '' }}>Kawin</option>
-                                                                <option value="Cerai Hidup" {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                                                                <option value="Cerai Mati" {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                                                                <option value="Belum Kawin"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Belum Kawin' ? 'selected' : '' }}>
+                                                                    Belum Kawin</option>
+                                                                <option value="Kawin"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Kawin' ? 'selected' : '' }}>
+                                                                    Kawin</option>
+                                                                <option value="Cerai Hidup"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Hidup' ? 'selected' : '' }}>
+                                                                    Cerai Hidup</option>
+                                                                <option value="Cerai Mati"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Mati' ? 'selected' : '' }}>
+                                                                    Cerai Mati</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="StsKeluargaKry" class="form-label fw-bold">Status Keluarga</label>
+                                                        <label for="StsKeluargaKry" class="form-label fw-bold">Status
+                                                            Keluarga</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                                            <select class="form-select" id="StsKeluargaKry" name="StsKeluargaKry">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-users"></i></span>
+                                                            <select class="form-select" id="StsKeluargaKry"
+                                                                name="StsKeluargaKry">
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Kepala Keluarga" {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Kepala Keluarga' ? 'selected' : '' }}>Kepala Keluarga</option>
-                                                                <option value="Istri" {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Istri' ? 'selected' : '' }}>Istri</option>
-                                                                <option value="Anak" {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Anak' ? 'selected' : '' }}>Anak</option>
-                                                                <option value="Lainnya" {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
+                                                                <option value="Kepala Keluarga"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Kepala Keluarga' ? 'selected' : '' }}>
+                                                                    Kepala Keluarga</option>
+                                                                <option value="Istri"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Istri' ? 'selected' : '' }}>
+                                                                    Istri</option>
+                                                                <option value="Anak"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Anak' ? 'selected' : '' }}>
+                                                                    Anak</option>
+                                                                <option value="Lainnya"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Lainnya' ? 'selected' : '' }}>
+                                                                    Lainnya</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -349,24 +460,35 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="JumlahAnakKry" class="form-label fw-bold">Jumlah Anak</label>
+                                                        <label for="JumlahAnakKry" class="form-label fw-bold">Jumlah
+                                                            Anak</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-child"></i></span>
-                                                            <input type="number" class="form-control" id="JumlahAnakKry" name="JumlahAnakKry"
-                                                                value="{{ old('JumlahAnakKry', $karyawan->JumlahAnakKry) }}" min="0">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-child"></i></span>
+                                                            <input type="number" class="form-control" id="JumlahAnakKry"
+                                                                name="JumlahAnakKry"
+                                                                value="{{ old('JumlahAnakKry', $karyawan->JumlahAnakKry) }}"
+                                                                min="0">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="PekerjaanKry" class="form-label fw-bold">Pekerjaan</label>
+                                                        <label for="PekerjaanKry"
+                                                            class="form-label fw-bold">Pekerjaan</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                                            <input type="text" class="form-control" id="PekerjaanKry" name="PekerjaanKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-briefcase"></i></span>
+                                                            <input type="text" class="form-control" id="PekerjaanKry"
+                                                                name="PekerjaanKry"
                                                                 value="{{ old('PekerjaanKry', $karyawan->PekerjaanKry) }}">
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <div class="row">
+
                                             </div>
 
                                             <div class="row">
@@ -375,18 +497,24 @@
                                                         <label for="Telpon1Kry" class="form-label fw-bold">Telepon 1 <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                                            <input type="text" class="form-control" id="Telpon1Kry" name="Telpon1Kry"
-                                                                value="{{ old('Telpon1Kry', $karyawan->Telpon1Kry) }}" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone"></i></span>
+                                                            <input type="text" class="form-control" id="Telpon1Kry"
+                                                                name="Telpon1Kry"
+                                                                value="{{ old('Telpon1Kry', $karyawan->Telpon1Kry) }}"
+                                                                required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="Telpon2Kry" class="form-label fw-bold">Telepon 2</label>
+                                                        <label for="Telpon2Kry" class="form-label fw-bold">Telepon
+                                                            2</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
-                                                            <input type="text" class="form-control" id="Telpon2Kry" name="Telpon2Kry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone-alt"></i></span>
+                                                            <input type="text" class="form-control" id="Telpon2Kry"
+                                                                name="Telpon2Kry"
                                                                 value="{{ old('Telpon2Kry', $karyawan->Telpon2Kry) }}">
                                                         </div>
                                                     </div>
@@ -398,18 +526,23 @@
                                                     <div class="form-group mb-3">
                                                         <label for="EmailKry" class="form-label fw-bold">Email</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                                            <input type="email" class="form-control" id="EmailKry" name="EmailKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-envelope"></i></span>
+                                                            <input type="email" class="form-control" id="EmailKry"
+                                                                name="EmailKry"
                                                                 value="{{ old('EmailKry', $karyawan->EmailKry) }}">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="InstagramKry" class="form-label fw-bold">Instagram</label>
+                                                        <label for="InstagramKry"
+                                                            class="form-label fw-bold">Instagram</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
-                                                            <input type="text" class="form-control" id="InstagramKry" name="InstagramKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fab fa-instagram"></i></span>
+                                                            <input type="text" class="form-control" id="InstagramKry"
+                                                                name="InstagramKry"
                                                                 value="{{ old('InstagramKry', $karyawan->InstagramKry) }}">
                                                         </div>
                                                     </div>
@@ -420,40 +553,66 @@
                                 </div>
 
                                 <!-- Pendidikan -->
-                                <div class="tab-pane fade" id="pendidikan" role="tabpanel" aria-labelledby="pendidikan-tab">
+                                <div class="tab-pane fade" id="pendidikan" role="tabpanel"
+                                    aria-labelledby="pendidikan-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan</h5>
+                                            <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi
+                                                Pendidikan</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="PendidikanTrhKry" class="form-label fw-bold">Pendidikan Terakhir <span
+                                                        <label for="PendidikanTrhKry"
+                                                            class="form-label fw-bold">Pendidikan Terakhir <span
                                                                 class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-user-graduate"></i></span>
-                                                            <select class="form-select" id="PendidikanTrhKry" name="PendidikanTrhKry" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-graduate"></i></span>
+                                                            <select class="form-select" id="PendidikanTrhKry"
+                                                                name="PendidikanTrhKry" required>
                                                                 <option value="" disabled>Pilih Pendidikan</option>
-                                                                <option value="SD" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SD' ? 'selected' : '' }}>SD</option>
-                                                                <option value="SMP" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMP' ? 'selected' : '' }}>SMP</option>
-                                                                <option value="SMA/SMK" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMA/SMK' ? 'selected' : '' }}>SMA/SMK</option>
-                                                                <option value="D1" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D1' ? 'selected' : '' }}>D1</option>
-                                                                <option value="D2" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D2' ? 'selected' : '' }}>D2</option>
-                                                                <option value="D3" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D3' ? 'selected' : '' }}>D3</option>
-                                                                <option value="D4/S1" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D4/S1' ? 'selected' : '' }}>D4/S1</option>
-                                                                <option value="S2" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'S2' ? 'selected' : '' }}>S2</option>
-                                                                <option value="S3" {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'S3' ? 'selected' : '' }}>S3</option>
+                                                                <option value="SD"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SD' ? 'selected' : '' }}>
+                                                                    SD</option>
+                                                                <option value="SMP"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMP' ? 'selected' : '' }}>
+                                                                    SMP</option>
+                                                                <option value="SMA/SMK"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMA/SMK' ? 'selected' : '' }}>
+                                                                    SMA/SMK</option>
+                                                                <option value="D1"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D1' ? 'selected' : '' }}>
+                                                                    D1</option>
+                                                                <option value="D2"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D2' ? 'selected' : '' }}>
+                                                                    D2</option>
+                                                                <option value="D3"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D3' ? 'selected' : '' }}>
+                                                                    D3</option>
+                                                                <option value="D4/S1"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D4/S1' ? 'selected' : '' }}>
+                                                                    D4/S1</option>
+                                                                <option value="S2"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'S2' ? 'selected' : '' }}>
+                                                                    S2</option>
+                                                                <option value="S3"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'S3' ? 'selected' : '' }}>
+                                                                    S3</option>
                                                             </select>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="InstitusiPdkKry" class="form-label fw-bold">Institusi</label>
+                                                        <label for="InstitusiPdkKry"
+                                                            class="form-label fw-bold">Institusi</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-university"></i></span>
-                                                            <input type="text" class="form-control" id="InstitusiPdkKry" name="InstitusiPdkKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-university"></i></span>
+                                                            <input type="text" class="form-control"
+                                                                id="InstitusiPdkKry" name="InstitusiPdkKry"
                                                                 value="{{ old('InstitusiPdkKry', $karyawan->InstitusiPdkKry) }}">
                                                         </div>
                                                     </div>
@@ -463,21 +622,28 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="JurusanPdkKry" class="form-label fw-bold">Jurusan</label>
+                                                        <label for="JurusanPdkKry"
+                                                            class="form-label fw-bold">Jurusan</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-book"></i></span>
-                                                            <input type="text" class="form-control" id="JurusanPdkKry" name="JurusanPdkKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-book"></i></span>
+                                                            <input type="text" class="form-control" id="JurusanPdkKry"
+                                                                name="JurusanPdkKry"
                                                                 value="{{ old('JurusanPdkKry', $karyawan->JurusanPdkKry) }}">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="TahunLlsKry" class="form-label fw-bold">Tahun Lulus</label>
+                                                        <label for="TahunLlsKry" class="form-label fw-bold">Tahun
+                                                            Lulus</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
-                                                            <input type="number" class="form-control" id="TahunLlsKry" name="TahunLlsKry"
-                                                                value="{{ old('TahunLlsKry', $karyawan->TahunLlsKry) }}" min="1950" max="{{ date('Y') }}">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-check"></i></span>
+                                                            <input type="number" class="form-control" id="TahunLlsKry"
+                                                                name="TahunLlsKry"
+                                                                value="{{ old('TahunLlsKry', $karyawan->TahunLlsKry) }}"
+                                                                min="1950" max="{{ date('Y') }}">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -488,25 +654,33 @@
                                                     <div class="form-group mb-3">
                                                         <label for="GelarPdkKry" class="form-label fw-bold">Gelar</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-award"></i></span>
-                                                            <input type="text" class="form-control" id="GelarPdkKry" name="GelarPdkKry"
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-award"></i></span>
+                                                            <input type="text" class="form-control" id="GelarPdkKry"
+                                                                name="GelarPdkKry"
                                                                 value="{{ old('GelarPdkKry', $karyawan->GelarPdkKry) }}">
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
-                                                        <label for="FileDokKry" class="form-label fw-bold">Unggah Dokumen</label>
+                                                        <label for="FileDokKry" class="form-label fw-bold">Unggah
+                                                            Dokumen</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-file-pdf"></i></span>
-                                                            <input type="file" class="form-control" id="FileDokKry" name="FileDokKry">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-file-pdf"></i></span>
+                                                            <input type="file" class="form-control" id="FileDokKry"
+                                                                name="FileDokKry">
                                                         </div>
                                                         <div class="form-text text-muted">
-                                                            <i class="fas fa-info-circle me-1"></i>Format file: PDF, JPG, PNG.
-                                                            @if($karyawan->FileDokKry)
+                                                            <i class="fas fa-info-circle me-1"></i>Format file: PDF, JPG,
+                                                            PNG.
+                                                            @if ($karyawan->FileDokKry)
                                                                 <br>
-                                                                <a href="{{ asset('storage/' . $karyawan->FileDokKry) }}" target="_blank" class="text-primary">
-                                                                    <i class="fas fa-external-link-alt me-1"></i>Lihat Dokumen Saat Ini
+                                                                <a href="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                                    target="_blank" class="text-primary">
+                                                                    <i class="fas fa-external-link-alt me-1"></i>Lihat
+                                                                    Dokumen Saat Ini
                                                                 </a>
                                                             @endif
                                                         </div>
@@ -527,7 +701,8 @@
                                     <button type="button" id="nextTabBtn" class="btn btn-primary me-2">
                                         Selanjutnya <i class="fas fa-arrow-right ms-1"></i>
                                     </button>
-                                    <button type="submit" id="submitBtn" class="btn btn-success" style="display: none;">
+                                    <button type="submit" id="submitBtn" class="btn btn-success"
+                                        style="display: none;">
                                         <i class="fas fa-save me-1"></i> Update Data
                                     </button>
                                 </div>
@@ -637,7 +812,7 @@
             const form = document.getElementById('karyawanForm');
 
             // Tab navigation variables
-            const tabs = ['biodata', 'alamat', 'tambahan', 'pendidikan'];
+            const tabs = ['biodata', 'alamat', 'pendidikan', 'tambahan'];
             let currentTabIndex = 0;
 
             const prevTabBtn = document.getElementById('prevTabBtn');
@@ -694,7 +869,8 @@
                         field.classList.add('is-invalid');
 
                         // Create error message if it doesn't exist
-                        if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
+                        if (!field.nextElementSibling || !field.nextElementSibling.classList
+                            .contains('invalid-feedback')) {
                             const feedback = document.createElement('div');
                             feedback.className = 'invalid-feedback';
                             feedback.textContent = 'Field ini wajib diisi';
@@ -718,7 +894,7 @@
 
             // Listen to Bootstrap's tab events to keep track of current tab
             document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab, index) => {
-                tab.addEventListener('shown.bs.tab', function (event) {
+                tab.addEventListener('shown.bs.tab', function(event) {
                     currentTabIndex = index;
 
                     // Update navigation buttons state
