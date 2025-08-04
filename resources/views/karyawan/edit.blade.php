@@ -580,9 +580,12 @@
                                                                 <option value="SMP"
                                                                     {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMP' ? 'selected' : '' }}>
                                                                     SMP</option>
-                                                                <option value="SMA/SMK"
-                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMA/SMK' ? 'selected' : '' }}>
-                                                                    SMA/SMK</option>
+                                                                <option value="SMA"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMA' ? 'selected' : '' }}>
+                                                                    SMA</option>
+                                                                <option value="SMK"
+                                                                    {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SMK' ? 'selected' : '' }}>
+                                                                    SMK</option>
                                                                 <option value="D1"
                                                                     {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'D1' ? 'selected' : '' }}>
                                                                     D1</option>
