@@ -71,13 +71,13 @@
 
                                                 $workDuration = '';
                                                 if ($years > 0) {
-                                                    $workDuration .= $years . ' tahun ';
+                                                    $workDuration .= $years . ' thn ';
                                                 }
                                                 if ($months > 0) {
-                                                    $workDuration .= $months . ' bulan ';
+                                                    $workDuration .= $months . ' bln ';
                                                 }
                                                 if ($days > 0) {
-                                                    $workDuration .= $days . ' hari';
+                                                    $workDuration .= $days . ' hri';
                                                 }
                                                 $workDuration = trim($workDuration);
                                             }
@@ -89,7 +89,7 @@
                                             <td>{{ $karyawan->TempatLhrKry }}</td>
                                             <td>{{ $karyawan->TanggalLhrKry ? date('d-m-Y', strtotime($karyawan->TanggalLhrKry)) : '-' }}
                                             </td>
-                                            <td>{{ $age }} {{ is_numeric($age) ? 'tahun' : '' }}</td>
+                                            <td>{{ $age }} {{ is_numeric($age) ? 'thn' : '' }}</td>
                                             <td>{{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
                                             </td>
                                             <td>{{ $workDuration }}</td>
