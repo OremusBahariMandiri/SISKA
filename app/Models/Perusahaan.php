@@ -14,6 +14,7 @@ class Perusahaan extends Model
     protected $fillable = [
         'IdKode',
         'NamaPrsh',
+        'SingkatanPrsh',
         'AlamatPrsh',
         'TelpPrsh',
         'TelpPrsh2',

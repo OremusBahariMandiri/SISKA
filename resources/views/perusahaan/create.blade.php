@@ -46,6 +46,15 @@
                                                         value="{{ old('NamaPrsh') }}" required>
                                                 </div>
                                             </div>
+                                            <div class="form-group mb-3">
+                                                <label for="SingkatanPrsh" class="form-label fw-bold">Singkatan Perusahaan <span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-house"></i></span>
+                                                    <input type="text" class="form-control" id="SingkatanPrsh" name="SingkatanPrsh"
+                                                        value="{{ old('SingkatanPrsh') }}" required>
+                                                </div>
+                                            </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="AlamatPrsh" class="form-label fw-bold">Alamat <span
