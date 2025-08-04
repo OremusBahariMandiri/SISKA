@@ -48,7 +48,6 @@
                                     <i class="fas fa-info-circle me-1"></i> Informasi Tambahan
                                 </button>
                             </li>
-
                         </ul>
 
                         <!-- Tab content -->
@@ -100,12 +99,15 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="info-group mb-3">
-                                                <label class="info-label fw-bold">Nama</label>
-                                                <div class="info-value">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                        <div class="form-control">{{ $karyawan->NamaKry }}</div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Nama</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user"></i></span>
+                                                            <div class="form-control">{{ $karyawan->NamaKry }}</div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -161,6 +163,114 @@
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-pray"></i></span>
                                                             <div class="form-control">{{ $karyawan->AgamaKry }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Perkawinan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-ring"></i></span>
+                                                            <div class="form-control">{{ $karyawan->StsKawinKry }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Keluarga</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-users"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->StsKeluargaKry ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Jumlah Anak</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-child"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->JumlahAnakKry ?? '0' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Pekerjaan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-briefcase"></i></span>
+                                                            <div class="form-control">{{ $karyawan->PekerjaanKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Telepon 1</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone"></i></span>
+                                                            <div class="form-control">{{ $karyawan->Telpon1Kry }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Telepon 2</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-phone-alt"></i></span>
+                                                            <div class="form-control">{{ $karyawan->Telpon2Kry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Email</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-envelope"></i></span>
+                                                            <div class="form-control">{{ $karyawan->EmailKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Instagram</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fab fa-instagram"></i></span>
+                                                            <div class="form-control">{{ $karyawan->InstagramKry ?? '-' }}
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -257,6 +367,105 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Domisili</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marked-alt"></i></span>
+                                                            <div class="form-control">{{ $karyawan->DomisiliKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pendidikan Tab -->
+                            <div class="tab-pane fade" id="pendidikan" role="tabpanel" aria-labelledby="pendidikan-tab">
+                                <div class="card border-secondary mb-4">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Pendidikan Terakhir</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-graduate"></i></span>
+                                                            <div class="form-control">{{ $karyawan->PendidikanTrhKry }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Institusi</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-university"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->InstitusiPdkKry ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Jurusan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-book"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->JurusanPdkKry ?? '-' }}</div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tahun Lulus</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-check"></i></span>
+                                                            <div class="form-control">{{ $karyawan->TahunLlsKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Gelar</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-award"></i></span>
+                                                            <div class="form-control">{{ $karyawan->GelarPdkKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -330,265 +539,49 @@
                                                 </div>
                                             </div>
                                         @endif
+                                        <div class="col-md-12">
+                                            <div class="info-group mb-3">
+                                                <label class="info-label fw-bold">Dokumen</label>
+                                                <div class="info-value">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="fas fa-file-pdf"></i></span>
+                                                        <div class="form-control">
+                                                            @if ($karyawan->FileDokKry)
+                                                                @php
+                                                                    $fileExtension = pathinfo(
+                                                                        storage_path(
+                                                                            'app/public/' . $karyawan->FileDokKry,
+                                                                        ),
+                                                                        PATHINFO_EXTENSION,
+                                                                    );
+                                                                    $isPdf = strtolower($fileExtension) === 'pdf';
+                                                                    $isImage = in_array(
+                                                                        strtolower($fileExtension),
+                                                                        ['jpg', 'jpeg', 'png', 'gif'],
+                                                                    );
+                                                                @endphp
 
-                                        <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Domisili</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-map-marked-alt"></i></span>
-                                                            <div class="form-control">{{ $karyawan->DomisiliKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Status Perkawinan</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-ring"></i></span>
-                                                            <div class="form-control">{{ $karyawan->StsKawinKry }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Status Keluarga</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-users"></i></span>
-                                                            <div class="form-control">
-                                                                {{ $karyawan->StsKeluargaKry ?? '-' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Jumlah Anak</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-child"></i></span>
-                                                            <div class="form-control">
-                                                                {{ $karyawan->JumlahAnakKry ?? '0' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Pekerjaan</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-briefcase"></i></span>
-                                                            <div class="form-control">{{ $karyawan->PekerjaanKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Telepon 1</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-phone"></i></span>
-                                                            <div class="form-control">{{ $karyawan->Telpon1Kry }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Telepon 2</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-phone-alt"></i></span>
-                                                            <div class="form-control">{{ $karyawan->Telpon2Kry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Email</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-envelope"></i></span>
-                                                            <div class="form-control">{{ $karyawan->EmailKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Instagram</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fab fa-instagram"></i></span>
-                                                            <div class="form-control">{{ $karyawan->InstagramKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Pendidikan Tab -->
-                            <div class="tab-pane fade" id="pendidikan" role="tabpanel" aria-labelledby="pendidikan-tab">
-                                <div class="card border-secondary mb-4">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Pendidikan Terakhir</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-user-graduate"></i></span>
-                                                            <div class="form-control">{{ $karyawan->PendidikanTrhKry }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Institusi</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-university"></i></span>
-                                                            <div class="form-control">
-                                                                {{ $karyawan->InstitusiPdkKry ?? '-' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Jurusan</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-book"></i></span>
-                                                            <div class="form-control">
-                                                                {{ $karyawan->JurusanPdkKry ?? '-' }}</div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Tahun Lulus</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-calendar-check"></i></span>
-                                                            <div class="form-control">{{ $karyawan->TahunLlsKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Gelar</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-award"></i></span>
-                                                            <div class="form-control">{{ $karyawan->GelarPdkKry ?? '-' }}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Dokumen</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-file-pdf"></i></span>
-                                                            <div class="form-control">
-                                                                @if ($karyawan->FileDokKry)
-                                                                    @php
-                                                                        $fileExtension = pathinfo(
-                                                                            storage_path(
-                                                                                'app/public/' . $karyawan->FileDokKry,
-                                                                            ),
-                                                                            PATHINFO_EXTENSION,
-                                                                        );
-                                                                        $isPdf = strtolower($fileExtension) === 'pdf';
-                                                                        $isImage = in_array(
-                                                                            strtolower($fileExtension),
-                                                                            ['jpg', 'jpeg', 'png', 'gif'],
-                                                                        );
-                                                                    @endphp
-
-                                                                    @if ($isPdf || $isImage)
-                                                                        <a href="{{ asset('storage/' . $karyawan->FileDokKry) }}"
-                                                                            target="_blank" class="text-primary"
-                                                                            rel="noopener">
-                                                                            <i
-                                                                                class="fas fa-external-link-alt me-1"></i>Lihat
-                                                                            Dokumen
-                                                                        </a>
-                                                                    @else
-                                                                        <a href="{{ route('karyawan.view-document', $karyawan->id) }}"
-                                                                            target="_blank" class="text-primary"
-                                                                            rel="noopener">
-                                                                            <i
-                                                                                class="fas fa-external-link-alt me-1"></i>Lihat
-                                                                            Dokumen
-                                                                        </a>
-                                                                    @endif
+                                                                @if ($isPdf || $isImage)
+                                                                    <a href="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                                        target="_blank" class="text-primary"
+                                                                        rel="noopener">
+                                                                        <i
+                                                                            class="fas fa-external-link-alt me-1"></i>Lihat
+                                                                        Dokumen
+                                                                    </a>
                                                                 @else
-                                                                    <span class="text-muted">Tidak ada dokumen</span>
+                                                                    <a href="{{ route('karyawan.view-document', $karyawan->id) }}"
+                                                                        target="_blank" class="text-primary"
+                                                                        rel="noopener">
+                                                                        <i
+                                                                            class="fas fa-external-link-alt me-1"></i>Lihat
+                                                                        Dokumen
+                                                                    </a>
                                                                 @endif
-                                                            </div>
+                                                            @else
+                                                                <span class="text-muted">Tidak ada dokumen</span>
+                                                            @endif
                                                         </div>
                                                     </div>
                                                 </div>
