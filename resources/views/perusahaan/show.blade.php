@@ -26,15 +26,6 @@
                                         <h5 class="mb-0"><i class="fas fa-building me-2"></i>Informasi Perusahaan</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">Kode</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <div class="form-control">{{ $perusahaan->IdKode }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Nama Perusahaan</label>
