@@ -221,6 +221,20 @@
                                         </div>
 
                                         <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Kewarganegaraan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-flag"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $karyawan->WargaNegaraKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <div class="col-md-6">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Telepon 1</label>
@@ -374,7 +388,8 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-map-marked-alt"></i></span>
-                                                            <div class="form-control">{{ $karyawan->DomisiliKry ?? '-' }}
+                                                            <div class="form-control">
+                                                                <textarea class="form-control" id="DomisiliKry" name="DomisiliKry" rows="3" readonly>{{ $karyawan->DomisiliKry ?? '-' }}</textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -539,6 +554,42 @@
                                                 </div>
                                             </div>
                                         @endif
+
+                                        @if ($karyawan->FileDokKry)
+                                            @php
+                                                $fileExtension = pathinfo(
+                                                    storage_path(
+                                                        'app/public/' . $karyawan->FileDokKry,
+                                                    ),
+                                                    PATHINFO_EXTENSION,
+                                                );
+                                                $isImage = in_array(strtolower($fileExtension), [
+                                                    'jpg',
+                                                    'jpeg',
+                                                    'png',
+                                                    'gif',
+                                                ]);
+                                            @endphp
+
+                                            @if ($isImage)
+                                                <div class="col-md-12">
+                                                    <div class="info-group mb-4">
+                                                        <label class="info-label fw-bold">Foto Karyawan</label>
+                                                        <div class="info-value">
+                                                            <div class="card">
+                                                                <div class="card-body text-center">
+                                                                    <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                                         alt="Foto {{ $karyawan->NamaKry }}"
+                                                                         class="img-fluid img-thumbnail"
+                                                                         style="max-height: 300px;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endif
+
                                         <div class="col-md-12">
                                             <div class="info-group mb-3">
                                                 <label class="info-label fw-bold">Dokumen</label>
@@ -556,26 +607,26 @@
                                                                         PATHINFO_EXTENSION,
                                                                     );
                                                                     $isPdf = strtolower($fileExtension) === 'pdf';
-                                                                    $isImage = in_array(
-                                                                        strtolower($fileExtension),
-                                                                        ['jpg', 'jpeg', 'png', 'gif'],
-                                                                    );
+                                                                    $isImage = in_array(strtolower($fileExtension), [
+                                                                        'jpg',
+                                                                        'jpeg',
+                                                                        'png',
+                                                                        'gif',
+                                                                    ]);
                                                                 @endphp
 
                                                                 @if ($isPdf || $isImage)
                                                                     <a href="{{ asset('storage/' . $karyawan->FileDokKry) }}"
                                                                         target="_blank" class="text-primary"
                                                                         rel="noopener">
-                                                                        <i
-                                                                            class="fas fa-external-link-alt me-1"></i>Lihat
+                                                                        <i class="fas fa-external-link-alt me-1"></i>Lihat
                                                                         Dokumen
                                                                     </a>
                                                                 @else
                                                                     <a href="{{ route('karyawan.view-document', $karyawan->id) }}"
                                                                         target="_blank" class="text-primary"
                                                                         rel="noopener">
-                                                                        <i
-                                                                            class="fas fa-external-link-alt me-1"></i>Lihat
+                                                                        <i class="fas fa-external-link-alt me-1"></i>Lihat
                                                                         Dokumen
                                                                     </a>
                                                                 @endif

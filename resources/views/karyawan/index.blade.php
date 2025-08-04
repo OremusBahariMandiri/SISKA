@@ -37,23 +37,62 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th width="12%">NRK</th>
-                                        <th width="15%">NIK</th>
                                         <th>Nama</th>
+                                        <th>Tempat Lahir</th>
                                         <th>Tanggal Lahir</th>
-                                        <th>No. Telepon</th>
+                                        <th>Umur</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Masa Kerja</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th class="text-center" width="15%">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($karyawans as $karyawan)
+                                        @php
+                                            // Calculate age from date of birth
+                                            $birthDate = $karyawan->TanggalLhrKry
+                                                ? \Carbon\Carbon::parse($karyawan->TanggalLhrKry)
+                                                : null;
+                                            $age = $birthDate ? $birthDate->age : '-';
+
+                                            // Calculate work duration from join date
+                                            $joinDate = $karyawan->TglMsk
+                                                ? \Carbon\Carbon::parse($karyawan->TglMsk)
+                                                : null;
+                                            $workDuration = '-';
+
+                                            if ($joinDate) {
+                                                $now = \Carbon\Carbon::now();
+                                                $diffInDays = $joinDate->diffInDays($now);
+                                                $years = floor($diffInDays / 365);
+                                                $months = floor(($diffInDays % 365) / 30);
+                                                $days = $diffInDays - $years * 365 - $months * 30;
+
+                                                $workDuration = '';
+                                                if ($years > 0) {
+                                                    $workDuration .= $years . ' tahun ';
+                                                }
+                                                if ($months > 0) {
+                                                    $workDuration .= $months . ' bulan ';
+                                                }
+                                                if ($days > 0) {
+                                                    $workDuration .= $days . ' hari';
+                                                }
+                                                $workDuration = trim($workDuration);
+                                            }
+                                        @endphp
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $karyawan->NrkKry }}</td>
-                                            <td>{{ $karyawan->NikKtp }}</td>
                                             <td>{{ $karyawan->NamaKry }}</td>
-                                            <td>{{ $karyawan->TanggalLhrKry ? date('d-m-Y', strtotime($karyawan->TanggalLhrKry)) : '-' }}</td>
-                                            <td>{{ $karyawan->Telpon1Kry }}</td>
+                                            <td>{{ $karyawan->TempatLhrKry }}</td>
+                                            <td>{{ $karyawan->TanggalLhrKry ? date('d-m-Y', strtotime($karyawan->TanggalLhrKry)) : '-' }}
+                                            </td>
+                                            <td>{{ $age }} {{ is_numeric($age) ? 'tahun' : '' }}</td>
+                                            <td>{{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
+                                            </td>
+                                            <td>{{ $workDuration }}</td>
                                             <td class="text-center">
                                                 @if ($karyawan->StsKaryawan == 'Aktif')
                                                     <span class="badge bg-success">Aktif</span>
