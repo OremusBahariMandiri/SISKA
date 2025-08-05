@@ -172,59 +172,97 @@ if (window.appInitialized) {
             });
         }
 
-        // Handle submenu toggles - PERBAIKAN UNTUK DROPDOWN
+        // Handle submenu toggles - PERBAIKAN DROPDOWN
         if (menuItems && menuItems.length > 0) {
             console.log(`Found ${menuItems.length} menu items`);
 
             menuItems.forEach(function(item) {
                 item.addEventListener('click', function(e) {
-                    console.log("Menu item clicked:", this);
+                    e.preventDefault();
+                    console.log("Menu item clicked:", this.getAttribute('data-menu'));
 
-                    // Periksa apakah yang diklik adalah elemen menu item itu sendiri atau ikon submenu
-                    if (e.target === this || e.target.closest('.menu-icon-text') ||
-                        e.target.classList.contains('submenu-indicator') ||
-                        e.target.closest('.submenu-indicator')) {
+                    const menuId = this.getAttribute('data-menu');
+                    if (!menuId) return;
 
-                        e.preventDefault();
+                    const submenu = document.getElementById(menuId);
+                    const indicator = this.querySelector('.submenu-indicator');
+                    const parentItem = this.closest('.nav-item');
 
-                        const menuId = this.getAttribute('data-menu');
-                        const submenu = document.getElementById(menuId);
+                    if (!submenu) return;
 
-                        console.log("Menu ID:", menuId, "Submenu:", submenu);
+                    // Periksa jika sidebar dalam mode collapsed (desktop)
+                    const isCollapsedDesktop = !mediaQuery.matches &&
+                                             layoutContainer &&
+                                             layoutContainer.classList.contains('sidebar-collapsed');
 
-                        // Jika berada di mobile view, atau desktop view tapi tidak dalam collapsed state
-                        const isCollapsedDesktop = !mediaQuery.matches && layoutContainer.classList.contains('sidebar-collapsed');
+                    if (isCollapsedDesktop) {
+                        // Di mode collapsed, tidak toggle submenu
+                        return;
+                    }
 
-                        if (!isCollapsedDesktop) {
-                            // Toggle open class on menu item
-                            this.classList.toggle('open');
+                    // Close other open submenus (accordion behavior)
+                    const otherActiveItems = document.querySelectorAll('.sidebar-menu-item.active:not([data-menu="' + menuId + '"])');
+                    otherActiveItems.forEach(function(otherItem) {
+                        const otherMenuId = otherItem.getAttribute('data-menu');
+                        const otherSubmenu = document.getElementById(otherMenuId);
+                        const otherIndicator = otherItem.querySelector('.submenu-indicator');
 
-                            // Toggle show class on submenu
-                            if (submenu) {
-                                submenu.classList.toggle('show');
-                                console.log("Toggled submenu visibility:", submenu.classList.contains('show'));
+                        if (otherSubmenu) {
+                            otherItem.classList.remove('active');
+                            otherSubmenu.classList.remove('show');
+                            if (otherIndicator) {
+                                otherIndicator.classList.remove('rotated');
                             }
                         }
+                    });
+
+                    // Toggle current submenu
+                    const isCurrentlyActive = this.classList.contains('active');
+
+                    if (isCurrentlyActive) {
+                        // Close current submenu
+                        this.classList.remove('active');
+                        submenu.classList.remove('show');
+                        if (indicator) {
+                            indicator.classList.remove('rotated');
+                        }
+                    } else {
+                        // Open current submenu
+                        this.classList.add('active');
+                        submenu.classList.add('show');
+                        if (indicator) {
+                            indicator.classList.add('rotated');
+                        }
                     }
+
+                    console.log("Submenu toggled:", {
+                        menuId: menuId,
+                        isVisible: submenu.classList.contains('show'),
+                        isActive: this.classList.contains('active')
+                    });
                 });
             });
         }
 
-        // Check for mobile/desktop view
+        // Handle responsive behavior
         function handleResize(e) {
             if (e.matches) {
                 // Mobile view
-                layoutContainer.classList.remove('sidebar-collapsed');
+                if (layoutContainer) {
+                    layoutContainer.classList.remove('sidebar-collapsed');
+                }
             } else {
                 // Desktop view
-                layoutContainer.classList.remove('sidebar-active');
+                if (layoutContainer) {
+                    layoutContainer.classList.remove('sidebar-active');
 
-                // Restore sidebar state
-                const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
-                if (isCollapsed) {
-                    layoutContainer.classList.add('sidebar-collapsed');
-                } else {
-                    layoutContainer.classList.remove('sidebar-collapsed');
+                    // Restore sidebar state
+                    const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+                    if (isCollapsed) {
+                        layoutContainer.classList.add('sidebar-collapsed');
+                    } else {
+                        layoutContainer.classList.remove('sidebar-collapsed');
+                    }
                 }
             }
         }
@@ -235,19 +273,21 @@ if (window.appInitialized) {
             mediaQuery.addEventListener('change', handleResize);
         }
 
-        // Initialize any active submenus (for current page)
-        const activeMenuItems = document.querySelectorAll('.sidebar-menu-item.active');
-        activeMenuItems.forEach(function(item) {
-            console.log("Setting active menu item:", item);
-            item.classList.add('open');
+        // Initialize active submenus based on current page
+        document.querySelectorAll('.sidebar-submenu.show').forEach(function(submenu) {
+            const menuId = submenu.id;
+            const menuItem = document.querySelector(`[data-menu="${menuId}"]`);
+            const indicator = menuItem ? menuItem.querySelector('.submenu-indicator') : null;
 
-            const menuId = item.getAttribute('data-menu');
-            const submenu = document.getElementById(menuId);
-
-            if (submenu) {
-                submenu.classList.add('show');
+            if (menuItem) {
+                menuItem.classList.add('active');
+                if (indicator) {
+                    indicator.classList.add('rotated');
+                }
             }
         });
+
+        console.log("Sidebar initialization completed");
     }
 
     // Function to auto-hide alerts

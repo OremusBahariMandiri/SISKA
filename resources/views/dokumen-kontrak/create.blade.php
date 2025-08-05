@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Dokumen Karyawan')
+@section('title', 'Tambah Dokumen Kontrak')
 
 @section('content')
     <div class="container">
@@ -8,8 +8,8 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Karyawan</span>
-                        <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
+                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Kontrak</span>
+                        <a href="{{ route('dokumen-kontrak.index') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -25,7 +25,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('dokumen-karyawan.store') }}" method="POST" id="dokumenKaryawanForm"
+                        <form action="{{ route('dokumen-kontrak.store') }}" method="POST" id="dokumenKontrakForm"
                             enctype="multipart/form-data">
                             @csrf
 
@@ -326,7 +326,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Form validation with visual feedback
-            const form = document.getElementById('dokumenKaryawanForm');
+            const form = document.getElementById('dokumenKontrakForm');
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();

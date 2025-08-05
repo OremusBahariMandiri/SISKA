@@ -41,8 +41,11 @@ class UserAccessController extends Controller
             'kategori-dokumen' => 'Kategori Dokumen',
             'jenis-dokumen' => 'Jenis Dokumen',
             'dokumen-karyawan' => 'Dokumen Karyawan',
+            'dokumen-kontrak' => 'Dokumen Kontrak',
+            'dokumen-karir' => 'Dokumen Karir',
+            'dokumen-legalitas' => 'Dokumen Legalitas',
 
-            // Add other menus here
+        // Add other menus here
         ];
 
         // Prepare user access data

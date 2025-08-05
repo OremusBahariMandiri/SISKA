@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\DokumenKaryawan;
+use App\Models\DokumenKontrak;
 use App\Models\Karyawan;
 use App\Models\KategoriDokumen;
 use App\Models\JenisDokumen;
@@ -11,25 +11,25 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 
-class DokumenKaryawanController extends Controller
+class DokumenKontrakController extends Controller
 {
     use GenerateIdTrait;
 
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:dokumen_karyawan')->only('index', 'show');
-        $this->middleware('check.access:dokumen_karyawan,tambah')->only('create', 'store');
-        $this->middleware('check.access:dokumen_karyawan,ubah')->only('edit', 'update');
-        $this->middleware('check.access:dokumen_karyawan,hapus')->only('destroy');
-        $this->middleware('check.access:dokumen_karyawan,download')->only('download');
-        $this->middleware('check.access:dokumen_karyawan,monitoring')->only('monitoring');
+        $this->middleware('check.access:dokumen_kontrak')->only('index', 'show');
+        $this->middleware('check.access:dokumen_kontrak,tambah')->only('create', 'store');
+        $this->middleware('check.access:dokumen_kontrak,ubah')->only('edit', 'update');
+        $this->middleware('check.access:dokumen_kontrak,hapus')->only('destroy');
+        $this->middleware('check.access:dokumen_kontrak,download')->only('download');
+        $this->middleware('check.access:dokumen_kontrak,monitoring')->only('monitoring');
     }
 
     public function index()
     {
-        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'])->get();
-        return view('dokumen-karyawan.index', compact('dokumenKaryawan'));
+        $dokumenKontrak = DokumenKontrak::with(['karyawan'])->get();
+        return view('dokumen-kontrak.index', compact('dokumenKontrak'));
     }
 
     public function create()
@@ -53,15 +53,15 @@ class DokumenKaryawanController extends Controller
         }
 
         // Generate ID otomatis
-        $newId = $this->generateId('B01', 'B01DmDokKaryawan');
+        $newId = $this->generateId('B02', 'B02DokKontrak');
 
-        return view('dokumen-karyawan.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
+        return view('dokumen-kontrak.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok',
+            'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
@@ -70,7 +70,7 @@ class DokumenKaryawanController extends Controller
 
         // Generate ID if not present
         if (empty($request->IdKode)) {
-            $IdKode = $this->generateId('B01', 'B01DmDokKaryawan');
+            $IdKode = $this->generateId('B02', 'B02DokKontrak');
         } else {
             $IdKode = $request->IdKode;
         }
@@ -156,23 +156,23 @@ class DokumenKaryawanController extends Controller
             $fileName = $cleanNoReg . '_' . $cleanJenisDok . '_' . $namaKaryawan . '_' . $tglBerakhir . '.' . $extension;
 
             // Store file with the new name
-            $file->storeAs('documents/karyawan', $fileName, 'public');
+            $file->storeAs('documents/kontrak', $fileName, 'public');
             $data['FileDok'] = $fileName;
         }
 
-        DokumenKaryawan::create($data);
+        DokumenKontrak::create($data);
 
-        return redirect()->route('dokumen-karyawan.index')
-            ->with('success', 'Dokumen Karyawan berhasil dibuat.');
+        return redirect()->route('dokumen-kontrak.index')
+            ->with('success', 'Dokumen Kontrak berhasil dibuat.');
     }
 
-    public function show(DokumenKaryawan $dokumenKaryawan)
+    public function show(DokumenKontrak $dokumenKontrak)
     {
-        $dokumenKaryawan->load(['karyawan']);
-        return view('dokumen-karyawan.show', compact('dokumenKaryawan'));
+        $dokumenKontrak->load(['karyawan']);
+        return view('dokumen-kontrak.show', compact('dokumenKontrak'));
     }
 
-    public function edit(DokumenKaryawan $dokumenKaryawan)
+    public function edit(DokumenKontrak $dokumenKontrak)
     {
         $karyawan = Karyawan::all();
         $kategoriDokumen = KategoriDokumen::all();
@@ -192,14 +192,13 @@ class DokumenKaryawanController extends Controller
             ];
         }
 
-        return view('dokumen-karyawan.edit', compact('dokumenKaryawan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
+        return view('dokumen-kontrak.edit', compact('dokumenKontrak', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
     }
 
-
-    public function update(Request $request, DokumenKaryawan $dokumenKaryawan)
+    public function update(Request $request, DokumenKontrak $dokumenKontrak)
     {
         $request->validate([
-            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok,' . $dokumenKaryawan->id,
+            'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok,' . $dokumenKontrak->Id,
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
@@ -257,8 +256,12 @@ class DokumenKaryawanController extends Controller
 
         if ($request->hasFile('FileDok')) {
             // Delete old file if exists
-            if ($dokumenKaryawan->FileDok) {
-                Storage::disk('public')->delete('documents/karyawan/' . $dokumenKaryawan->FileDok);
+            if ($dokumenKontrak->FileDok) {
+                Storage::disk('public')->delete('documents/kontrak/' . $dokumenKontrak->FileDok);
+                // Check alternative location if file not found in main location
+                if (!Storage::disk('public')->exists('documents/kontrak/' . $dokumenKontrak->FileDok)) {
+                    Storage::disk('public')->delete('contracts/' . $dokumenKontrak->FileDok);
+                }
             }
 
             $file = $request->file('FileDok');
@@ -291,48 +294,58 @@ class DokumenKaryawanController extends Controller
             $fileName = $cleanNoReg . '_' . $cleanJenisDok . '_' . $namaKaryawan . '_' . $tglBerakhir . '.' . $extension;
 
             // Store file with the new name
-            $file->storeAs('documents/karyawan', $fileName, 'public');
+            $file->storeAs('documents/kontrak', $fileName, 'public');
             $data['FileDok'] = $fileName;
         }
 
-        $dokumenKaryawan->update($data);
+        $dokumenKontrak->update($data);
 
-        return redirect()->route('dokumen-karyawan.index')
-            ->with('success', 'Dokumen Karyawan berhasil diperbarui.');
+        return redirect()->route('dokumen-kontrak.index')
+            ->with('success', 'Dokumen Kontrak berhasil diperbarui.');
     }
 
-    public function destroy(DokumenKaryawan $dokumenKaryawan)
+    public function destroy(DokumenKontrak $dokumenKontrak)
     {
         // Delete file if exists
-        if ($dokumenKaryawan->FileDok) {
-            Storage::disk('public')->delete('documents/karyawan/' . $dokumenKaryawan->FileDok);
+        if ($dokumenKontrak->FileDok) {
+            Storage::disk('public')->delete('documents/kontrak/' . $dokumenKontrak->FileDok);
+            // Check alternative location if file not found in main location
+            if (!Storage::disk('public')->exists('documents/kontrak/' . $dokumenKontrak->FileDok)) {
+                Storage::disk('public')->delete('contracts/' . $dokumenKontrak->FileDok);
+            }
         }
 
-        $dokumenKaryawan->delete();
+        $dokumenKontrak->delete();
 
-        return redirect()->route('dokumen-karyawan.index')
-            ->with('success', 'Dokumen Karyawan berhasil dihapus.');
+        return redirect()->route('dokumen-kontrak.index')
+            ->with('success', 'Dokumen Kontrak berhasil dihapus.');
     }
 
-    public function download(DokumenKaryawan $dokumenKaryawan)
+    public function download(DokumenKontrak $dokumenKontrak)
     {
-        if (!$dokumenKaryawan->FileDok) {
+        if (!$dokumenKontrak->FileDok) {
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        $path = storage_path('app/public/documents/karyawan/' . $dokumenKaryawan->FileDok);
+        // Check in the new location first
+        $path = storage_path('app/public/documents/kontrak/' . $dokumenKontrak->FileDok);
 
+        // If not found, try the old location
         if (!file_exists($path)) {
-            return back()->with('error', 'File tidak ditemukan.');
+            $path = storage_path('app/public/contracts/' . $dokumenKontrak->FileDok);
+
+            if (!file_exists($path)) {
+                return back()->with('error', 'File tidak ditemukan.');
+            }
         }
 
-        // File already has the formatted name
-        return response()->download($path, $dokumenKaryawan->FileDok);
+        // File already has the formatted name in new system
+        return response()->download($path, $dokumenKontrak->FileDok);
     }
 
     public function monitoring()
     {
-        $dokumen = DokumenKaryawan::with(['karyawan'])
+        $dokumen = DokumenKontrak::with(['karyawan'])
             ->whereNotNull('TglBerakhirDok')
             ->get();
 
@@ -354,7 +367,7 @@ class DokumenKaryawanController extends Controller
             return $item->TglBerakhirDok && $today->diffInDays($item->TglBerakhirDok, false) < 0;
         });
 
-        return view('dokumen-karyawan.monitoring', compact('expired30', 'expired60', 'expired90', 'expired'));
+        return view('dokumen-kontrak.monitoring', compact('expired30', 'expired60', 'expired90', 'expired'));
     }
 
     /**
@@ -363,7 +376,7 @@ class DokumenKaryawanController extends Controller
     public function getDocumentStats()
     {
         // Count expired documents based on TglPengingat or TglBerakhirDok
-        $expiredCount = DokumenKaryawan::where(function ($query) {
+        $expiredCount = DokumenKontrak::where(function ($query) {
             // Documents with reminder date that has passed or is today
             $query->whereNotNull('TglPengingat')
                 ->where('TglPengingat', '<=', now());
@@ -379,7 +392,7 @@ class DokumenKaryawanController extends Controller
         })->count();
 
         // Count documents that will expire soon (warning)
-        $warningCount = DokumenKaryawan::where(function ($query) {
+        $warningCount = DokumenKontrak::where(function ($query) {
             // Documents with reminder date in the next 30 days
             $query->whereNotNull('TglPengingat')
                 ->where('TglPengingat', '>', now())
@@ -402,20 +415,20 @@ class DokumenKaryawanController extends Controller
         ]);
     }
 
-    public function viewDocument(DokumenKaryawan $dokumenKaryawan)
+    public function viewDocument(DokumenKontrak $dokumenKontrak)
     {
         // Ensure file exists
-        if (!$dokumenKaryawan->FileDok) {
+        if (!$dokumenKontrak->FileDok) {
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        // File path
-        $filePath = storage_path('app/public/documents/karyawan/' . $dokumenKaryawan->FileDok);
+        // File path - check in new location first
+        $filePath = storage_path('app/public/documents/kontrak/' . $dokumenKontrak->FileDok);
 
         // Check if file exists
         if (!file_exists($filePath)) {
-            // Try alternative path (in case path in database is different)
-            $alternativePath = storage_path('app/public/documents/' . $dokumenKaryawan->FileDok);
+            // Try alternative path (old location)
+            $alternativePath = storage_path('app/public/contracts/' . $dokumenKontrak->FileDok);
 
             if (file_exists($alternativePath)) {
                 $filePath = $alternativePath;
@@ -442,12 +455,12 @@ class DokumenKaryawanController extends Controller
         if (in_array($extension, ['pdf', 'jpg', 'jpeg', 'png'])) {
             return response()->file($filePath, [
                 'Content-Type' => $contentType,
-                'Content-Disposition' => 'inline; filename="' . $dokumenKaryawan->FileDok . '"'
+                'Content-Disposition' => 'inline; filename="' . $dokumenKontrak->FileDok . '"'
             ]);
         }
 
         // If file cannot be previewed, redirect to download
-        return redirect()->route('dokumen-karyawan.download', $dokumenKaryawan);
+        return redirect()->route('dokumen-kontrak.download', $dokumenKontrak);
     }
 
     public function getJenisByKategori($kategoriId)

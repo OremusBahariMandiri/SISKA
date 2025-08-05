@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Detail Dokumen Karyawan')
+@section('title', 'Detail Dokumen Kontrak')
 
 @section('content')
     <div class="container">
@@ -8,12 +8,12 @@
             <div class="col-md-10">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Detail Dokumen Karyawan</span>
+                        <span class="fw-bold"><i class="fas fa-file-contract me-2"></i>Detail Dokumen Kontrak</span>
                         <div>
-                            <a href="{{ route('dokumen-karyawan.edit', $dokumenKaryawan->id) }}" class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('dokumen-kontrak.edit', $dokumenKontrak->Id) }}" class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
-                            <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
+                            <a href="{{ route('dokumen-kontrak.index') }}" class="btn btn-light btn-sm">
                                 <i class="fas fa-arrow-left me-1"></i>Kembali
                             </a>
                         </div>
@@ -33,7 +33,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->NoRegDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->NoRegDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -43,7 +43,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->karyawan->NamaKaryawan ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->karyawan->NamaKry ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -53,7 +53,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->KategoriDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->KategoriDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -63,7 +63,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->JenisDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->JenisDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -73,7 +73,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                                    <div class="form-control min-height-100">{{ $dokumenKaryawan->KetDok ?? '-' }}</div>
+                                                    <div class="form-control min-height-100">{{ $dokumenKontrak->KetDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -93,13 +93,13 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text">
-                                                        @if($dokumenKaryawan->ValidasiDok === 'Tetap')
+                                                        @if($dokumenKontrak->ValidasiDok === 'Tetap')
                                                             <i class="fas fa-infinity text-primary"></i>
                                                         @else
                                                             <i class="fas fa-sync text-success"></i>
                                                         @endif
                                                     </span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->ValidasiDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->ValidasiDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +110,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
                                                     <div class="form-control">
-                                                        {{ $dokumenKaryawan->TglTerbitDok ? $dokumenKaryawan->TglTerbitDok->format('d/m/Y') : '-' }}
+                                                        {{ $dokumenKontrak->TglTerbitDok ? $dokumenKontrak->TglTerbitDok->format('d/m/Y') : '-' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -122,10 +122,10 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
                                                     <div class="form-control">
-                                                        @if($dokumenKaryawan->TglBerakhirDok)
-                                                            <span class="{{ $dokumenKaryawan->is_expired ? 'text-danger fw-bold' : '' }}">
-                                                                {{ $dokumenKaryawan->TglBerakhirDok->format('d/m/Y') }}
-                                                                @if($dokumenKaryawan->is_expired)
+                                                        @if($dokumenKontrak->TglBerakhirDok)
+                                                            <span class="{{ $dokumenKontrak->is_expired ? 'text-danger fw-bold' : '' }}">
+                                                                {{ $dokumenKontrak->TglBerakhirDok->format('d/m/Y') }}
+                                                                @if($dokumenKontrak->is_expired)
                                                                     <i class="fas fa-exclamation-circle text-danger ms-1" data-bs-toggle="tooltip" title="Sudah kedaluwarsa"></i>
                                                                 @endif
                                                             </span>
@@ -142,7 +142,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-hourglass-half"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->MasaBerlaku }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->MasaBerlaku }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -153,7 +153,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-bell"></i></span>
                                                     <div class="form-control">
-                                                        {{ $dokumenKaryawan->TglPengingat ? $dokumenKaryawan->TglPengingat->format('d/m/Y') : '-' }}
+                                                        {{ $dokumenKontrak->TglPengingat ? $dokumenKontrak->TglPengingat->format('d/m/Y') : '-' }}
                                                     </div>
                                                 </div>
                                             </div>
@@ -164,7 +164,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->MasaPengingat }}</div>
+                                                    <div class="form-control">{{ $dokumenKontrak->MasaPengingat }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -186,14 +186,14 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text">
-                                                        @if($dokumenKaryawan->StatusDok === 'Berlaku')
+                                                        @if($dokumenKontrak->StatusDok === 'Berlaku')
                                                             <i class="fas fa-check-circle text-success"></i>
                                                         @else
                                                             <i class="fas fa-times-circle text-danger"></i>
                                                         @endif
                                                     </span>
                                                     <div class="form-control">
-                                                        @if($dokumenKaryawan->StatusDok === 'Berlaku')
+                                                        @if($dokumenKontrak->StatusDok === 'Berlaku')
                                                             <span class="badge bg-success">Berlaku</span>
                                                         @else
                                                             <span class="badge bg-danger">Tidak Berlaku</span>
@@ -207,19 +207,15 @@
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">File Dokumen</label>
                                             <div class="info-value">
-                                                @if($dokumenKaryawan->FileDok)
+                                                @if($dokumenKontrak->FileDok)
                                                     <div class="d-flex gap-2">
-                                                        {{-- <a href="{{ route('dokumen-karyawan.download', $dokumenKaryawan->id) }}"
-                                                            class="btn btn-primary">
-                                                            <i class="fas fa-download me-1"></i> Download
-                                                        </a> --}}
-                                                        <a href="{{ route('dokumen-karyawan.viewDocument', $dokumenKaryawan->id) }}"
+                                                        <a href="{{ route('dokumen-kontrak.viewDocument', $dokumenKontrak->Id) }}"
                                                             class="btn btn-info" target="_blank">
                                                             <i class="fas fa-eye me-1"></i> Lihat
                                                         </a>
                                                     </div>
                                                     <div class="mt-2 small">
-                                                        <i class="fas fa-file me-1"></i> {{ $dokumenKaryawan->FileDok }}
+                                                        <i class="fas fa-file me-1"></i> {{ $dokumenKontrak->FileDok }}
                                                     </div>
                                                 @else
                                                     <div class="alert alert-warning mb-0">

@@ -47,17 +47,17 @@
                                     </button>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="info-kontak-tab" data-bs-toggle="tab"
-                                        data-bs-target="#info-kontak" type="button" role="tab"
-                                        aria-controls="info-kontak" aria-selected="false">
-                                        <i class="fas fa-phone me-1"></i> Kontak
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
                                     <button class="nav-link" id="info-pendidikan-tab" data-bs-toggle="tab"
                                         data-bs-target="#info-pendidikan" type="button" role="tab"
                                         aria-controls="info-pendidikan" aria-selected="false">
                                         <i class="fas fa-graduation-cap me-1"></i> Pendidikan
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="info-kontak-tab" data-bs-toggle="tab"
+                                        data-bs-target="#info-kontak" type="button" role="tab"
+                                        aria-controls="info-kontak" aria-selected="false">
+                                        <i class="fas fa-phone me-1"></i> Kontak
                                     </button>
                                 </li>
                             </ul>
@@ -671,7 +671,7 @@
             const form = document.getElementById('keluargaForm');
 
             // Tab navigation variables
-            const tabs = ['info-utama', 'info-pribadi', 'info-kontak', 'info-pendidikan'];
+            const tabs = ['info-utama', 'info-pribadi', 'info-pendidikan', 'info-kontak'];
             let currentTabIndex = 0;
 
             const prevTabBtn = document.getElementById('prevTabBtn');

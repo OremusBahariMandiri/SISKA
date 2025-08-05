@@ -80,12 +80,12 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                                             <select class="form-select @error('IdKodeA04') is-invalid @enderror"
-                                                                id="IdKodeA04" name="IdKodeA04" required>
+                                                                id="IdKodeA04" name="IdKodeA04" required data-live-search="true">
                                                                 <option value="" selected disabled>Pilih Karyawan</option>
                                                                 @foreach ($karyawans as $karyawan)
                                                                     <option value="{{ $karyawan->IdKode }}"
                                                                         {{ old('IdKodeA04') == $karyawan->IdKode ? 'selected' : '' }}>
-                                                                        {{ $karyawan->NamaKry }} - {{ $karyawan->NikKry }}
+                                                                        {{ $karyawan->NrkKry }} - {{ $karyawan->NamaKry }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -147,6 +147,79 @@
                                                         </div>
                                                         <div class="form-text">
                                                             <i class="fas fa-info-circle me-1"></i>Misalnya: Anak ke-1, dll.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Informasi Karyawan (Disabled Fields) -->
+                                            <div id="infoKaryawanContainer" class="mt-4" style="display: none;">
+                                                <div class="card border-info">
+                                                    <div class="card-header bg-info bg-opacity-25 text-dark">
+                                                        <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan</h6>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">NRK</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                                                        <input type="text" class="form-control" id="NrkKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Nama Karyawan</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                                        <input type="text" class="form-control" id="NamaKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">NIK</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                                        <input type="text" class="form-control" id="NikKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Tempat Lahir</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                                        <input type="text" class="form-control" id="TempatLhrKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Tanggal Lahir</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                                                        <input type="text" class="form-control" id="TanggalLhrKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Jenis Kelamin</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
+                                                                        <input type="text" class="form-control" id="SexKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Divisi/Departemen</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                                        <input type="text" class="form-control" id="DepartemenKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group mb-3">
+                                                                    <label class="form-label fw-bold">Jabatan</label>
+                                                                    <div class="input-group">
+                                                                        <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                                                                        <input type="text" class="form-control" id="JabatanKry" disabled>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -527,6 +600,9 @@
 @endsection
 
 @push('styles')
+    <!-- Bootstrap Select CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/css/bootstrap-select.min.css">
+
     <style>
         .card-header {
             font-weight: 600;
@@ -605,165 +681,266 @@
             background-position: right 0.75rem center, center right 2.25rem;
             background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
         }
+
+        /* Bootstrap Select Styling */
+        .bootstrap-select .dropdown-toggle {
+            border: 1px solid #ced4da;
+        }
+
+        .bootstrap-select .dropdown-toggle:focus,
+        .bootstrap-select .dropdown-toggle:active {
+            border-color: #86b7fe;
+            outline: 0;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        .bootstrap-select .dropdown-menu {
+            max-height: 300px;
+        }
+
+        .bootstrap-select .bs-searchbox .form-control {
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+        }
     </style>
 @endpush
 
 @push('scripts')
+    <!-- Bootstrap Select JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta3/dist/js/bootstrap-select.min.js"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Form validation with visual feedback
-    const form = document.getElementById('keluargaForm');
+            // Initialize Bootstrap Select
+            $('#IdKodeA04').selectpicker({
+                liveSearch: true,
+                size: 10,
+                liveSearchPlaceholder: 'Cari karyawan...',
+                title: 'Pilih Karyawan'
+            });
 
-    // Tab navigation variables
-    const tabs = ['info-utama', 'info-pribadi', 'info-kontak', 'info-pendidikan'];
-    let currentTabIndex = 0;
+            // Form validation with visual feedback
+            const form = document.getElementById('keluargaForm');
 
-    const prevTabBtn = document.getElementById('prevTabBtn');
-    const nextTabBtn = document.getElementById('nextTabBtn');
-    const submitBtn = document.getElementById('submitBtn');
+            // Tab navigation variables
+            const tabs = ['info-utama', 'info-pribadi', 'info-kontak', 'info-pendidikan'];
+            let currentTabIndex = 0;
 
-    // Bootstrap Tab objects
-    const tabElements = [];
-    tabs.forEach(tabId => {
-        tabElements.push(new bootstrap.Tab(document.getElementById(`${tabId}-tab`)));
-    });
+            const prevTabBtn = document.getElementById('prevTabBtn');
+            const nextTabBtn = document.getElementById('nextTabBtn');
+            const submitBtn = document.getElementById('submitBtn');
 
-    // Function to show specific tab
-    function showTab(tabIndex) {
-        // Activate the tab using Bootstrap's API
-        tabElements[tabIndex].show();
+            // Bootstrap Tab objects
+            const tabElements = [];
+            tabs.forEach(tabId => {
+                tabElements.push(new bootstrap.Tab(document.getElementById(`${tabId}-tab`)));
+            });
 
-        // Update buttons state
-        prevTabBtn.style.display = tabIndex > 0 ? 'block' : 'none';
+            // Function to show specific tab
+            function showTab(tabIndex) {
+                // Activate the tab using Bootstrap's API
+                tabElements[tabIndex].show();
 
-        if (tabIndex === tabs.length - 1) {
-            nextTabBtn.style.display = 'none';
-            submitBtn.style.display = 'block';
-        } else {
-            nextTabBtn.style.display = 'block';
-            submitBtn.style.display = 'none';
-        }
+                // Update buttons state
+                prevTabBtn.style.display = tabIndex > 0 ? 'block' : 'none';
 
-        currentTabIndex = tabIndex;
-    }
-
-    // Initialize with first tab
-    showTab(0);
-
-    // Previous button click
-    prevTabBtn.addEventListener('click', function() {
-        if (currentTabIndex > 0) {
-            showTab(currentTabIndex - 1);
-        }
-    });
-
-    // Next button click
-    nextTabBtn.addEventListener('click', function() {
-        // Validate current tab fields
-        let isValid = true;
-
-        // Check validation for the current tab
-        const currentTabElement = document.getElementById(tabs[currentTabIndex]);
-        const requiredFields = currentTabElement.querySelectorAll('[required]');
-
-        requiredFields.forEach(field => {
-            if (!field.value) {
-                isValid = false;
-                field.classList.add('is-invalid');
-
-                // Create error message if it doesn't exist
-                if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
-                    const feedback = document.createElement('div');
-                    feedback.className = 'invalid-feedback';
-                    feedback.textContent = 'Field ini wajib diisi';
-                    field.parentNode.insertBefore(feedback, field.nextElementSibling);
-                }
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-
-        if (isValid && currentTabIndex < tabs.length - 1) {
-            showTab(currentTabIndex + 1);
-        } else if (!isValid) {
-            // Focus on first invalid field
-            const firstInvalid = currentTabElement.querySelector('.is-invalid');
-            if (firstInvalid) {
-                firstInvalid.focus();
-            }
-        }
-    });
-
-    // Listen to Bootstrap's tab events to keep track of current tab
-    document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab, index) => {
-        tab.addEventListener('shown.bs.tab', function (event) {
-            currentTabIndex = index;
-
-            // Update navigation buttons state
-            prevTabBtn.style.display = currentTabIndex > 0 ? 'block' : 'none';
-
-            if (currentTabIndex === tabs.length - 1) {
-                nextTabBtn.style.display = 'none';
-                submitBtn.style.display = 'block';
-            } else {
-                nextTabBtn.style.display = 'block';
-                submitBtn.style.display = 'none';
-            }
-        });
-    });
-
-    // Form submission
-    form.addEventListener('submit', function(event) {
-        if (!form.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-
-            // Highlight missing required fields across all tabs
-            document.querySelectorAll('[required]').forEach(function(input) {
-                if (!input.value) {
-                    input.classList.add('is-invalid');
-
-                    // Create error message if it doesn't exist
-                    if (!input.nextElementSibling || !input.nextElementSibling.classList
-                        .contains('invalid-feedback')) {
-                        const feedback = document.createElement('div');
-                        feedback.className = 'invalid-feedback';
-                        feedback.textContent = 'Field ini wajib diisi';
-                        input.parentNode.insertBefore(feedback, input.nextElementSibling);
-                    }
+                if (tabIndex === tabs.length - 1) {
+                    nextTabBtn.style.display = 'none';
+                    submitBtn.style.display = 'block';
                 } else {
-                    input.classList.remove('is-invalid');
+                    nextTabBtn.style.display = 'block';
+                    submitBtn.style.display = 'none';
+                }
+
+                currentTabIndex = tabIndex;
+            }
+
+            // Initialize with first tab
+            showTab(0);
+
+            // Previous button click
+            prevTabBtn.addEventListener('click', function() {
+                if (currentTabIndex > 0) {
+                    showTab(currentTabIndex - 1);
                 }
             });
 
-            // Find tab with first error and show it
-            for (let i = 0; i < tabs.length; i++) {
-                const tabElement = document.getElementById(tabs[i]);
-                const invalidField = tabElement.querySelector('.is-invalid');
+            // Next button click
+            nextTabBtn.addEventListener('click', function() {
+                // Validate current tab fields
+                let isValid = true;
 
-                if (invalidField) {
-                    showTab(i);
-                    invalidField.focus();
-                    break;
+                // Check validation for the current tab
+                const currentTabElement = document.getElementById(tabs[currentTabIndex]);
+                const requiredFields = currentTabElement.querySelectorAll('[required]');
+
+                requiredFields.forEach(field => {
+                    if (!field.value) {
+                        isValid = false;
+                        field.classList.add('is-invalid');
+
+                        // Create error message if it doesn't exist
+                        if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('invalid-feedback')) {
+                            const feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            feedback.textContent = 'Field ini wajib diisi';
+                            field.parentNode.insertBefore(feedback, field.nextElementSibling);
+                        }
+                    } else {
+                        field.classList.remove('is-invalid');
+                    }
+                });
+
+                if (isValid && currentTabIndex < tabs.length - 1) {
+                    showTab(currentTabIndex + 1);
+                } else if (!isValid) {
+                    // Focus on first invalid field
+                    const firstInvalid = currentTabElement.querySelector('.is-invalid');
+                    if (firstInvalid) {
+                        firstInvalid.focus();
+                    }
                 }
-            }
-        }
-    });
+            });
 
-    // Remove invalid class when input changes
-    document.querySelectorAll('input, select, textarea').forEach(function(input) {
-        input.addEventListener('input', function() {
-            if (this.hasAttribute('required') && this.value) {
-                this.classList.remove('is-invalid');
+            // Listen to Bootstrap's tab events to keep track of current tab
+            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab, index) => {
+                tab.addEventListener('shown.bs.tab', function (event) {
+                    currentTabIndex = index;
+
+                    // Update navigation buttons state
+                    prevTabBtn.style.display = currentTabIndex > 0 ? 'block' : 'none';
+
+                    if (currentTabIndex === tabs.length - 1) {
+                        nextTabBtn.style.display = 'none';
+                        submitBtn.style.display = 'block';
+                    } else {
+                        nextTabBtn.style.display = 'block';
+                        submitBtn.style.display = 'none';
+                    }
+                });
+            });
+
+            // Form submission
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Highlight missing required fields across all tabs
+                    document.querySelectorAll('[required]').forEach(function(input) {
+                        if (!input.value) {
+                            input.classList.add('is-invalid');
+
+                            // Create error message if it doesn't exist
+                            if (!input.nextElementSibling || !input.nextElementSibling.classList
+                                .contains('invalid-feedback')) {
+                                const feedback = document.createElement('div');
+                                feedback.className = 'invalid-feedback';
+                                feedback.textContent = 'Field ini wajib diisi';
+                                input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                            }
+                        } else {
+                            input.classList.remove('is-invalid');
+                        }
+                    });
+
+                    // Find tab with first error and show it
+                    for (let i = 0; i < tabs.length; i++) {
+                        const tabElement = document.getElementById(tabs[i]);
+                        const invalidField = tabElement.querySelector('.is-invalid');
+
+                        if (invalidField) {
+                            showTab(i);
+                            invalidField.focus();
+                            break;
+                        }
+                    }
+                }
+            });
+
+            // Remove invalid class when input changes
+            document.querySelectorAll('input, select, textarea').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    if (this.hasAttribute('required') && this.value) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+
+                input.addEventListener('change', function() {
+                    if (this.hasAttribute('required') && this.value) {
+                        this.classList.remove('is-invalid');
+                    }
+                });
+            });
+
+            // Handle karyawan selection and fetch details
+            const karyawanSelect = document.getElementById('IdKodeA04');
+            const infoKaryawanContainer = document.getElementById('infoKaryawanContainer');
+
+            karyawanSelect.addEventListener('change', function() {
+                const karyawanId = this.value;
+
+                if (karyawanId) {
+                    // Show the container
+                    infoKaryawanContainer.style.display = 'block';
+
+                    // Fetch karyawan details
+                    fetch(`/karyawan-detail/${karyawanId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            // Populate the disabled fields
+                            document.getElementById('NrkKry').value = data.NrkKry || '';
+                            document.getElementById('NamaKry').value = data.NamaKry || '';
+                            document.getElementById('NikKry').value = data.NikKry || '';
+                            document.getElementById('TempatLhrKry').value = data.TempatLhrKry || '';
+
+                            // Format date if exists
+                            if (data.TanggalLhrKry) {
+                                const date = new Date(data.TanggalLhrKry);
+                                const formattedDate = date.toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: 'long',
+                                    year: 'numeric'
+                                });
+                                document.getElementById('TanggalLhrKry').value = formattedDate;
+                            } else {
+                                document.getElementById('TanggalLhrKry').value = '';
+                            }
+
+                            // Map gender code to text
+                            let genderText = '';
+                            if (data.SexKry === 'L') {
+                                genderText = 'Laki-laki';
+                            } else if (data.SexKry === 'P') {
+                                genderText = 'Perempuan';
+                            }
+                            document.getElementById('SexKry').value = genderText;
+
+                            // Display department and position if available
+                            document.getElementById('DepartemenKry').value = data.departemen ? data.departemen.NamaDept : '';
+                            document.getElementById('JabatanKry').value = data.jabatan ? data.jabatan.NamaJabatan : '';
+                        })
+                        .catch(error => {
+                            console.error('Error fetching karyawan data:', error);
+                            alert('Gagal memuat data karyawan. Silakan coba lagi.');
+                            infoKaryawanContainer.style.display = 'none';
+                        });
+                } else {
+                    // Hide the container if no karyawan selected
+                    infoKaryawanContainer.style.display = 'none';
+                }
+            });
+
+            // If there's a pre-selected karyawan (from old input), trigger the change event
+            if (karyawanSelect.value) {
+                const event = new Event('change');
+                karyawanSelect.dispatchEvent(event);
             }
         });
-
-        input.addEventListener('change', function() {
-            if (this.hasAttribute('required') && this.value) {
-                this.classList.remove('is-invalid');
-            }
-        });
-    });
-});
     </script>
 @endpush
