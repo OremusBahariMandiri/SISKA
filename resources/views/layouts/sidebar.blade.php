@@ -20,36 +20,28 @@
                         <span class="nav-text">Dashboard</span>
                     </a>
                 </li>
+
                 {{-- Data Master Dropdown --}}
-                <li class="nav-item">
-                    <a class="nav-link sidebar-menu-item
-                    {{ request()->is('users*') ||
-                    request()->is('perusahaan*') ||
-                    request()->is('karyawan*') ||
-                    request()->is('keluarga-karyawan*') ||
-                    request()->is('kategori-dokumen*') ||
-                    request()->is('jenis-dokumen*')
-                        ? 'active open'
-                        : '' }}"
-                        href="javascript:void(0);" data-menu="dataMaster">
+                @php
+                    $dataMasterActive = request()->is('users*') ||
+                                       request()->is('perusahaan*') ||
+                                       request()->is('karyawan*') ||
+                                       request()->is('keluarga-karyawan*') ||
+                                       request()->is('kategori-dokumen*') ||
+                                       request()->is('jenis-dokumen*');
+                @endphp
+                <li class="nav-item has-submenu">
+                    <a class="nav-link sidebar-menu-item {{ $dataMasterActive ? 'active' : '' }}"
+                       href="#" data-menu="dataMaster">
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <div class="menu-icon-text">
                                 <i class="fas fa-database"></i>
                                 <span class="nav-text">Data Master</span>
                             </div>
-                            <i class="fas fa-chevron-down submenu-indicator"></i>
+                            <i class="fas fa-chevron-down submenu-indicator {{ $dataMasterActive ? 'rotated' : '' }}"></i>
                         </div>
                     </a>
-                    <ul class="sidebar-submenu
-                    {{ request()->is('users*') ||
-                    request()->is('perusahaan*') ||
-                    request()->is('karyawan*') ||
-                    request()->is('keluarga-karyawan*') ||
-                    request()->is('kategori-dokumen*') ||
-                    request()->is('jenis-dokumen*')
-                        ? 'show'
-                        : '' }}"
-                        id="dataMaster">
+                    <ul class="sidebar-submenu {{ $dataMasterActive ? 'show' : '' }}" id="dataMaster">
                         {{-- Users --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('pengguna'))
                             <li class="nav-item">
@@ -60,6 +52,7 @@
                                 </a>
                             </li>
                         @endif
+
                         {{-- Perusahaan --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('perusahaan'))
                             <li class="nav-item">
@@ -70,6 +63,7 @@
                                 </a>
                             </li>
                         @endif
+
                         {{-- Karyawan --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('karyawan'))
                             <li class="nav-item">
@@ -80,6 +74,7 @@
                                 </a>
                             </li>
                         @endif
+
                         {{-- Keluarga Karyawan --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('keluarga-karyawan'))
                             <li class="nav-item">
@@ -90,6 +85,7 @@
                                 </a>
                             </li>
                         @endif
+
                         {{-- Kategori Dokumen --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('kategori-dokumen'))
                             <li class="nav-item">
@@ -100,6 +96,7 @@
                                 </a>
                             </li>
                         @endif
+
                         {{-- Jenis Dokumen --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('jenis-dokumen'))
                             <li class="nav-item">
@@ -112,17 +109,71 @@
                         @endif
                     </ul>
                 </li>
-                {{-- Dokumen Karyawan (di luar dropdown) --}}
-                @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-karyawan'))
-                    <li class="nav-item">
-                        <a class="nav-link {{ request()->is('dokumen-karyawan*') && !request()->is('dokumen-karyawan/monitoring*') ? 'active' : '' }}"
-                            href="{{ route('dokumen-karyawan.index') }}">
-                            <i class="fas fa-file-contract"></i>
-                            <span class="nav-text">Dokumen Karyawan</span>
-                        </a>
-                    </li>
-                @endif
 
+                {{-- Manajemen Dokumen Dropdown --}}
+                @php
+                    $dokumenActive = request()->is('dokumen-karyawan*') ||
+                                    request()->is('dokumen-kontrak*') ||
+                                    request()->is('dokumen-karir*') ||
+                                    request()->is('dokumen-legalitas*');
+                @endphp
+                <li class="nav-item has-submenu">
+                    <a class="nav-link sidebar-menu-item {{ $dokumenActive ? 'active' : '' }}"
+                       href="#" data-menu="manajemenDokumen">
+                        <div class="d-flex align-items-center justify-content-between w-100">
+                            <div class="menu-icon-text">
+                                <i class="fas fa-file-alt"></i>
+                                <span class="nav-text">Manajemen Dokumen</span>
+                            </div>
+                            <i class="fas fa-chevron-down submenu-indicator {{ $dokumenActive ? 'rotated' : '' }}"></i>
+                        </div>
+                    </a>
+                    <ul class="sidebar-submenu {{ $dokumenActive ? 'show' : '' }}" id="manajemenDokumen">
+                        {{-- Dokumen Karyawan --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-karyawan'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-karyawan*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-karyawan.index') }}">
+                                    <i class="fas fa-file-contract"></i>
+                                    <span>Dokumen Karyawan</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- Dokumen Kontrak --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-kontrak'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-kontrak*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-kontrak.index') }}">
+                                    <i class="fas fa-handshake"></i>
+                                    <span>Dokumen Kontrak</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- Dokumen Karir --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-karir'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-karir*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-karir.index') }}">
+                                    <i class="fas fa-chart-line"></i>
+                                    <span>Dokumen Karir</span>
+                                </a>
+                            </li>
+                        @endif
+
+                        {{-- Dokumen Legalitas --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-legalitas'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-legalitas*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-legalitas.index') }}">
+                                    <i class="fas fa-gavel"></i>
+                                    <span>Dokumen Legalitas</span>
+                                </a>
+                            </li>
+                        @endif
+                    </ul>
+                </li>
             </ul>
         </div>
     </div>

@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Dokumen Karyawan')
+@section('title', 'Edit Dokumen Kontrak')
 
 @section('content')
     <div class="container">
@@ -8,8 +8,8 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Karyawan</span>
-                        <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
+                        <span class="fw-bold"><i class="fas fa-edit me-2"></i>Edit Dokumen Kontrak</span>
+                        <a href="{{ route('dokumen-kontrak.index') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -25,9 +25,10 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('dokumen-karyawan.store') }}" method="POST" id="dokumenKaryawanForm"
+                        <form action="{{ route('dokumen-kontrak.update', $dokumenKontrak->Id) }}" method="POST" id="dokumenKontrakForm"
                             enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
 
                             <!-- Grouped form sections with cards -->
                             <div class="row g-4">
@@ -39,7 +40,7 @@
                                         </div>
                                         <div class="card-body">
                                             <input type="text" class="form-control" id="IdKode" name="IdKode"
-                                                value="{{ old('IdKode', $newId) }}" hidden readonly>
+                                                value="{{ $dokumenKontrak->IdKode }}" hidden readonly>
 
                                             <div class="form-group mb-3">
                                                 <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
@@ -47,7 +48,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
                                                     <input type="text" class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok') }}"
+                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok', $dokumenKontrak->NoRegDok) }}"
                                                         placeholder="Masukkan nomor registrasi dokumen" required>
                                                     @error('NoRegDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -65,7 +66,7 @@
                                                         <option value="">-- Pilih Karyawan --</option>
                                                         @foreach ($karyawan as $employee)
                                                             <option value="{{ $employee->IdKode }}"
-                                                                {{ old('IdKodeA04') == $employee->IdKode ? 'selected' : '' }}>
+                                                                {{ old('IdKodeA04', $dokumenKontrak->IdKodeA04) == $employee->IdKode ? 'selected' : '' }}>
                                                                 {{ $employee->NamaKry }}
                                                             </option>
                                                         @endforeach
@@ -86,7 +87,7 @@
                                                         <option value="">-- Pilih Kategori --</option>
                                                         @foreach ($kategoriDokumen as $kategori)
                                                             <option value="{{ $kategori->IdKode }}"
-                                                                {{ old('KategoriDok') == $kategori->IdKode ? 'selected' : '' }}>
+                                                                {{ old('KategoriDok', $dokumenKontrak->KategoriDok) == $kategori->IdKode ? 'selected' : '' }}>
                                                                 {{ $kategori->KategoriDok }}
                                                             </option>
                                                         @endforeach
@@ -117,7 +118,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-align-left"></i></span>
                                                     <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok"
-                                                        rows="3" placeholder="Masukkan keterangan dokumen">{{ old('KetDok') }}</textarea>
+                                                        rows="3" placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenKontrak->KetDok) }}</textarea>
                                                     @error('KetDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -140,7 +141,7 @@
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
                                                             type="radio" name="ValidasiDok" id="tetap" value="Tetap"
-                                                            {{ old('ValidasiDok', 'Tetap') == 'Tetap' ? 'checked' : '' }} required>
+                                                            {{ old('ValidasiDok', $dokumenKontrak->ValidasiDok) == 'Tetap' ? 'checked' : '' }} required>
                                                         <label class="form-check-label" for="tetap">
                                                             <i class="fas fa-infinity text-primary me-1"></i>Tetap
                                                         </label>
@@ -148,7 +149,7 @@
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
                                                             type="radio" name="ValidasiDok" id="perpanjangan" value="Perpanjangan"
-                                                            {{ old('ValidasiDok') == 'Perpanjangan' ? 'checked' : '' }}>
+                                                            {{ old('ValidasiDok', $dokumenKontrak->ValidasiDok) == 'Perpanjangan' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="perpanjangan">
                                                             <i class="fas fa-sync text-success me-1"></i>Perpanjangan
                                                         </label>
@@ -167,7 +168,7 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
                                                             <input type="date" class="form-control tanggal-input @error('TglTerbitDok') is-invalid @enderror"
-                                                                id="TglTerbitDok" name="TglTerbitDok" value="{{ old('TglTerbitDok') }}" required>
+                                                                id="TglTerbitDok" name="TglTerbitDok" value="{{ old('TglTerbitDok', $dokumenKontrak->TglTerbitDok ? $dokumenKontrak->TglTerbitDok->format('Y-m-d') : '') }}" required>
                                                             @error('TglTerbitDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -180,7 +181,7 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
                                                             <input type="date" class="form-control tanggal-input @error('TglBerakhirDok') is-invalid @enderror"
-                                                                id="TglBerakhirDok" name="TglBerakhirDok" value="{{ old('TglBerakhirDok') }}">
+                                                                id="TglBerakhirDok" name="TglBerakhirDok" value="{{ old('TglBerakhirDok', $dokumenKontrak->TglBerakhirDok ? $dokumenKontrak->TglBerakhirDok->format('Y-m-d') : '') }}">
                                                             @error('TglBerakhirDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -192,7 +193,7 @@
                                             <div class="form-group mb-3">
                                                 <label for="MasaBerlaku" class="form-label fw-bold">Masa Berlaku</label>
                                                 <input type="text" class="form-control bg-light" id="MasaBerlaku"
-                                                    name="MasaBerlaku" value="{{ old('MasaBerlaku', 'Tetap') }}" readonly>
+                                                    name="MasaBerlaku" value="{{ old('MasaBerlaku', $dokumenKontrak->MasaBerlaku) }}" readonly>
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Masa berlaku akan dihitung otomatis
                                                 </div>
@@ -203,7 +204,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-bell"></i></span>
                                                     <input type="date" class="form-control tanggal-input @error('TglPengingat') is-invalid @enderror"
-                                                        id="TglPengingat" name="TglPengingat" value="{{ old('TglPengingat') }}">
+                                                        id="TglPengingat" name="TglPengingat" value="{{ old('TglPengingat', $dokumenKontrak->TglPengingat ? $dokumenKontrak->TglPengingat->format('Y-m-d') : '') }}">
                                                     @error('TglPengingat')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -213,7 +214,7 @@
                                             <div class="form-group mb-3">
                                                 <label for="MasaPengingat" class="form-label fw-bold">Masa Pengingat</label>
                                                 <input type="text" class="form-control bg-light" id="MasaPengingat"
-                                                    name="MasaPengingat" value="{{ old('MasaPengingat', '-') }}" readonly>
+                                                    name="MasaPengingat" value="{{ old('MasaPengingat', $dokumenKontrak->MasaPengingat) }}" readonly>
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Masa pengingat akan dihitung otomatis
                                                 </div>
@@ -244,6 +245,25 @@
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Format: PDF, JPG, JPEG, PNG.
                                                 </div>
+                                                @if($dokumenKontrak->FileDok)
+                                                    <div class="mt-2">
+                                                        <p class="mb-1">File saat ini:</p>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge bg-info me-2">
+                                                                <i class="fas fa-file-alt"></i>
+                                                            </span>
+                                                            <span class="text-truncate">{{ $dokumenKontrak->FileDok }}</span>
+                                                            <a href="{{ route('dokumen-kontrak.viewDocument', $dokumenKontrak->Id) }}"
+                                                                class="btn btn-sm btn-success ms-2" target="_blank">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                            {{-- <a href="{{ route('dokumen-kontrak.download', $dokumenKontrak->Id) }}"
+                                                                class="btn btn-sm btn-primary ms-1">
+                                                                <i class="fas fa-download"></i>
+                                                            </a> --}}
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -253,7 +273,7 @@
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input @error('StatusDok') is-invalid @enderror"
                                                             type="radio" name="StatusDok" id="berlaku" value="Berlaku"
-                                                            {{ old('StatusDok', 'Berlaku') == 'Berlaku' ? 'checked' : '' }} required>
+                                                            {{ old('StatusDok', $dokumenKontrak->StatusDok) == 'Berlaku' ? 'checked' : '' }} required>
                                                         <label class="form-check-label" for="berlaku">
                                                             <i class="fas fa-check-circle text-success me-1"></i>Berlaku
                                                         </label>
@@ -261,7 +281,7 @@
                                                     <div class="form-check form-check-inline">
                                                         <input class="form-check-input @error('StatusDok') is-invalid @enderror"
                                                             type="radio" name="StatusDok" id="tidak_berlaku" value="Tidak Berlaku"
-                                                            {{ old('StatusDok') == 'Tidak Berlaku' ? 'checked' : '' }}>
+                                                            {{ old('StatusDok', $dokumenKontrak->StatusDok) == 'Tidak Berlaku' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="tidak_berlaku">
                                                             <i class="fas fa-times-circle text-danger me-1"></i>Tidak Berlaku
                                                         </label>
@@ -278,7 +298,7 @@
 
                             <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-2"></i>Simpan
+                                    <i class="fas fa-save me-2"></i>Update
                                 </button>
                             </div>
                         </form>
@@ -326,7 +346,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Form validation with visual feedback
-            const form = document.getElementById('dokumenKaryawanForm');
+            const form = document.getElementById('dokumenKontrakForm');
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();
@@ -365,7 +385,7 @@
             const jenisDokSelect = document.getElementById('JenisDok');
 
             // Simpan jenis dokumen yang sudah terpilih (untuk halaman edit)
-            const selectedJenisDok = jenisDokSelect.value;
+            const selectedJenisDok = "{{ old('JenisDok', $dokumenKontrak->JenisDok) }}";
 
             // Data jenisDokumenByKategori dari controller
             const jenisDokumenByKategori = @json($jenisDokumenByKategori);

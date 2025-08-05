@@ -271,4 +271,25 @@ class KeluargaKaryawanController extends Controller
         $keluargaKaryawans = KeluargaKaryawan::where('IdKodeA04', $karyawanId)->get();
         return response()->json($keluargaKaryawans);
     }
+
+    /**
+     * Get karyawan detail by ID for form dropdowns.
+     *
+     * @param string $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getKaryawanDetail($id)
+    {
+        try {
+            $karyawan = Karyawan::with(['departemen', 'jabatan'])
+                ->findOrFail($id);
+
+            return response()->json($karyawan);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Karyawan tidak ditemukan',
+                'error' => $e->getMessage()
+            ], 404);
+        }
+    }
 }

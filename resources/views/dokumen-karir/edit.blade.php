@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Dokumen Karyawan')
+@section('title', 'Edit Dokumen Karir')
 
 @section('content')
     <div class="container">
@@ -8,8 +8,8 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Karyawan</span>
-                        <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
+                        <span class="fw-bold"><i class="fas fa-edit me-2"></i>Edit Dokumen Karir</span>
+                        <a href="{{ route('dokumen-karir.index') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -25,9 +25,10 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('dokumen-karyawan.store') }}" method="POST" id="dokumenKaryawanForm"
-                            enctype="multipart/form-data">
+                        <form action="{{ route('dokumen-karir.update', $dokumenKarir->Id) }}" method="POST"
+                            id="dokumenKarirForm" enctype="multipart/form-data">
                             @csrf
+                            @method('PUT')
 
                             <!-- Grouped form sections with cards -->
                             <div class="row g-4">
@@ -39,15 +40,17 @@
                                         </div>
                                         <div class="card-body">
                                             <input type="text" class="form-control" id="IdKode" name="IdKode"
-                                                value="{{ old('IdKode', $newId) }}" hidden readonly>
+                                                value="{{ $dokumenKarir->IdKode }}" hidden readonly>
 
                                             <div class="form-group mb-3">
                                                 <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <input type="text" class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok') }}"
+                                                    <input type="text"
+                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
+                                                        id="NoRegDok" name="NoRegDok"
+                                                        value="{{ old('NoRegDok', $dokumenKarir->NoRegDok) }}"
                                                         placeholder="Masukkan nomor registrasi dokumen" required>
                                                     @error('NoRegDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -65,7 +68,7 @@
                                                         <option value="">-- Pilih Karyawan --</option>
                                                         @foreach ($karyawan as $employee)
                                                             <option value="{{ $employee->IdKode }}"
-                                                                {{ old('IdKodeA04') == $employee->IdKode ? 'selected' : '' }}>
+                                                                {{ old('IdKodeA04', $dokumenKarir->IdKodeA04) == $employee->IdKode ? 'selected' : '' }}>
                                                                 {{ $employee->NamaKry }}
                                                             </option>
                                                         @endforeach
@@ -86,7 +89,7 @@
                                                         <option value="">-- Pilih Kategori --</option>
                                                         @foreach ($kategoriDokumen as $kategori)
                                                             <option value="{{ $kategori->IdKode }}"
-                                                                {{ old('KategoriDok') == $kategori->IdKode ? 'selected' : '' }}>
+                                                                {{ old('KategoriDok', $dokumenKarir->KategoriDok) == $kategori->IdKode ? 'selected' : '' }}>
                                                                 {{ $kategori->KategoriDok }}
                                                             </option>
                                                         @endforeach
@@ -116,8 +119,8 @@
                                                 <label for="KetDok" class="form-label fw-bold">Keterangan Dokumen</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                                    <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok"
-                                                        rows="3" placeholder="Masukkan keterangan dokumen">{{ old('KetDok') }}</textarea>
+                                                    <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok" rows="3"
+                                                        placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenKarir->KetDok) }}</textarea>
                                                     @error('KetDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -131,24 +134,31 @@
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
+                                            <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku &
+                                                Tanggal</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="form-group mb-3">
-                                                <label class="form-label fw-bold">Validasi Dokumen <span class="text-danger">*</span></label>
+                                                <label class="form-label fw-bold">Validasi Dokumen <span
+                                                        class="text-danger">*</span></label>
                                                 <div class="bg-light p-2 rounded">
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
-                                                            type="radio" name="ValidasiDok" id="tetap" value="Tetap"
-                                                            {{ old('ValidasiDok', 'Tetap') == 'Tetap' ? 'checked' : '' }} required>
+                                                        <input
+                                                            class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
+                                                            type="radio" name="ValidasiDok" id="tetap"
+                                                            value="Tetap"
+                                                            {{ old('ValidasiDok', $dokumenKarir->ValidasiDok) == 'Tetap' ? 'checked' : '' }}
+                                                            required>
                                                         <label class="form-check-label" for="tetap">
                                                             <i class="fas fa-infinity text-primary me-1"></i>Tetap
                                                         </label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
-                                                            type="radio" name="ValidasiDok" id="perpanjangan" value="Perpanjangan"
-                                                            {{ old('ValidasiDok') == 'Perpanjangan' ? 'checked' : '' }}>
+                                                        <input
+                                                            class="form-check-input validasi-dokumen @error('ValidasiDok') is-invalid @enderror"
+                                                            type="radio" name="ValidasiDok" id="perpanjangan"
+                                                            value="Perpanjangan"
+                                                            {{ old('ValidasiDok', $dokumenKarir->ValidasiDok) == 'Perpanjangan' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="perpanjangan">
                                                             <i class="fas fa-sync text-success me-1"></i>Perpanjangan
                                                         </label>
@@ -162,12 +172,16 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="TglTerbitDok" class="form-label fw-bold">Tanggal Terbit <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="TglTerbitDok" class="form-label fw-bold">Tanggal
+                                                            Terbit <span class="text-danger">*</span></label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
-                                                            <input type="date" class="form-control tanggal-input @error('TglTerbitDok') is-invalid @enderror"
-                                                                id="TglTerbitDok" name="TglTerbitDok" value="{{ old('TglTerbitDok') }}" required>
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-plus"></i></span>
+                                                            <input type="date"
+                                                                class="form-control tanggal-input @error('TglTerbitDok') is-invalid @enderror"
+                                                                id="TglTerbitDok" name="TglTerbitDok"
+                                                                value="{{ old('TglTerbitDok', $dokumenKarir->TglTerbitDok ? $dokumenKarir->TglTerbitDok->format('Y-m-d') : '') }}"
+                                                                required>
                                                             @error('TglTerbitDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -176,11 +190,15 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3 tgl-berakhir-group">
-                                                        <label for="TglBerakhirDok" class="form-label fw-bold">Tanggal Berakhir</label>
+                                                        <label for="TglBerakhirDok" class="form-label fw-bold">Tanggal
+                                                            Berakhir</label>
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
-                                                            <input type="date" class="form-control tanggal-input @error('TglBerakhirDok') is-invalid @enderror"
-                                                                id="TglBerakhirDok" name="TglBerakhirDok" value="{{ old('TglBerakhirDok') }}">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-times"></i></span>
+                                                            <input type="date"
+                                                                class="form-control tanggal-input @error('TglBerakhirDok') is-invalid @enderror"
+                                                                id="TglBerakhirDok" name="TglBerakhirDok"
+                                                                value="{{ old('TglBerakhirDok', $dokumenKarir->TglBerakhirDok ? $dokumenKarir->TglBerakhirDok->format('Y-m-d') : '') }}">
                                                             @error('TglBerakhirDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -192,18 +210,23 @@
                                             <div class="form-group mb-3">
                                                 <label for="MasaBerlaku" class="form-label fw-bold">Masa Berlaku</label>
                                                 <input type="text" class="form-control bg-light" id="MasaBerlaku"
-                                                    name="MasaBerlaku" value="{{ old('MasaBerlaku', 'Tetap') }}" readonly>
+                                                    name="MasaBerlaku"
+                                                    value="{{ old('MasaBerlaku', $dokumenKarir->MasaBerlaku) }}" readonly>
                                                 <div class="form-text text-muted">
-                                                    <i class="fas fa-info-circle me-1"></i>Masa berlaku akan dihitung otomatis
+                                                    <i class="fas fa-info-circle me-1"></i>Masa berlaku akan dihitung
+                                                    otomatis
                                                 </div>
                                             </div>
 
                                             <div class="form-group mb-3 tgl-pengingat-group">
-                                                <label for="TglPengingat" class="form-label fw-bold">Tanggal Pengingat</label>
+                                                <label for="TglPengingat" class="form-label fw-bold">Tanggal
+                                                    Pengingat</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-bell"></i></span>
-                                                    <input type="date" class="form-control tanggal-input @error('TglPengingat') is-invalid @enderror"
-                                                        id="TglPengingat" name="TglPengingat" value="{{ old('TglPengingat') }}">
+                                                    <input type="date"
+                                                        class="form-control tanggal-input @error('TglPengingat') is-invalid @enderror"
+                                                        id="TglPengingat" name="TglPengingat"
+                                                        value="{{ old('TglPengingat', $dokumenKarir->TglPengingat ? $dokumenKarir->TglPengingat->format('Y-m-d') : '') }}">
                                                     @error('TglPengingat')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -211,11 +234,15 @@
                                             </div>
 
                                             <div class="form-group mb-3">
-                                                <label for="MasaPengingat" class="form-label fw-bold">Masa Pengingat</label>
+                                                <label for="MasaPengingat" class="form-label fw-bold">Masa
+                                                    Pengingat</label>
                                                 <input type="text" class="form-control bg-light" id="MasaPengingat"
-                                                    name="MasaPengingat" value="{{ old('MasaPengingat', '-') }}" readonly>
+                                                    name="MasaPengingat"
+                                                    value="{{ old('MasaPengingat', $dokumenKarir->MasaPengingat) }}"
+                                                    readonly>
                                                 <div class="form-text text-muted">
-                                                    <i class="fas fa-info-circle me-1"></i>Masa pengingat akan dihitung otomatis
+                                                    <i class="fas fa-info-circle me-1"></i>Masa pengingat akan dihitung
+                                                    otomatis
                                                 </div>
                                             </div>
                                         </div>
@@ -234,8 +261,10 @@
                                             <div class="form-group mb-3">
                                                 <label for="FileDok" class="form-label fw-bold">File Dokumen</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
-                                                    <input type="file" class="form-control @error('FileDok') is-invalid @enderror"
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-file-upload"></i></span>
+                                                    <input type="file"
+                                                        class="form-control @error('FileDok') is-invalid @enderror"
                                                         id="FileDok" name="FileDok">
                                                     @error('FileDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -244,6 +273,22 @@
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Format: PDF, JPG, JPEG, PNG.
                                                 </div>
+                                                @if ($dokumenKarir->FileDok)
+                                                    <div class="mt-2">
+                                                        <p class="mb-1">File saat ini:</p>
+                                                        <div class="d-flex align-items-center">
+                                                            <span class="badge bg-info me-2">
+                                                                <i class="fas fa-file-alt"></i>
+                                                            </span>
+                                                            <span
+                                                                class="text-truncate">{{ $dokumenKarir->FileDok }}</span>
+                                                            <a href="{{ route('dokumen-karir.viewDocument', $dokumenKarir->Id) }}"
+                                                                class="btn btn-sm btn-success ms-2" target="_blank">
+                                                                <i class="fas fa-eye"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -251,19 +296,25 @@
                                                 <label for="StatusDok" class="form-label fw-bold">Status Dokumen</label>
                                                 <div class="bg-light p-2 rounded">
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input @error('StatusDok') is-invalid @enderror"
-                                                            type="radio" name="StatusDok" id="berlaku" value="Berlaku"
-                                                            {{ old('StatusDok', 'Berlaku') == 'Berlaku' ? 'checked' : '' }} required>
+                                                        <input
+                                                            class="form-check-input @error('StatusDok') is-invalid @enderror"
+                                                            type="radio" name="StatusDok" id="berlaku"
+                                                            value="Berlaku"
+                                                            {{ old('StatusDok', $dokumenKarir->StatusDok) == 'Berlaku' ? 'checked' : '' }}
+                                                            required>
                                                         <label class="form-check-label" for="berlaku">
                                                             <i class="fas fa-check-circle text-success me-1"></i>Berlaku
                                                         </label>
                                                     </div>
                                                     <div class="form-check form-check-inline">
-                                                        <input class="form-check-input @error('StatusDok') is-invalid @enderror"
-                                                            type="radio" name="StatusDok" id="tidak_berlaku" value="Tidak Berlaku"
-                                                            {{ old('StatusDok') == 'Tidak Berlaku' ? 'checked' : '' }}>
+                                                        <input
+                                                            class="form-check-input @error('StatusDok') is-invalid @enderror"
+                                                            type="radio" name="StatusDok" id="tidak_berlaku"
+                                                            value="Tidak Berlaku"
+                                                            {{ old('StatusDok', $dokumenKarir->StatusDok) == 'Tidak Berlaku' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="tidak_berlaku">
-                                                            <i class="fas fa-times-circle text-danger me-1"></i>Tidak Berlaku
+                                                            <i class="fas fa-times-circle text-danger me-1"></i>Tidak
+                                                            Berlaku
                                                         </label>
                                                     </div>
                                                     @error('StatusDok')
@@ -278,7 +329,7 @@
 
                             <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-2"></i>Simpan
+                                    <i class="fas fa-save me-2"></i>Update
                                 </button>
                             </div>
                         </form>
@@ -326,7 +377,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Form validation with visual feedback
-            const form = document.getElementById('dokumenKaryawanForm');
+            const form = document.getElementById('dokumenKarirForm');
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();
@@ -337,7 +388,8 @@
                         if (!input.value) {
                             input.classList.add('is-invalid');
                             // Create error message if it doesn't exist
-                            if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('invalid-feedback')) {
+                            if (!input.nextElementSibling || !input.nextElementSibling.classList
+                                .contains('invalid-feedback')) {
                                 const feedback = document.createElement('div');
                                 feedback.className = 'invalid-feedback';
                                 feedback.textContent = 'Field ini wajib diisi';
@@ -365,7 +417,7 @@
             const jenisDokSelect = document.getElementById('JenisDok');
 
             // Simpan jenis dokumen yang sudah terpilih (untuk halaman edit)
-            const selectedJenisDok = jenisDokSelect.value;
+            const selectedJenisDok = "{{ old('JenisDok', $dokumenKarir->JenisDok) }}";
 
             // Data jenisDokumenByKategori dari controller
             const jenisDokumenByKategori = @json($jenisDokumenByKategori);

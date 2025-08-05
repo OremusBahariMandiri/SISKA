@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Tambah Dokumen Karyawan')
+@section('title', 'Tambah Dokumen Karir')
 
 @section('content')
     <div class="container">
@@ -8,8 +8,8 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Karyawan</span>
-                        <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
+                        <span class="fw-bold"><i class="fas fa-file-plus me-2"></i>Tambah Dokumen Karir</span>
+                        <a href="{{ route('dokumen-karir.index') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -25,7 +25,7 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('dokumen-karyawan.store') }}" method="POST" id="dokumenKaryawanForm"
+                        <form action="{{ route('dokumen-karir.store') }}" method="POST" id="dokumenKarirForm"
                             enctype="multipart/form-data">
                             @csrf
 
@@ -34,7 +34,7 @@
                                 <!-- Basic Information -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                        <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                         </div>
                                         <div class="card-body">
@@ -130,7 +130,7 @@
                                 <!-- Validity and Date Information -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                        <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                             <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
                                         </div>
                                         <div class="card-body">
@@ -225,7 +225,7 @@
 
                             <!-- Additional Information -->
                             <div class="card border-secondary mt-4">
-                                <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Tambahan</h5>
                                 </div>
                                 <div class="card-body">
@@ -326,7 +326,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Form validation with visual feedback
-            const form = document.getElementById('dokumenKaryawanForm');
+            const form = document.getElementById('dokumenKarirForm');
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();

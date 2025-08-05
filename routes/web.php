@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DokumenKarirController;
 use App\Http\Controllers\DokumenKaryawanController;
+use App\Http\Controllers\DokumenKontrakController;
+use App\Http\Controllers\DokumenLegalitasController;
 use App\Http\Controllers\JenisDokumenController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriDokumenController;
@@ -9,6 +12,7 @@ use App\Http\Controllers\KeluargaKaryawanController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\UserAccessController;
 use App\Http\Controllers\UserController;
+use App\Models\DokumenKarir;
 use App\Models\DokumenKaryawan;
 use Illuminate\Support\Facades\Route;
 
@@ -53,6 +57,8 @@ Route::middleware(['auth'])->group(function () {
 
     //Keluarga Karyawan Route
     Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
+    Route::get('keluarga-by-karyawan/{karyawanId}', [KeluargaKaryawanController::class, 'getByKaryawan'])->name('keluarga.by.karyawan');
+    Route::get('karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])->name('karyawan.detail');
 
     //Kategori Dokumen Route
     Route::resource('kategori-dokumen', KategoriDokumenController::class);
@@ -66,5 +72,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('dokumen-karyawan/{dokumenKaryawan}/view-document', [DokumenKaryawanController::class, 'viewDocument'])->name('dokumen-karyawan.viewDocument');
     Route::post('/dokumen-karyawan/export-excel', [DokumenKaryawanController::class, 'exportExcel'])->name('dokumen-karyawan.export-excel');
 
-});
+    //Dokumen Kontrak Route
+    Route::resource('dokumen-kontrak', DokumenKontrakController::class);
+    Route::post('/dokumen-kontrak/export-excel', [DokumenKontrakController::class, 'exportExcel'])->name('dokumen-kontrak.export-excel');
+    Route::get('dokumen-kontrak/{dokumenKontrak}/view-document', [DokumenKontrakController::class, 'viewDocument'])->name('dokumen-kontrak.viewDocument');
 
+    //Dokumen Karir Route
+    Route::resource('dokumen-karir', DokumenKarirController::class);
+    Route::post('/dokumen-karir/export-excel', [DokumenKarirController::class, 'exportExcel'])->name('dokumen-karir.export-excel');
+    Route::get('dokumen-karir/{dokummenKarir}/view-document', [DokumenKarirController::class, 'viewDocument'])->name('dokumen-karir.viewDocument');
+
+
+    //Dokumen Legalitas Route
+    Route::resource('dokumen-legalitas', DokumenLegalitasController::class);
+    Route::get('dokumen-legalitas/{dokumenLegalitas}/view-document', [DokumenLegalitasController::class, 'viewDocument'])->name('dokumen-legalitas.viewDocument');
+    Route::post('/dokumen-legalitas/export-excel', [DokumenLegalitasController::class, 'exportExcel'])->name('dokumen-legalitas.export-excel');
+});
