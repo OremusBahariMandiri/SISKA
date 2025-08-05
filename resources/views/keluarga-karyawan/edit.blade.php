@@ -29,6 +29,8 @@
                             id="keluargaForm">
                             @csrf
                             @method('PUT')
+                            <input type="text" class="form-control" id="IdKode" name="IdKode"
+                                value="{{ old('IdKode', $keluargaKaryawan->IdKode) }}" hidden readonly>
 
                             <!-- Nav tabs for form sections -->
                             <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
@@ -73,16 +75,7 @@
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-6">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IdKode" class="form-label fw-bold">ID Kode</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i class="fas fa-key"></i></span>
-                                                            <input type="text" class="form-control" id="IdKode"
-                                                                value="{{ $keluargaKaryawan->IdKode }}" readonly disabled>
-                                                        </div>
-                                                    </div>
-
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="IdKodeA04" class="form-label fw-bold">Karyawan <span
                                                                 class="text-danger">*</span></label>
@@ -91,12 +84,13 @@
                                                                     class="fas fa-user-tie"></i></span>
                                                             <select
                                                                 class="form-select @error('IdKodeA04') is-invalid @enderror"
-                                                                id="IdKodeA04" name="IdKodeA04" required>
+                                                                id="IdKodeA04" name="IdKodeA04" required
+                                                                data-live-search="true">
                                                                 <option value="" disabled>Pilih Karyawan</option>
                                                                 @foreach ($karyawans as $karyawan)
                                                                     <option value="{{ $karyawan->IdKode }}"
                                                                         {{ old('IdKodeA04', $keluargaKaryawan->IdKodeA04) == $karyawan->IdKode ? 'selected' : '' }}>
-                                                                        {{ $karyawan->NamaKry }} - {{ $karyawan->NikKry }}
+                                                                        {{ $karyawan->NamaKry }} - {{ $karyawan->NrkKry }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
@@ -106,31 +100,176 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="StsKeluargaKry" class="form-label fw-bold">Status
-                                                            Keluarga <span class="text-danger">*</span></label>
+                                                        <label for="NikKtpUtama" class="form-label fw-bold">NIK KTP</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
+                                                            <input type="text" class="form-control" id="NikKtpUtama"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="NrkKry" class="form-label fw-bold">NRK
+                                                            Karyawan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-badge"></i></span>
+                                                            <input type="text" class="form-control" id="NrkKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal
+                                                            Masuk</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-plus"></i></span>
+                                                            <input type="text" class="form-control" id="TglMsk"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="MasaKerja" class="form-label fw-bold">Masa
+                                                            Kerja</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-business-time"></i></span>
+                                                            <input type="text" class="form-control" id="MasaKerja"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="StsKaryawan" class="form-label fw-bold">Status
+                                                            Karyawan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-user-check"></i></span>
+                                                            <input type="text" class="form-control" id="StsKaryawan"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="StsKawinKry" class="form-label fw-bold">Status
+                                                            Perkawinan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-ring"></i></span>
+                                                            <input type="text" class="form-control" id="StsKawinKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="StsKeluargaKryInfo" class="form-label fw-bold">Status
+                                                            Keluarga</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-users"></i></span>
-                                                            <select
-                                                                class="form-select @error('StsKeluargaKry') is-invalid @enderror"
-                                                                id="StsKeluargaKry" name="StsKeluargaKry" required>
-                                                                <option value="" disabled>Pilih Status</option>
-                                                                @foreach ($statusKeluargaOptions as $status)
-                                                                    <option value="{{ $status }}"
-                                                                        {{ old('StsKeluargaKry', $keluargaKaryawan->StsKeluargaKry) == $status ? 'selected' : '' }}>
-                                                                        {{ $status }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('StsKeluargaKry')
+                                                            <input type="text" class="form-control" id="StsKeluargaKryInfo"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="JumlahAnakKry" class="form-label fw-bold">Jumlah
+                                                            Anak</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-child"></i></span>
+                                                            <input type="text" class="form-control" id="JumlahAnakKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="UmurKry" class="form-label fw-bold">Umur</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-birthday-cake"></i></span>
+                                                            <input type="text" class="form-control" id="UmurKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="KotaKry" class="form-label fw-bold">Kota</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-city"></i></span>
+                                                            <input type="text" class="form-control" id="KotaKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="ProvinsiKry" class="form-label fw-bold">Provinsi</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map"></i></span>
+                                                            <input type="text" class="form-control" id="ProvinsiKry"
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="AlamatKry" class="form-label fw-bold">Alamat</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-home"></i></span>
+                                                            <textarea class="form-control" id="AlamatKry" rows="3" disabled></textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Informasi Pribadi -->
+                                <div class="tab-pane fade" id="info-pribadi" role="tabpanel"
+                                    aria-labelledby="info-pribadi-tab">
+                                    <div class="card border-secondary mb-4">
+                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                            <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Informasi Keluarga</h5>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="NikKlg" class="form-label fw-bold">NIK</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-id-card"></i></span>
+                                                            <input type="text"
+                                                                class="form-control @error('NikKlg') is-invalid @enderror"
+                                                                id="NikKlg" name="NikKlg"
+                                                                value="{{ old('NikKlg', $keluargaKaryawan->NikKlg) }}">
+                                                            @error('NikKlg')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
                                                     </div>
-
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="NamaKlg" class="form-label fw-bold">Nama <span
                                                                 class="text-danger">*</span></label>
@@ -149,57 +288,43 @@
                                                     </div>
                                                 </div>
 
-                                                <div class="col-md-12">
+                                                <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="KetKeluargaKry"
-                                                            class="form-label fw-bold">Keterangan</label>
+                                                        <label for="TempatLhrKlg" class="form-label fw-bold">Tempat
+                                                            Lahir</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
-                                                                    class="fas fa-sticky-note"></i></span>
+                                                                    class="fas fa-map-marker-alt"></i></span>
                                                             <input type="text"
-                                                                class="form-control @error('KetKeluargaKry') is-invalid @enderror"
-                                                                id="KetKeluargaKry" name="KetKeluargaKry"
-                                                                value="{{ old('KetKeluargaKry', $keluargaKaryawan->KetKeluargaKry) }}">
-                                                            @error('KetKeluargaKry')
+                                                                class="form-control @error('TempatLhrKlg') is-invalid @enderror"
+                                                                id="TempatLhrKlg" name="TempatLhrKlg"
+                                                                value="{{ old('TempatLhrKlg', $keluargaKaryawan->TempatLhrKlg) }}">
+                                                            @error('TempatLhrKlg')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
-                                                        </div>
-                                                        <div class="form-text">
-                                                            <i class="fas fa-info-circle me-1"></i>Misalnya: Anak ke-1,
-                                                            dll.
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Informasi Pribadi -->
-                                <div class="tab-pane fade" id="info-pribadi" role="tabpanel"
-                                    aria-labelledby="info-pribadi-tab">
-                                    <div class="card border-secondary mb-4">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Informasi Keluarga</h5>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="NikKlg" class="form-label fw-bold">NIK</label>
+                                                        <label for="TanggalLhrKlg" class="form-label fw-bold">Tanggal
+                                                            Lahir</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
-                                                                    class="fas fa-id-card"></i></span>
-                                                            <input type="text"
-                                                                class="form-control @error('NikKlg') is-invalid @enderror"
-                                                                id="NikKlg" name="NikKlg"
-                                                                value="{{ old('NikKlg', $keluargaKaryawan->NikKlg) }}">
-                                                            @error('NikKlg')
+                                                                    class="fas fa-calendar-alt"></i></span>
+                                                            <input type="date"
+                                                                class="form-control @error('TanggalLhrKlg') is-invalid @enderror"
+                                                                id="TanggalLhrKlg" name="TanggalLhrKlg"
+                                                                value="{{ old('TanggalLhrKlg', $keluargaKaryawan->TanggalLhrKlg ? $keluargaKaryawan->TanggalLhrKlg->format('Y-m-d') : '') }}">
+                                                            @error('TanggalLhrKlg')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
+                                                        <div id="usiaInfo" class="form-text text-muted mt-1"></div>
                                                     </div>
+                                                </div>
 
+                                                <div class="col-md-6">
                                                     <div class="form-group mb-3">
                                                         <label for="SexKlg" class="form-label fw-bold">Jenis Kelamin
                                                             <span class="text-danger">*</span></label>
@@ -219,38 +344,6 @@
                                                                 @endforeach
                                                             </select>
                                                             @error('SexKlg')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group mb-3">
-                                                        <label for="TempatLhrKlg" class="form-label fw-bold">Tempat
-                                                            Lahir</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-map-marker-alt"></i></span>
-                                                            <input type="text"
-                                                                class="form-control @error('TempatLhrKlg') is-invalid @enderror"
-                                                                id="TempatLhrKlg" name="TempatLhrKlg"
-                                                                value="{{ old('TempatLhrKlg', $keluargaKaryawan->TempatLhrKlg) }}">
-                                                            @error('TempatLhrKlg')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group mb-3">
-                                                        <label for="TanggalLhrKlg" class="form-label fw-bold">Tanggal
-                                                            Lahir</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-calendar-alt"></i></span>
-                                                            <input type="date"
-                                                                class="form-control @error('TanggalLhrKlg') is-invalid @enderror"
-                                                                id="TanggalLhrKlg" name="TanggalLhrKlg"
-                                                                value="{{ old('TanggalLhrKlg', $keluargaKaryawan->TanggalLhrKlg ? $keluargaKaryawan->TanggalLhrKlg->format('Y-m-d') : '') }}">
-                                                            @error('TanggalLhrKlg')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -279,7 +372,32 @@
                                                             @enderror
                                                         </div>
                                                     </div>
-
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group mb-3">
+                                                        <label for="StsKeluargaKry" class="form-label fw-bold">Status
+                                                            Keluarga <span class="text-danger">*</span></label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-users"></i></span>
+                                                            <select
+                                                                class="form-select @error('StsKeluargaKry') is-invalid @enderror"
+                                                                id="StsKeluargaKry" name="StsKeluargaKry" required>
+                                                                <option value="" disabled>Pilih Status</option>
+                                                                @foreach ($statusKeluargaOptions as $status)
+                                                                    <option value="{{ $status }}"
+                                                                        {{ old('StsKeluargaKry', $keluargaKaryawan->StsKeluargaKry) == $status ? 'selected' : '' }}>
+                                                                        {{ $status }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                            @error('StsKeluargaKry')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
                                                     <div class="form-group mb-3">
                                                         <label for="StsKawinKlg" class="form-label fw-bold">Status
                                                             Kawin</label>
@@ -302,7 +420,39 @@
                                                             @enderror
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="AlamatKtpKlg" class="form-label fw-bold">Alamat
+                                                            KTP</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-home"></i></span>
+                                                            <textarea class="form-control @error('AlamatKtpKlg') is-invalid @enderror" id="AlamatKtpKlg" name="AlamatKtpKlg"
+                                                                rows="3">{{ old('AlamatKtpKlg', $keluargaKaryawan->AlamatKtpKlg) }}</textarea>
+                                                            @error('AlamatKtpKlg')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="DomisiliKlg" class="form-label fw-bold">Alamat
+                                                            Domisili</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-map-marked-alt"></i></span>
+                                                            <textarea class="form-control @error('DomisiliKlg') is-invalid @enderror" id="DomisiliKlg" name="DomisiliKlg"
+                                                                rows="3">{{ old('DomisiliKlg', $keluargaKaryawan->DomisiliKlg) }}</textarea>
+                                                            @error('DomisiliKlg')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
 
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="PekerjaanKlg"
                                                             class="form-label fw-bold">Pekerjaan</label>
@@ -318,7 +468,8 @@
                                                             @enderror
                                                         </div>
                                                     </div>
-
+                                                </div>
+                                                <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="WargaNegaraKlg" class="form-label fw-bold">Warga
                                                             Negara</label>
@@ -335,31 +486,26 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                            </div>
-
-                                            <div class="form-group mb-3">
-                                                <label for="AlamatKtpKlg" class="form-label fw-bold">Alamat KTP</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-home"></i></span>
-                                                    <textarea class="form-control @error('AlamatKtpKlg') is-invalid @enderror" id="AlamatKtpKlg" name="AlamatKtpKlg"
-                                                        rows="3">{{ old('AlamatKtpKlg', $keluargaKaryawan->AlamatKtpKlg) }}</textarea>
-                                                    @error('AlamatKtpKlg')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
-
-                                            <div class="form-group mb-3">
-                                                <label for="DomisiliKlg" class="form-label fw-bold">Alamat
-                                                    Domisili</label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i
-                                                            class="fas fa-map-marked-alt"></i></span>
-                                                    <textarea class="form-control @error('DomisiliKlg') is-invalid @enderror" id="DomisiliKlg" name="DomisiliKlg"
-                                                        rows="3">{{ old('DomisiliKlg', $keluargaKaryawan->DomisiliKlg) }}</textarea>
-                                                    @error('DomisiliKlg')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
+                                                        <label for="KetKeluargaKry"
+                                                            class="form-label fw-bold">Keterangan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-sticky-note"></i></span>
+                                                            <input type="text"
+                                                                class="form-control @error('KetKeluargaKry') is-invalid @enderror"
+                                                                id="KetKeluargaKry" name="KetKeluargaKry"
+                                                                value="{{ old('KetKeluargaKry', $keluargaKaryawan->KetKeluargaKry) }}">
+                                                            @error('KetKeluargaKry')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="form-text">
+                                                            <i class="fas fa-info-circle me-1"></i>Misalnya: Anak ke-1,
+                                                            dll.
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -455,7 +601,8 @@
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
                                             <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi
-                                                Pendidikan</h5>
+                                                Pendidikan
+                                            </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
@@ -470,7 +617,7 @@
                                                             <select
                                                                 class="form-select @error('PendidikanTrhKlg') is-invalid @enderror"
                                                                 id="PendidikanTrhKlg" name="PendidikanTrhKlg">
-                                                                <option value="" selected disabled>Pilih Pendidikan
+                                                                <option value="" disabled>Pilih Pendidikan
                                                                 </option>
                                                                 @foreach ($pendidikanOptions as $value => $label)
                                                                     <option value="{{ $value }}"
@@ -661,14 +808,229 @@
             background-position: right 0.75rem center, center right 2.25rem;
             background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
         }
+
+        /* Select2 custom styles */
+        .select2-container--bootstrap-5 .select2-selection {
+            border: 1px solid #ced4da;
+            padding: 0.375rem 0.75rem;
+            height: auto;
+            min-height: calc(1.5em + 0.75rem + 2px);
+            border-radius: 0.25rem;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding-left: 0;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__arrow {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .input-group .select2-container {
+            flex: 1 1 auto;
+            width: 1% !important;
+        }
+
+        .input-group .select2-container .select2-selection {
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+
+        /* Age info styles */
+        #usiaInfo {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        #usiaInfo.text-danger {
+            color: #dc3545 !important;
+        }
+
+        #usiaInfo.text-success {
+            color: #198754 !important;
+        }
+
+        #usiaInfo.text-primary {
+            color: #0d6efd !important;
+        }
+
+        #usiaInfo.text-warning {
+            color: #ffc107 !important;
+        }
     </style>
+    <!-- Include Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
 @endpush
 
 @push('scripts')
+    <!-- Include Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Form validation with visual feedback
-            const form = document.getElementById('keluargaForm');
+            // Check if Select2 is properly loaded
+            if (typeof $.fn.select2 === 'function') {
+                try {
+                    $('#IdKodeA04').select2({
+                        theme: 'bootstrap-5',
+                        placeholder: 'Pilih Karyawan',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownParent: $('#IdKodeA04').parent()
+                    });
+                    console.log('Select2 initialized successfully');
+                } catch (e) {
+                    console.error('Error initializing Select2:', e);
+                    // Fallback to regular select
+                    $('#IdKodeA04').addClass('form-select');
+                }
+            } else {
+                console.warn('Select2 plugin is not available');
+                // Fallback to regular select
+                $('#IdKodeA04').addClass('form-select');
+            }
+
+            // Age calculation function
+            const tanggalLahirInput = document.getElementById('TanggalLhrKlg');
+            const usiaInfo = document.getElementById('usiaInfo');
+
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birthDateObj = new Date(birthDate);
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            function updateAge() {
+                if (tanggalLahirInput.value) {
+                    const age = calculateAge(tanggalLahirInput.value);
+                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+
+                    // Add color coding for age
+                    if (age < 17) {
+                        usiaInfo.classList.add('text-danger');
+                        usiaInfo.classList.remove('text-muted', 'text-success', 'text-warning', 'text-primary');
+                    } else if (age >= 17 && age < 25) {
+                        usiaInfo.classList.add('text-success');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-warning', 'text-primary');
+                    } else if (age >= 25 && age < 55) {
+                        usiaInfo.classList.add('text-primary');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-warning');
+                    } else {
+                        usiaInfo.classList.add('text-warning');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-primary');
+                    }
+                } else {
+                    usiaInfo.innerHTML = '';
+                    usiaInfo.className = 'form-text text-muted mt-1';
+                }
+            }
+
+            tanggalLahirInput.addEventListener('change', updateAge);
+            tanggalLahirInput.addEventListener('input', updateAge);
+
+            // Run once on page load if a date is already set
+            if (tanggalLahirInput.value) {
+                updateAge();
+            }
+
+            // Load employee data on page load (for the initially selected employee)
+            const initialKaryawanId = document.getElementById('IdKodeA04').value;
+            if (initialKaryawanId) {
+                loadEmployeeData(initialKaryawanId);
+            }
+
+            // Fetch and display employee data when selected
+            const employeeSelect = document.getElementById('IdKodeA04');
+            if (employeeSelect) {
+                employeeSelect.addEventListener('change', function() {
+                    const karyawanId = this.value;
+                    if (!karyawanId) {
+                        // Clear all fields if no employee selected
+                        clearEmployeeData();
+                        return;
+                    }
+
+                    loadEmployeeData(karyawanId);
+                });
+            }
+
+            // Function to load employee data
+            function loadEmployeeData(karyawanId) {
+                // Show loading indicators in all employee info fields
+                document.getElementById('NikKtpUtama').value = 'Loading...';
+                document.getElementById('NrkKry').value = 'Loading...';
+                document.getElementById('TglMsk').value = 'Loading...';
+                document.getElementById('MasaKerja').value = 'Loading...';
+                document.getElementById('StsKaryawan').value = 'Loading...';
+                document.getElementById('StsKawinKry').value = 'Loading...';
+                document.getElementById('StsKeluargaKryInfo').value = 'Loading...';
+                document.getElementById('JumlahAnakKry').value = 'Loading...';
+                document.getElementById('UmurKry').value = 'Loading...';
+                document.getElementById('KotaKry').value = 'Loading...';
+                document.getElementById('ProvinsiKry').value = 'Loading...';
+                document.getElementById('AlamatKry').value = 'Loading...';
+
+                // Use the correct URL format with the karyawanId
+                fetch(`/keluarga-karyawan/get-karyawan-detail/${karyawanId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Employee data received:', data);
+
+                        // Fill in employee info fields
+                        document.getElementById('NikKtpUtama').value = data.NikKtp || '';
+                        document.getElementById('NrkKry').value = data.NrkKry || '';
+                        document.getElementById('TglMsk').value = data.formatted_tgl_msk || '';
+                        document.getElementById('MasaKerja').value = data.masa_kerja || '';
+                        document.getElementById('StsKaryawan').value = data.StsKaryawan || '';
+                        document.getElementById('StsKawinKry').value = data.StsKawinKry || '';
+                        document.getElementById('StsKeluargaKryInfo').value = data.StsKeluargaKry || '';
+                        document.getElementById('JumlahAnakKry').value = data.JumlahAnakKry || '0';
+                        document.getElementById('UmurKry').value = data.umur || '';
+                        document.getElementById('KotaKry').value = data.KotaKry || '';
+                        document.getElementById('ProvinsiKry').value = data.ProvinsiKry || '';
+                        document.getElementById('AlamatKry').value = data.AlamatKry || '';
+                    })
+                    .catch(error => {
+                        console.error('Error fetching employee data:', error);
+
+                        // Clear all fields on error
+                        clearEmployeeData();
+
+                        // Show error alert
+                        alert('Gagal memuat data karyawan. Silakan coba lagi.');
+                    });
+            }
+
+            // Function to clear all employee data fields
+            function clearEmployeeData() {
+                document.getElementById('NikKtpUtama').value = '';
+                document.getElementById('NrkKry').value = '';
+                document.getElementById('TglMsk').value = '';
+                document.getElementById('MasaKerja').value = '';
+                document.getElementById('StsKaryawan').value = '';
+                document.getElementById('StsKawinKry').value = '';
+                document.getElementById('StsKeluargaKryInfo').value = '';
+                document.getElementById('JumlahAnakKry').value = '';
+                document.getElementById('UmurKry').value = '';
+                document.getElementById('KotaKry').value = '';
+                document.getElementById('ProvinsiKry').value = '';
+                document.getElementById('AlamatKry').value = '';
+            }
 
             // Tab navigation variables
             const tabs = ['info-utama', 'info-pribadi', 'info-pendidikan', 'info-kontak'];
@@ -678,8 +1040,23 @@
             const nextTabBtn = document.getElementById('nextTabBtn');
             const submitBtn = document.getElementById('submitBtn');
 
-            // Function to update navigation buttons based on current tab
-            function updateNavigationButtons(tabIndex) {
+            // Bootstrap Tab objects
+            const tabElements = [];
+            tabs.forEach(tabId => {
+                const tabElement = document.getElementById(`${tabId}-tab`);
+                if (tabElement) {
+                    tabElements.push(new bootstrap.Tab(tabElement));
+                }
+            });
+
+            // Function to show specific tab
+            function showTab(tabIndex) {
+                // Activate the tab using Bootstrap's API
+                if (tabElements[tabIndex]) {
+                    tabElements[tabIndex].show();
+                }
+
+                // Update buttons state
                 prevTabBtn.style.display = tabIndex > 0 ? 'block' : 'none';
 
                 if (tabIndex === tabs.length - 1) {
@@ -693,24 +1070,13 @@
                 currentTabIndex = tabIndex;
             }
 
-            // Initialize buttons state based on initial active tab
-            updateNavigationButtons(0);
-
-            // Set up tab change event listeners using Bootstrap's built-in events
-            const tabEls = document.querySelectorAll('button[data-bs-toggle="tab"]');
-            tabEls.forEach((tabEl, index) => {
-                tabEl.addEventListener('shown.bs.tab', function(event) {
-                    updateNavigationButtons(index);
-                });
-            });
+            // Initialize with first tab
+            showTab(0);
 
             // Previous button click
             prevTabBtn.addEventListener('click', function() {
                 if (currentTabIndex > 0) {
-                    // Activate previous tab using Bootstrap API
-                    const prevTab = new bootstrap.Tab(document.getElementById(
-                        `${tabs[currentTabIndex-1]}-tab`));
-                    prevTab.show();
+                    showTab(currentTabIndex - 1);
                 }
             });
 
@@ -742,10 +1108,7 @@
                 });
 
                 if (isValid && currentTabIndex < tabs.length - 1) {
-                    // Activate next tab using Bootstrap API
-                    const nextTab = new bootstrap.Tab(document.getElementById(
-                        `${tabs[currentTabIndex+1]}-tab`));
-                    nextTab.show();
+                    showTab(currentTabIndex + 1);
                 } else if (!isValid) {
                     // Focus on first invalid field
                     const firstInvalid = currentTabElement.querySelector('.is-invalid');
@@ -755,45 +1118,66 @@
                 }
             });
 
+            // Listen to Bootstrap's tab events to keep track of current tab
+            document.querySelectorAll('button[data-bs-toggle="tab"]').forEach((tab, index) => {
+                tab.addEventListener('shown.bs.tab', function(event) {
+                    currentTabIndex = index;
+
+                    // Update navigation buttons state
+                    prevTabBtn.style.display = currentTabIndex > 0 ? 'block' : 'none';
+
+                    if (currentTabIndex === tabs.length - 1) {
+                        nextTabBtn.style.display = 'none';
+                        submitBtn.style.display = 'block';
+                    } else {
+                        nextTabBtn.style.display = 'block';
+                        submitBtn.style.display = 'none';
+                    }
+                });
+            });
+
             // Form submission
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+            const form = document.getElementById('keluargaForm');
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    if (!form.checkValidity()) {
+                        event.preventDefault();
+                        event.stopPropagation();
 
-                    // Highlight missing required fields across all tabs
-                    document.querySelectorAll('[required]').forEach(function(input) {
-                        if (!input.value) {
-                            input.classList.add('is-invalid');
+                        // Highlight missing required fields across all tabs
+                        document.querySelectorAll('[required]').forEach(function(input) {
+                            if (!input.value) {
+                                input.classList.add('is-invalid');
 
-                            // Create error message if it doesn't exist
-                            if (!input.nextElementSibling || !input.nextElementSibling.classList
-                                .contains('invalid-feedback')) {
-                                const feedback = document.createElement('div');
-                                feedback.className = 'invalid-feedback';
-                                feedback.textContent = 'Field ini wajib diisi';
-                                input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                                // Create error message if it doesn't exist
+                                if (!input.nextElementSibling || !input.nextElementSibling.classList
+                                    .contains('invalid-feedback')) {
+                                    const feedback = document.createElement('div');
+                                    feedback.className = 'invalid-feedback';
+                                    feedback.textContent = 'Field ini wajib diisi';
+                                    input.parentNode.insertBefore(feedback, input
+                                        .nextElementSibling);
+                                }
+                            } else {
+                                input.classList.remove('is-invalid');
                             }
-                        } else {
-                            input.classList.remove('is-invalid');
-                        }
-                    });
+                        });
 
-                    // Find tab with first error and show it
-                    for (let i = 0; i < tabs.length; i++) {
-                        const tabElement = document.getElementById(tabs[i]);
-                        const invalidField = tabElement.querySelector('.is-invalid');
-
-                        if (invalidField) {
-                            // Activate tab with error using Bootstrap API
-                            const errorTab = new bootstrap.Tab(document.getElementById(`${tabs[i]}-tab`));
-                            errorTab.show();
-                            invalidField.focus();
-                            break;
+                        // Find tab with first error and show it
+                        for (let i = 0; i < tabs.length; i++) {
+                            const tabElement = document.getElementById(tabs[i]);
+                            if (tabElement) {
+                                const invalidField = tabElement.querySelector('.is-invalid');
+                                if (invalidField) {
+                                    showTab(i);
+                                    invalidField.focus();
+                                    break;
+                                }
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
 
             // Remove invalid class when input changes
             document.querySelectorAll('input, select, textarea').forEach(function(input) {

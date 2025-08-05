@@ -105,7 +105,10 @@ class Karyawan extends Model
     public function getMasaKerjaAttribute()
     {
         if ($this->TglMsk) {
-            return Carbon::parse($this->TglMsk)->diffForHumans(null, true);
+            $diff = Carbon::parse($this->TglMsk)->diffForHumans(null, true);
+
+            // Ganti "year" dan "years" menjadi "tahun"
+            return str_replace(['year', 'years'], 'tahun', $diff);
         }
         return null;
     }

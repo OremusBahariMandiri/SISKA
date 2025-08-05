@@ -360,7 +360,6 @@
                                                         </div>
                                                         <div class="form-text text-muted">
                                                             <i class="fas fa-info-circle me-1"></i>Format Email: testing@gmail.com
-
                                                         </div>
                                                     </div>
                                                 </div>
