@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Carbon\Carbon;
 
 class Karyawan extends Model
 {
     use HasFactory;
 
     protected $table = 'A04DmKaryawan';
-
 
     protected $fillable = [
         'IdKode',
@@ -97,7 +97,7 @@ class Karyawan extends Model
     public function getUmurAttribute()
     {
         if ($this->TanggalLhrKry) {
-            return \Carbon\Carbon::parse($this->TanggalLhrKry)->age;
+            return Carbon::parse($this->TanggalLhrKry)->age;
         }
         return null;
     }
@@ -105,8 +105,60 @@ class Karyawan extends Model
     public function getMasaKerjaAttribute()
     {
         if ($this->TglMsk) {
-            return \Carbon\Carbon::parse($this->TglMsk)->diffForHumans(null, true);
+            return Carbon::parse($this->TglMsk)->diffForHumans(null, true);
         }
         return null;
+    }
+
+    // Get complete address as a formatted string
+    public function getAlamatLengkapAttribute()
+    {
+        $alamat = $this->AlamatKry ?? '';
+
+        if ($this->RtRwKry) {
+            $alamat .= $alamat ? " RT/RW: {$this->RtRwKry}" : "RT/RW: {$this->RtRwKry}";
+        }
+
+        if ($this->KelurahanKry) {
+            $alamat .= $alamat ? ", {$this->KelurahanKry}" : $this->KelurahanKry;
+        }
+
+        if ($this->KecamatanKry) {
+            $alamat .= $alamat ? ", {$this->KecamatanKry}" : $this->KecamatanKry;
+        }
+
+        if ($this->KotaKry) {
+            $alamat .= $alamat ? ", {$this->KotaKry}" : $this->KotaKry;
+        }
+
+        if ($this->ProvinsiKry) {
+            $alamat .= $alamat ? ", {$this->ProvinsiKry}" : $this->ProvinsiKry;
+        }
+
+        return $alamat;
+    }
+
+    // Prepare date for form display
+    public function getFormattedTglMskAttribute()
+    {
+        if (!$this->TglMsk) {
+            return '';
+        }
+
+        return $this->TglMsk->format('d/m/Y');
+    }
+
+    // Method for API serialization to include all needed attributes
+    public function toArray()
+    {
+        $array = parent::toArray();
+
+        // Add computed attributes
+        $array['umur'] = $this->getUmurAttribute();
+        $array['masa_kerja'] = $this->getMasaKerjaAttribute();
+        $array['alamat_lengkap'] = $this->getAlamatLengkapAttribute();
+        $array['formatted_tgl_msk'] = $this->getFormattedTglMskAttribute();
+
+        return $array;
     }
 }

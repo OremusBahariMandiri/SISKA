@@ -175,12 +175,12 @@
                                                                 required>
                                                                 <option value="" disabled>Pilih Jenis Kelamin
                                                                 </option>
-                                                                <option value="Laki-laki"
-                                                                    {{ old('SexKry', $karyawan->SexKry) == 'Laki-laki' ? 'selected' : '' }}>
-                                                                    Laki-laki</option>
-                                                                <option value="Perempuan"
-                                                                    {{ old('SexKry', $karyawan->SexKry) == 'Perempuan' ? 'selected' : '' }}>
-                                                                    Perempuan</option>
+                                                                <option value="LAKI-LAKI"
+                                                                    {{ old('SexKry', $karyawan->SexKry) == 'LAKI-LAKI' ? 'selected' : '' }}>
+                                                                    LAKI-LAKI</option>
+                                                                <option value="PEREMPUAN"
+                                                                    {{ old('SexKry', $karyawan->SexKry) == 'PEREMPUAN' ? 'selected' : '' }}>
+                                                                    PEREMPUAN</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -195,27 +195,27 @@
                                                             <select class="form-select" id="AgamaKry" name="AgamaKry"
                                                                 required>
                                                                 <option value="" disabled>Pilih Agama</option>
-                                                                <option value="Islam"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Islam' ? 'selected' : '' }}>
-                                                                    Islam</option>
-                                                                <option value="Kristen"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Kristen' ? 'selected' : '' }}>
-                                                                    Kristen</option>
-                                                                <option value="Katolik"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Katolik' ? 'selected' : '' }}>
-                                                                    Katolik</option>
-                                                                <option value="Hindu"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Hindu' ? 'selected' : '' }}>
-                                                                    Hindu</option>
-                                                                <option value="Buddha"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Buddha' ? 'selected' : '' }}>
-                                                                    Buddha</option>
-                                                                <option value="Konghucu"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Konghucu' ? 'selected' : '' }}>
-                                                                    Konghucu</option>
-                                                                <option value="Lainnya"
-                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'Lainnya' ? 'selected' : '' }}>
-                                                                    Lainnya</option>
+                                                                <option value="ISLAM"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'ISLAM' ? 'selected' : '' }}>
+                                                                    ISLAM</option>
+                                                                <option value="KRISTEN"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'KRISTEN' ? 'selected' : '' }}>
+                                                                    KRISTEN</option>
+                                                                <option value="KATOLIK"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'KATOLIK' ? 'selected' : '' }}>
+                                                                    KATOLIK</option>
+                                                                <option value="HINDU"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'HINDU' ? 'selected' : '' }}>
+                                                                    HINDU</option>
+                                                                <option value="BUDDHA"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'BUDDHA' ? 'selected' : '' }}>
+                                                                    BUDDHA</option>
+                                                                <option value="KONGHUCU"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'KONGHUCU' ? 'selected' : '' }}>
+                                                                    KONGHUCU</option>
+                                                                <option value="LAINYA"
+                                                                    {{ old('AgamaKry', $karyawan->AgamaKry) == 'LAINYA' ? 'selected' : '' }}>
+                                                                    LAINYA</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -230,18 +230,18 @@
                                                             <select class="form-select" id="StsKawinKry"
                                                                 name="StsKawinKry" required>
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Belum Kawin"
-                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Belum Kawin' ? 'selected' : '' }}>
-                                                                    Belum Kawin</option>
-                                                                <option value="Kawin"
-                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Kawin' ? 'selected' : '' }}>
-                                                                    Kawin</option>
-                                                                <option value="Cerai Hidup"
-                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Hidup' ? 'selected' : '' }}>
-                                                                    Cerai Hidup</option>
-                                                                <option value="Cerai Mati"
-                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'Cerai Mati' ? 'selected' : '' }}>
-                                                                    Cerai Mati</option>
+                                                                <option value="BELUM KAWIN"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'BELUM KAWIN' ? 'selected' : '' }}>
+                                                                    BELUM KAWIN</option>
+                                                                <option value="KAWIN"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'KAWIN' ? 'selected' : '' }}>
+                                                                    KAWIN</option>
+                                                                <option value="CERAI HIDUP"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'CERAI HIDUP' ? 'selected' : '' }}>
+                                                                    CERAI HIDUP</option>
+                                                                <option value="CERAI MATI"
+                                                                    {{ old('StsKawinKry', $karyawan->StsKawinKry) == 'CERAI MATI' ? 'selected' : '' }}>
+                                                                    CERAI MATI</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -256,21 +256,21 @@
                                                             <select class="form-select" id="StsKeluargaKry"
                                                                 name="StsKeluargaKry">
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Suami"
-                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Suami' ? 'selected' : '' }}>
-                                                                    Suami</option>
-                                                                <option value="Istri"
-                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Istri' ? 'selected' : '' }}>
-                                                                    Istri</option>
-                                                                <option value="Bapak"
-                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Bapak' ? 'selected' : '' }}>
-                                                                    Bapak</option>
-                                                                <option value="Ibu"
-                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Ibu' ? 'selected' : '' }}>
-                                                                    Ibu</option>
-                                                                <option value="Anak"
-                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'Anak' ? 'selected' : '' }}>
-                                                                    Anak</option>
+                                                                <option value="SUAMI"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'SUAMI' ? 'selected' : '' }}>
+                                                                    SUAMI</option>
+                                                                <option value="ISTRI"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'ISTRI' ? 'selected' : '' }}>
+                                                                    ISTRI</option>
+                                                                <option value="BAPAK"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'BAPAK' ? 'selected' : '' }}>
+                                                                    BAPAK</option>
+                                                                <option value="IBU"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'IBU' ? 'selected' : '' }}>
+                                                                    IBU</option>
+                                                                <option value="ANAK"
+                                                                    {{ old('StsKeluargaKry', $karyawan->StsKeluargaKry) == 'ANAK' ? 'selected' : '' }}>
+                                                                    ANAK</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -627,21 +627,21 @@
                                                             <select class="form-select" id="StsKaryawan"
                                                                 name="StsKaryawan" required>
                                                                 <option value="" disabled>Pilih Status</option>
-                                                                <option value="Aktif"
-                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Aktif' ? 'selected' : '' }}>
-                                                                    Aktif</option>
-                                                                <option value="Pensiun"
-                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Pensiun' ? 'selected' : '' }}>
-                                                                    Pensiun</option>
-                                                                <option value="Mengundurkan Diri"
-                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Mengundurkan Diri' ? 'selected' : '' }}>
-                                                                    Mengundurkan Diri</option>
-                                                                <option value="Dikeluarkan"
-                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Dikeluarkan' ? 'selected' : '' }}>
-                                                                    Dikeluarkan</option>
-                                                                <option value="Meninggal"
-                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'Meninggal' ? 'selected' : '' }}>
-                                                                    Meninggal</option>
+                                                                <option value="AKTIF"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'AKTIF' ? 'selected' : '' }}>
+                                                                    AKTIF</option>
+                                                                <option value="PENSIUN"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'PENSIUN' ? 'selected' : '' }}>
+                                                                    PENSIUN</option>
+                                                                <option value="MENGUNDURKAN DIRI"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'MENGUNDURKAN DIRI' ? 'selected' : '' }}>
+                                                                    MENGUNDURKAN DIRI</option>
+                                                                <option value="DIKELUARKAN"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'DIKELUARKAN' ? 'selected' : '' }}>
+                                                                    DIKELUARKAN</option>
+                                                                <option value="MENINGGAL"
+                                                                    {{ old('StsKaryawan', $karyawan->StsKaryawan) == 'MENINGGAL' ? 'selected' : '' }}>
+                                                                    MENINGGAL</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -649,7 +649,7 @@
                                             </div>
 
                                             <div id="nonActiveFields"
-                                                class="{{ $karyawan->StsKaryawan != 'Aktif' ? '' : 'd-none' }}">
+                                                class="{{ $karyawan->StsKaryawan != 'AKTIF' ? '' : 'd-none' }}">
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="form-group mb-3">
@@ -1018,7 +1018,7 @@
             const nonActiveFields = document.getElementById('nonActiveFields');
 
             function toggleNonActiveFields() {
-                if (statusSelect.value !== 'Aktif' && statusSelect.value !== '') {
+                if (statusSelect.value !== 'AKTIF' && statusSelect.value !== '') {
                     nonActiveFields.classList.remove('d-none');
                 } else {
                     nonActiveFields.classList.add('d-none');
