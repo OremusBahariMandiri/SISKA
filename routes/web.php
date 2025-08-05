@@ -57,8 +57,8 @@ Route::middleware(['auth'])->group(function () {
 
     //Keluarga Karyawan Route
     Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
-    Route::get('keluarga-by-karyawan/{karyawanId}', [KeluargaKaryawanController::class, 'getByKaryawan'])->name('keluarga.by.karyawan');
-    Route::get('karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])->name('karyawan.detail');
+    Route::get('/keluarga-karyawan/get-karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])
+    ->name('keluarga-karyawan.get-karyawan-detail');
 
     //Kategori Dokumen Route
     Route::resource('kategori-dokumen', KategoriDokumenController::class);

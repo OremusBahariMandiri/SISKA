@@ -272,8 +272,9 @@ class KeluargaKaryawanController extends Controller
         return response()->json($keluargaKaryawans);
     }
 
+
     /**
-     * Get karyawan detail by ID for form dropdowns.
+     * Get karyawan detail by IdKode for form dropdowns.
      *
      * @param string $id
      * @return \Illuminate\Http\JsonResponse
@@ -281,11 +282,50 @@ class KeluargaKaryawanController extends Controller
     public function getKaryawanDetail($id)
     {
         try {
-            $karyawan = Karyawan::with(['departemen', 'jabatan'])
-                ->findOrFail($id);
+            // Log the received ID parameter for debugging
+            \Log::info('Received karyawan IdKode: ' . $id);
 
-            return response()->json($karyawan);
+            // Find by IdKode, not by id
+            $karyawan = Karyawan::where('IdKode', $id)->firstOrFail();
+
+            // Format the response data for the form
+            $response = [
+                'IdKode' => $karyawan->IdKode,
+                'NrkKry' => $karyawan->NrkKry,
+                'formatted_tgl_msk' => $karyawan->formatted_tgl_msk,
+                'NikKtp' => $karyawan->NikKtp,
+                'TempatLhrKry' => $karyawan->TempatLhrKry,
+                'TanggalLhrKry' => $karyawan->TanggalLhrKry,
+                'RtRwKry' => $karyawan->TanggalLhrKry,
+                'KelurahanKry' => $karyawan->KelurahanKry,
+                'KecamatanKry' => $karyawan->KecamatanKry,
+                'KotaKry' => $karyawan->KotaKry,
+                'ProvinsiKry' => $karyawan->ProvinsiKry,
+                'AgamaKry' => $karyawan->AgamaKry,
+                'StsKawinKry' => $karyawan->StsKawinKry,
+                'StsKeluargaKry' => $karyawan->StsKeluargaKry,
+                'JumlahAnakKry' => $karyawan->JumlahAnakKry ?? 0,
+                'PekerjaanKry' => $karyawan->PekerjaanKry,
+                'WargaNegaraKry' => $karyawan->WargaNegaraKry,
+                'EmailKry' => $karyawan->EmailKry,
+                'InstagramKry' => $karyawan->InstagramKry,
+                'Telpon1Kry' => $karyawan->Telpon1Kry,
+                'Telpon2Kry' => $karyawan->Telpon2Kry,
+                'DomisiliKry' => $karyawan->DomisiliKry,
+                'PendidikanTrhKry' => $karyawan->PendidikanTrhKry,
+                'InstitusiPdkKry' => $karyawan->InstitusiPdkKry,
+                'JurusanPdkKry' => $karyawan->JurusanPdkKry,
+                'TahunLlsKry' => $karyawan->TahunLlsKry,
+                'GelarPdkKry' => $karyawan->GelarPdkKry,
+                'StsKaryawan' => $karyawan->StsKaryawan,
+                'umur' => $karyawan->umur ? "{$karyawan->umur} tahun" : '',
+                'masa_kerja' => $karyawan->masa_kerja,
+                'AlamatKry' => $karyawan->alamat_lengkap,
+            ];
+
+            return response()->json($response);
         } catch (\Exception $e) {
+            \Log::error('Error in getKaryawanDetail: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Karyawan tidak ditemukan',
                 'error' => $e->getMessage()

@@ -38,19 +38,20 @@
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="info-kontak-tab" data-bs-toggle="tab"
-                                    data-bs-target="#info-kontak" type="button" role="tab" aria-controls="info-kontak"
-                                    aria-selected="false">
-                                    <i class="fas fa-phone me-1"></i> Kontak
-                                </button>
-                            </li>
-                            <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="info-pendidikan-tab" data-bs-toggle="tab"
                                     data-bs-target="#info-pendidikan" type="button" role="tab"
                                     aria-controls="info-pendidikan" aria-selected="false">
                                     <i class="fas fa-graduation-cap me-1"></i> Pendidikan
                                 </button>
                             </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="info-kontak-tab" data-bs-toggle="tab"
+                                    data-bs-target="#info-kontak" type="button" role="tab" aria-controls="info-kontak"
+                                    aria-selected="false">
+                                    <i class="fas fa-phone me-1"></i> Kontak
+                                </button>
+                            </li>
+
                         </ul>
 
                         <!-- Tab panes -->
@@ -442,7 +443,7 @@
                                             </div>
                                         @else
                                             <div class="row">
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     @if ($keluargaKaryawan->PendidikanTrhKlg)
                                                         <div class="info-group mb-3">
                                                             <label class="info-label fw-bold">Pendidikan Terakhir</label>
@@ -501,7 +502,7 @@
                                                     @endif
                                                 </div>
 
-                                                <div class="col-md-6">
+                                                <div class="col-md-12">
                                                     @if ($keluargaKaryawan->InstitusiPdkKlg)
                                                         <div class="info-group mb-3">
                                                             <label class="info-label fw-bold">Institusi</label>
