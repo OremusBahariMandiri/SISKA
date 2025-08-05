@@ -25,6 +25,13 @@
                             </div>
                         @endif
 
+                        <!-- Alert for validation errors -->
+                        <div class="alert alert-danger" id="validationAlert" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span>Mohon periksa kembali form. Beberapa field wajib belum diisi dengan benar.</span>
+                            <ul id="validationMessages" class="mt-2 mb-0"></ul>
+                        </div>
+
                         <form action="{{ route('karyawan.update', $karyawan->id) }}" method="POST" id="karyawanForm"
                             enctype="multipart/form-data">
                             @csrf
@@ -98,6 +105,7 @@
                                                                 name="TglMsk"
                                                                 value="{{ old('TglMsk', $karyawan->TglMsk ? $karyawan->TglMsk->format('Y-m-d') : '') }}">
                                                         </div>
+                                                        <div id="masaKerjaInfo" class="form-text text-muted mt-1"></div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-12">
@@ -159,6 +167,7 @@
                                                                 value="{{ old('TanggalLhrKry', $karyawan->TanggalLhrKry ? $karyawan->TanggalLhrKry->format('Y-m-d') : '') }}"
                                                                 required>
                                                         </div>
+                                                        <div id="usiaInfo" class="form-text text-muted mt-1"></div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -357,6 +366,10 @@
                                                             <input type="email" class="form-control" id="EmailKry"
                                                                 name="EmailKry"
                                                                 value="{{ old('EmailKry', $karyawan->EmailKry) }}">
+                                                        </div>
+                                                        <div class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>Format Email: testing@gmail.com
+
                                                         </div>
                                                     </div>
                                                 </div>
@@ -751,7 +764,7 @@
                                     <button type="button" id="nextTabBtn" class="btn btn-primary me-2">
                                         Selanjutnya <i class="fas fa-arrow-right ms-1"></i>
                                     </button>
-                                    <button type="submit" id="submitBtn" class="btn btn-success"
+                                    <button type="button" id="submitBtn" class="btn btn-success"
                                         style="display: none;">
                                         <i class="fas fa-save me-1"></i> Update Data
                                     </button>
@@ -759,6 +772,25 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Update Data</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menyimpan perubahan data karyawan ini?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubmit">Ya, Simpan</button>
                 </div>
             </div>
         </div>
@@ -852,6 +884,22 @@
             background-position: right 0.75rem center, center right 2.25rem;
             background-size: 16px 12px, calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
         }
+
+        /* Age info and work duration styles */
+        #usiaInfo, #masaKerjaInfo {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        /* Styling for validation alert */
+        #validationAlert {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        #validationMessages {
+            margin-top: 10px;
+        }
     </style>
 @endpush
 
@@ -860,6 +908,10 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Form validation with visual feedback
             const form = document.getElementById('karyawanForm');
+            const validationAlert = document.getElementById('validationAlert');
+            const validationMessages = document.getElementById('validationMessages');
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            const confirmSubmitBtn = document.getElementById('confirmSubmit');
 
             // Tab navigation variables
             const tabs = ['biodata', 'alamat', 'pendidikan', 'tambahan'];
@@ -960,29 +1012,57 @@
                 });
             });
 
-            // Form submission
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+            // Submit button click - Show confirmation modal
+            submitBtn.addEventListener('click', function(event) {
+                // Validate all required fields before showing confirmation
+                let isValid = true;
+                const invalidFieldsList = [];
 
-                    // Highlight missing required fields across all tabs
-                    document.querySelectorAll('[required]').forEach(function(input) {
-                        if (!input.value) {
-                            input.classList.add('is-invalid');
+                // Check all required fields across all tabs
+                document.querySelectorAll('[required]').forEach(function(input) {
+                    if (!input.value) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
 
-                            // Create error message if it doesn't exist
-                            if (!input.nextElementSibling || !input.nextElementSibling.classList
-                                .contains('invalid-feedback')) {
-                                const feedback = document.createElement('div');
-                                feedback.className = 'invalid-feedback';
-                                feedback.textContent = 'Field ini wajib diisi';
-                                input.parentNode.insertBefore(feedback, input.nextElementSibling);
-                            }
-                        } else {
-                            input.classList.remove('is-invalid');
+                        // Get field label for error message
+                        let fieldName = "";
+                        const label = input.closest('.form-group').querySelector('label');
+                        if (label) {
+                            fieldName = label.textContent.replace('*', '').trim();
                         }
+
+                        invalidFieldsList.push(fieldName);
+
+                        // Create error message if it doesn't exist
+                        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('invalid-feedback')) {
+                            const feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            feedback.textContent = 'Field ini wajib diisi';
+                            input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                        }
+                    } else {
+                        input.classList.remove('is-invalid');
+                    }
+                });
+
+                // Additional validation for NIK KTP (must be 16 digits)
+                const nikKtp = document.getElementById('NikKtp');
+                if (nikKtp.value && nikKtp.value.length !== 16) {
+                    isValid = false;
+                    nikKtp.classList.add('is-invalid');
+                    invalidFieldsList.push('NIK KTP (harus 16 digit)');
+                }
+
+                if (!isValid) {
+                    // Show validation error alert
+                    validationMessages.innerHTML = '';
+                    invalidFieldsList.forEach(function(field) {
+                        const li = document.createElement('li');
+                        li.textContent = field;
+                        validationMessages.appendChild(li);
                     });
+
+                    validationAlert.style.display = 'block';
 
                     // Find tab with first error and show it
                     for (let i = 0; i < tabs.length; i++) {
@@ -995,7 +1075,21 @@
                             break;
                         }
                     }
+
+                    // Scroll to the validation alert
+                    validationAlert.scrollIntoView({behavior: 'smooth'});
+                } else {
+                    // Hide validation alert if shown previously
+                    validationAlert.style.display = 'none';
+
+                    // Show confirmation modal
+                    confirmationModal.show();
                 }
+            });
+
+            // Confirm submit button click - Submit the form
+            confirmSubmitBtn.addEventListener('click', function() {
+                form.submit();
             });
 
             // Remove invalid class when input changes
@@ -1004,11 +1098,23 @@
                     if (this.hasAttribute('required') && this.value) {
                         this.classList.remove('is-invalid');
                     }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
+                    }
                 });
 
                 input.addEventListener('change', function() {
                     if (this.hasAttribute('required') && this.value) {
                         this.classList.remove('is-invalid');
+                    }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
                     }
                 });
             });
@@ -1027,6 +1133,127 @@
 
             statusSelect.addEventListener('change', toggleNonActiveFields);
             toggleNonActiveFields(); // Initial state
+
+            // Age calculation function
+            const tanggalLahirInput = document.getElementById('TanggalLhrKry');
+            const usiaInfo = document.getElementById('usiaInfo');
+
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birthDateObj = new Date(birthDate);
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            function updateAge() {
+                if (tanggalLahirInput.value) {
+                    const age = calculateAge(tanggalLahirInput.value);
+                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+
+                    // Add color coding for age
+                    if (age < 17) {
+                        usiaInfo.classList.add('text-danger');
+                        usiaInfo.classList.remove('text-muted', 'text-success', 'text-warning');
+                    } else if (age >= 17 && age < 25) {
+                        usiaInfo.classList.add('text-success');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-warning');
+                    } else if (age >= 25 && age < 55) {
+                        usiaInfo.classList.add('text-primary');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-warning');
+                    } else {
+                        usiaInfo.classList.add('text-warning');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-primary');
+                    }
+                } else {
+                    usiaInfo.innerHTML = '';
+                    usiaInfo.className = 'form-text text-muted mt-1';
+                }
+            }
+
+            tanggalLahirInput.addEventListener('change', updateAge);
+            tanggalLahirInput.addEventListener('input', updateAge);
+
+            // Run once on page load if a date is already set
+            if (tanggalLahirInput.value) {
+                updateAge();
+            }
+
+            // Work duration calculation
+            const tanggalMasukInput = document.getElementById('TglMsk');
+            const masaKerjaInfo = document.getElementById('masaKerjaInfo');
+
+            function calculateWorkDuration(startDate) {
+                const today = new Date();
+                const startDateObj = new Date(startDate);
+
+                let years = today.getFullYear() - startDateObj.getFullYear();
+                let months = today.getMonth() - startDateObj.getMonth();
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                return { years, months };
+            }
+
+            function updateWorkDuration() {
+                if (tanggalMasukInput.value) {
+                    const duration = calculateWorkDuration(tanggalMasukInput.value);
+
+                    let durationText = '';
+                    if (duration.years > 0) {
+                        durationText += `${duration.years} tahun`;
+                    }
+
+                    if (duration.months > 0) {
+                        if (durationText) {
+                            durationText += ` ${duration.months} bulan`;
+                        } else {
+                            durationText += `${duration.months} bulan`;
+                        }
+                    }
+
+                    if (!durationText) {
+                        durationText = 'Kurang dari 1 bulan';
+                    }
+
+                    masaKerjaInfo.innerHTML = `<i class="fas fa-business-time me-1"></i>Masa Kerja: <strong>${durationText}</strong>`;
+
+                    // Add color coding for work duration
+                    if (duration.years < 1) {
+                        masaKerjaInfo.classList.add('text-info');
+                        masaKerjaInfo.classList.remove('text-muted', 'text-success', 'text-warning', 'text-primary');
+                    } else if (duration.years >= 1 && duration.years < 3) {
+                        masaKerjaInfo.classList.add('text-primary');
+                        masaKerjaInfo.classList.remove('text-muted', 'text-info', 'text-success', 'text-warning');
+                    } else if (duration.years >= 3 && duration.years < 10) {
+                        masaKerjaInfo.classList.add('text-success');
+                        masaKerjaInfo.classList.remove('text-muted', 'text-info', 'text-primary', 'text-warning');
+                    } else {
+                        masaKerjaInfo.classList.add('text-warning');
+                        masaKerjaInfo.classList.remove('text-muted', 'text-info', 'text-primary', 'text-success');
+                    }
+                } else {
+                    masaKerjaInfo.innerHTML = '';
+                    masaKerjaInfo.className = 'form-text text-muted mt-1';
+                }
+            }
+
+            tanggalMasukInput.addEventListener('change', updateWorkDuration);
+            tanggalMasukInput.addEventListener('input', updateWorkDuration);
+
+            // Run once on page load if a date is already set
+            if (tanggalMasukInput.value) {
+                updateWorkDuration();
+            }
 
             // Preview uploaded image file before submission
             document.getElementById('FileDokKry').addEventListener('change', function(e) {
@@ -1088,4 +1315,4 @@
             });
         });
     </script>
-@endpush
+@endpushƒ

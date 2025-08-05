@@ -27,14 +27,14 @@
                                 <button class="nav-link active" id="info-utama-tab" data-bs-toggle="tab"
                                     data-bs-target="#info-utama" type="button" role="tab" aria-controls="info-utama"
                                     aria-selected="true">
-                                    <i class="fas fa-user me-1"></i> Informasi Utama
+                                    <i class="fas fa-user me-1"></i> Informasi Karyawan
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="info-pribadi-tab" data-bs-toggle="tab"
                                     data-bs-target="#info-pribadi" type="button" role="tab"
                                     aria-controls="info-pribadi" aria-selected="false">
-                                    <i class="fas fa-id-card me-1"></i> Informasi Pribadi
+                                    <i class="fas fa-id-card me-1"></i> Informasi Keluarga
                                 </button>
                             </li>
                             <li class="nav-item" role="presentation">
@@ -61,7 +61,7 @@
                                 aria-labelledby="info-utama-tab">
                                 <div class="card border-secondary mb-4">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Utama</h5>
+                                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
@@ -174,7 +174,7 @@
                                 aria-labelledby="info-pribadi-tab">
                                 <div class="card border-secondary mb-4">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Informasi Pribadi</h5>
+                                        <h5 class="mb-0"><i class="fas fa-id-card me-2"></i>Informasi Keluarga</h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="row">

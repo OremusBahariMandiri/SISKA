@@ -35,22 +35,23 @@ class KeluargaKaryawanController extends Controller
         $karyawans = Karyawan::orderBy('NamaKry')->get();
 
         // Status keluarga options
-        $statusKeluargaOptions = ['Suami', 'Istri', 'Anak', 'Bapak', 'Ibu'];
+        $statusKeluargaOptions = ['SUAMI', 'ISTRI', 'BAPAK', 'IBU', 'ANAK'];
 
         // Agama options
-        $agamaOptions = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Lainnya'];
+        $agamaOptions = ['ISLAM', 'KRISTEN', 'KATOLIK', 'HINDU', 'BUDDHA', 'KONGHUCU', 'LAINYA'];
 
         // Status Kawin options
-        $statusKawinOptions = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
+        $statusKawinOptions = ['BELUM KAWIN', 'KAWIN', 'CERAI HIDUP', 'CERAI MATI'];
 
         // Jenis kelamin options
-        $jenisKelaminOptions = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
+        $jenisKelaminOptions = ['L' => 'LAKI-LAKI', 'P' => 'PEREMPUAN'];
 
         // Pendidikan options
         $pendidikanOptions = [
             'SD' => 'SD',
-            'SMP' => 'SMP/Sederajat',
-            'SMA' => 'SMA/Sederajat',
+            'SMP' => 'SMP',
+            'SMA' => 'SMA',
+            'SMK' => 'SMK',
             'D1' => 'D1',
             'D2' => 'D2',
             'D3' => 'D3',
@@ -155,22 +156,23 @@ class KeluargaKaryawanController extends Controller
         $karyawans = Karyawan::orderBy('NamaKry')->get();
 
         // Status keluarga options
-        $statusKeluargaOptions = ['Suami', 'Istri', 'Anak', 'Bapak', 'Ibu'];
+        $statusKeluargaOptions = ['SUAMI', 'ISTRI', 'BAPAK', 'IBU', 'ANAK'];
 
         // Agama options
-        $agamaOptions = ['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Lainnya'];
+        $agamaOptions = ['ISLAM', 'KRISTEN', 'KATOLIK', 'HINDU', 'BUDDHA', 'KONGHUCU', 'LAINYA'];
 
         // Status Kawin options
-        $statusKawinOptions = ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'];
+        $statusKawinOptions = ['BELUM KAWIN', 'KAWIN', 'CERAI HIDUP', 'CERAI MATI'];
 
         // Jenis kelamin options
-        $jenisKelaminOptions = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
+        $jenisKelaminOptions = ['L' => 'LAKI-LAKI', 'P' => 'PEREMPUAN'];
 
         // Pendidikan options
         $pendidikanOptions = [
             'SD' => 'SD',
-            'SMP' => 'SMP/Sederajat',
-            'SMA' => 'SMA/Sederajat',
+            'SMP' => 'SMP',
+            'SMA' => 'SMA',
+            'SMK' => 'SMK',
             'D1' => 'D1',
             'D2' => 'D2',
             'D3' => 'D3',
