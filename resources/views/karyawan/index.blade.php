@@ -36,7 +36,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th width="12%">NRK</th>
+                                        <th width="7%">NRK</th>
                                         <th>Nama</th>
                                         <th>Tempat Lahir</th>
                                         <th>Tanggal Lahir</th>
