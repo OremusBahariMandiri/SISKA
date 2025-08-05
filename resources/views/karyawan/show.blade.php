@@ -502,16 +502,16 @@
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-user-check"></i></span>
                                                             <div class="form-control">
-                                                                @if ($karyawan->StsKaryawan == 'Aktif')
-                                                                    <span class="badge bg-success">Aktif</span>
-                                                                @elseif ($karyawan->StsKaryawan == 'Pensiun')
-                                                                    <span class="badge bg-info">Pensiun</span>
-                                                                @elseif ($karyawan->StsKaryawan == 'Mengundurkan Diri')
-                                                                    <span class="badge bg-warning">Mengundurkan Diri</span>
-                                                                @elseif ($karyawan->StsKaryawan == 'Dikeluarkan')
-                                                                    <span class="badge bg-danger">Dikeluarkan</span>
-                                                                @elseif ($karyawan->StsKaryawan == 'Meninggal')
-                                                                    <span class="badge bg-secondary">Meninggal</span>
+                                                                @if ($karyawan->StsKaryawan == 'AKTIF')
+                                                                    <span class="badge bg-success">AKTIF</span>
+                                                                @elseif ($karyawan->StsKaryawan == 'PENSIUN')
+                                                                    <span class="badge bg-info">PENSIUN</span>
+                                                                @elseif ($karyawan->StsKaryawan == 'MENGUNDURKAN DIRI')
+                                                                    <span class="badge bg-warning">MENGUNDURKAN DIRI</span>
+                                                                @elseif ($karyawan->StsKaryawan == 'DIKELUARKAN')
+                                                                    <span class="badge bg-danger">DIKELUARKAN</span>
+                                                                @elseif ($karyawan->StsKaryawan == 'MENINGGAL')
+                                                                    <span class="badge bg-secondary">MENINGGAL</span>
                                                                 @else
                                                                     <span
                                                                         class="badge bg-dark">{{ $karyawan->StsKaryawan }}</span>
@@ -523,7 +523,7 @@
                                             </div>
                                         </div>
 
-                                        @if ($karyawan->StsKaryawan != 'Aktif')
+                                        @if ($karyawan->StsKaryawan != 'AKTIF')
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <div class="info-group mb-3">

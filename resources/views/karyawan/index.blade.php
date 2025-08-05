@@ -94,16 +94,16 @@
                                             </td>
                                             <td>{{ $workDuration }}</td>
                                             <td class="text-center">
-                                                @if ($karyawan->StsKaryawan == 'Aktif')
-                                                    <span class="badge bg-success">Aktif</span>
-                                                @elseif ($karyawan->StsKaryawan == 'Pensiun')
-                                                    <span class="badge bg-info">Pensiun</span>
-                                                @elseif ($karyawan->StsKaryawan == 'Mengundurkan Diri')
-                                                    <span class="badge bg-warning">Mengundurkan Diri</span>
-                                                @elseif ($karyawan->StsKaryawan == 'Dikeluarkan')
-                                                    <span class="badge bg-danger">Dikeluarkan</span>
-                                                @elseif ($karyawan->StsKaryawan == 'Meninggal')
-                                                    <span class="badge bg-secondary">Meninggal</span>
+                                                @if ($karyawan->StsKaryawan == 'AKTIF')
+                                                    <span class="badge bg-success">AKTIF</span>
+                                                @elseif ($karyawan->StsKaryawan == 'PENSIUN')
+                                                    <span class="badge bg-info">PENSIUN</span>
+                                                @elseif ($karyawan->StsKaryawan == 'MENGUNDURKAN DIRI')
+                                                    <span class="badge bg-warning">MENGUNDURKAN DIRI</span>
+                                                @elseif ($karyawan->StsKaryawan == 'DIKELUARKAN')
+                                                    <span class="badge bg-danger">DIKELUARKAN</span>
+                                                @elseif ($karyawan->StsKaryawan == 'MENINGGAL')
+                                                    <span class="badge bg-secondary">MENINGGAL</span>
                                                 @else
                                                     <span class="badge bg-dark">{{ $karyawan->StsKaryawan }}</span>
                                                 @endif
