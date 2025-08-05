@@ -423,6 +423,27 @@
                                                 </div>
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
+                                                        <label for="KetKeluargaKry"
+                                                            class="form-label fw-bold">Keterangan</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-sticky-note"></i></span>
+                                                            <input type="text"
+                                                                class="form-control @error('KetKeluargaKry') is-invalid @enderror"
+                                                                id="KetKeluargaKry" name="KetKeluargaKry"
+                                                                value="{{ old('KetKeluargaKry', $keluargaKaryawan->KetKeluargaKry) }}">
+                                                            @error('KetKeluargaKry')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                        <div class="form-text">
+                                                            <i class="fas fa-info-circle me-1"></i>Misalnya: Anak ke-1,
+                                                            dll.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
                                                         <label for="AlamatKtpKlg" class="form-label fw-bold">Alamat
                                                             KTP</label>
                                                         <div class="input-group">
@@ -436,6 +457,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="DomisiliKlg" class="form-label fw-bold">Alamat
@@ -486,27 +508,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <div class="form-group mb-3">
-                                                        <label for="KetKeluargaKry"
-                                                            class="form-label fw-bold">Keterangan</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-sticky-note"></i></span>
-                                                            <input type="text"
-                                                                class="form-control @error('KetKeluargaKry') is-invalid @enderror"
-                                                                id="KetKeluargaKry" name="KetKeluargaKry"
-                                                                value="{{ old('KetKeluargaKry', $keluargaKaryawan->KetKeluargaKry) }}">
-                                                            @error('KetKeluargaKry')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                        <div class="form-text">
-                                                            <i class="fas fa-info-circle me-1"></i>Misalnya: Anak ke-1,
-                                                            dll.
-                                                        </div>
-                                                    </div>
-                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
