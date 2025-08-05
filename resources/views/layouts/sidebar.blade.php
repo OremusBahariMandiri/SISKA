@@ -123,7 +123,7 @@
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <div class="menu-icon-text">
                                 <i class="fas fa-file-alt"></i>
-                                <span class="nav-text">Manajemen Dokumen</span>
+                                <span class="nav-text">Dokumen</span>
                             </div>
                             <i class="fas fa-chevron-down submenu-indicator {{ $dokumenActive ? 'rotated' : '' }}"></i>
                         </div>
@@ -135,7 +135,7 @@
                                 <a class="submenu-link {{ request()->is('dokumen-karyawan*') ? 'active' : '' }}"
                                     href="{{ route('dokumen-karyawan.index') }}">
                                     <i class="fas fa-file-contract"></i>
-                                    <span>Dokumen Karyawan</span>
+                                    <span>Karyawan</span>
                                 </a>
                             </li>
                         @endif
@@ -146,7 +146,7 @@
                                 <a class="submenu-link {{ request()->is('dokumen-kontrak*') ? 'active' : '' }}"
                                     href="{{ route('dokumen-kontrak.index') }}">
                                     <i class="fas fa-handshake"></i>
-                                    <span>Dokumen Kontrak</span>
+                                    <span>Kontrak Kerja</span>
                                 </a>
                             </li>
                         @endif
@@ -157,7 +157,7 @@
                                 <a class="submenu-link {{ request()->is('dokumen-karir*') ? 'active' : '' }}"
                                     href="{{ route('dokumen-karir.index') }}">
                                     <i class="fas fa-chart-line"></i>
-                                    <span>Dokumen Karir</span>
+                                    <span>Jenjang Karir</span>
                                 </a>
                             </li>
                         @endif
@@ -168,7 +168,7 @@
                                 <a class="submenu-link {{ request()->is('dokumen-legalitas*') ? 'active' : '' }}"
                                     href="{{ route('dokumen-legalitas.index') }}">
                                     <i class="fas fa-gavel"></i>
-                                    <span>Dokumen Legalitas</span>
+                                    <span>Legalitas & Kebijakan</span>
                                 </a>
                             </li>
                         @endif
