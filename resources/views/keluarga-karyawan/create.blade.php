@@ -319,6 +319,7 @@
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
+                                                        <div id="usiaInfo" class="form-text text-muted mt-1"></div>
                                                     </div>
                                                 </div>
 
@@ -571,7 +572,11 @@
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
+                                                        <div class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>Format Email: testing@gmail.com
+                                                        </div>
                                                     </div>
+
 
                                                     <div class="form-group mb-3">
                                                         <label for="InstagramKlg"
@@ -838,6 +843,28 @@
             border-top-left-radius: 0;
             border-bottom-left-radius: 0;
         }
+
+        /* Age info styles */
+        #usiaInfo {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        #usiaInfo.text-danger {
+            color: #dc3545 !important;
+        }
+
+        #usiaInfo.text-success {
+            color: #198754 !important;
+        }
+
+        #usiaInfo.text-primary {
+            color: #0d6efd !important;
+        }
+
+        #usiaInfo.text-warning {
+            color: #ffc107 !important;
+        }
     </style>
     <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -870,6 +897,57 @@
                 console.warn('Select2 plugin is not available');
                 // Fallback to regular select
                 $('#IdKodeA04').addClass('form-select');
+            }
+
+            // Age calculation function
+            const tanggalLahirInput = document.getElementById('TanggalLhrKlg');
+            const usiaInfo = document.getElementById('usiaInfo');
+
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birthDateObj = new Date(birthDate);
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            function updateAge() {
+                if (tanggalLahirInput.value) {
+                    const age = calculateAge(tanggalLahirInput.value);
+                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+
+                    // Add color coding for age
+                    if (age < 17) {
+                        usiaInfo.classList.add('text-danger');
+                        usiaInfo.classList.remove('text-muted', 'text-success', 'text-warning', 'text-primary');
+                    } else if (age >= 17 && age < 25) {
+                        usiaInfo.classList.add('text-success');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-warning', 'text-primary');
+                    } else if (age >= 25 && age < 55) {
+                        usiaInfo.classList.add('text-primary');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-warning');
+                    } else {
+                        usiaInfo.classList.add('text-warning');
+                        usiaInfo.classList.remove('text-muted', 'text-danger', 'text-success', 'text-primary');
+                    }
+                } else {
+                    usiaInfo.innerHTML = '';
+                    usiaInfo.className = 'form-text text-muted mt-1';
+                }
+            }
+
+            tanggalLahirInput.addEventListener('change', updateAge);
+            tanggalLahirInput.addEventListener('input', updateAge);
+
+            // Run once on page load if a date is already set
+            if (tanggalLahirInput.value) {
+                updateAge();
             }
 
             // Fetch and display employee data when selected
