@@ -71,10 +71,13 @@
                                     aria-labelledby="info-utama-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan</h5>
+                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan
+                                            </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
+                                                <!-- Add photo container at the top of the form -->
+
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="IdKodeA04" class="form-label fw-bold">Karyawan <span
@@ -100,9 +103,21 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-12 mb-4 text-center">
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold mb-2">Foto Karyawan</label>
+                                                        <div class="mx-auto" style="width: 150px; height: 180px;">
+                                                            <img id="fotoKaryawan"
+                                                                src="{{ asset('images/default-user.png') }}"
+                                                                class="img-thumbnail shadow-sm" alt="Foto Karyawan"
+                                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="NikKtpUtama" class="form-label fw-bold">NIK KTP</label>
+                                                        <label for="NikKtpUtama" class="form-label fw-bold">NIK
+                                                            KTP</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-id-card"></i></span>
@@ -178,8 +193,8 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-users"></i></span>
-                                                            <input type="text" class="form-control" id="StsKeluargaKryInfo"
-                                                                disabled>
+                                                            <input type="text" class="form-control"
+                                                                id="StsKeluargaKryInfo" disabled>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -219,7 +234,8 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="ProvinsiKry" class="form-label fw-bold">Provinsi</label>
+                                                        <label for="ProvinsiKry"
+                                                            class="form-label fw-bold">Provinsi</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-map"></i></span>
@@ -421,6 +437,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="KetKeluargaKry"
@@ -442,6 +459,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="AlamatKtpKlg" class="form-label fw-bold">Alamat
@@ -570,6 +588,10 @@
                                                             @error('EmailKlg')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
+                                                        </div>
+                                                        <div class="form-text text-muted">
+                                                            <i class="fas fa-info-circle me-1"></i>Format Email:
+                                                            testing@gmail.com
                                                         </div>
                                                     </div>
 
@@ -860,6 +882,37 @@
         #usiaInfo.text-warning {
             color: #ffc107 !important;
         }
+
+        /* Styling for employee photo */
+        #fotoKaryawan {
+            transition: all 0.3s ease;
+            border: 2px solid #dee2e6;
+            object-fit: cover;
+        }
+
+        #fotoKaryawan:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add a subtle loading animation */
+        .img-loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
     </style>
     <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -915,7 +968,8 @@
             function updateAge() {
                 if (tanggalLahirInput.value) {
                     const age = calculateAge(tanggalLahirInput.value);
-                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+                    usiaInfo.innerHTML =
+                        `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
 
                     // Add color coding for age
                     if (age < 17) {
@@ -945,12 +999,6 @@
                 updateAge();
             }
 
-            // Load employee data on page load (for the initially selected employee)
-            const initialKaryawanId = document.getElementById('IdKodeA04').value;
-            if (initialKaryawanId) {
-                loadEmployeeData(initialKaryawanId);
-            }
-
             // Fetch and display employee data when selected
             const employeeSelect = document.getElementById('IdKodeA04');
             if (employeeSelect) {
@@ -962,60 +1010,80 @@
                         return;
                     }
 
-                    loadEmployeeData(karyawanId);
+                    // Show loading indicators in all employee info fields
+                    document.getElementById('NikKtpUtama').value = 'Loading...';
+                    document.getElementById('NrkKry').value = 'Loading...';
+                    document.getElementById('TglMsk').value = 'Loading...';
+                    document.getElementById('MasaKerja').value = 'Loading...';
+                    document.getElementById('StsKaryawan').value = 'Loading...';
+                    document.getElementById('StsKawinKry').value = 'Loading...';
+                    document.getElementById('StsKeluargaKryInfo').value = 'Loading...';
+                    document.getElementById('JumlahAnakKry').value = 'Loading...';
+                    document.getElementById('UmurKry').value = 'Loading...';
+                    document.getElementById('KotaKry').value = 'Loading...';
+                    document.getElementById('ProvinsiKry').value = 'Loading...';
+                    document.getElementById('AlamatKry').value = 'Loading...';
+
+                    // Set default photo while loading and add loading animation
+                    const photoElement = document.getElementById('fotoKaryawan');
+                    photoElement.src = "{{ asset('images/default-user.png') }}";
+                    photoElement.classList.add('img-loading');
+
+                    // Use the correct URL format with the karyawanId
+                    fetch(`/keluarga-karyawan/get-karyawan-detail/${karyawanId}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok: ' + response.status);
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            console.log('Employee data received:', data);
+
+                            // Fill in employee info fields
+                            document.getElementById('NikKtpUtama').value = data.NikKtp || '';
+                            document.getElementById('NrkKry').value = data.NrkKry || '';
+                            document.getElementById('TglMsk').value = data.formatted_tgl_msk || '';
+                            document.getElementById('MasaKerja').value = data.masa_kerja || '';
+                            document.getElementById('StsKaryawan').value = data.StsKaryawan || '';
+                            document.getElementById('StsKawinKry').value = data.StsKawinKry || '';
+                            document.getElementById('StsKeluargaKryInfo').value = data.StsKeluargaKry ||
+                                '';
+                            document.getElementById('JumlahAnakKry').value = data.JumlahAnakKry || '0';
+                            document.getElementById('UmurKry').value = data.umur || '';
+                            document.getElementById('KotaKry').value = data.KotaKry || '';
+                            document.getElementById('ProvinsiKry').value = data.ProvinsiKry || '';
+                            document.getElementById('AlamatKry').value = data.AlamatKry || '';
+
+                            // Set employee photo and remove loading animation
+                            photoElement.classList.remove('img-loading');
+                            if (data.FotoKry) {
+                                photoElement.src = data.FotoKry;
+                            } else {
+                                photoElement.src = "{{ asset('images/default-user.png') }}";
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching employee data:', error);
+
+                            // Clear all fields on error
+                            clearEmployeeData();
+
+                            // Remove loading animation from photo
+                            document.getElementById('fotoKaryawan').classList.remove('img-loading');
+
+                            // Show error alert
+                            alert('Gagal memuat data karyawan. Silakan coba lagi.');
+                        });
                 });
-            }
 
-            // Function to load employee data
-            function loadEmployeeData(karyawanId) {
-                // Show loading indicators in all employee info fields
-                document.getElementById('NikKtpUtama').value = 'Loading...';
-                document.getElementById('NrkKry').value = 'Loading...';
-                document.getElementById('TglMsk').value = 'Loading...';
-                document.getElementById('MasaKerja').value = 'Loading...';
-                document.getElementById('StsKaryawan').value = 'Loading...';
-                document.getElementById('StsKawinKry').value = 'Loading...';
-                document.getElementById('StsKeluargaKryInfo').value = 'Loading...';
-                document.getElementById('JumlahAnakKry').value = 'Loading...';
-                document.getElementById('UmurKry').value = 'Loading...';
-                document.getElementById('KotaKry').value = 'Loading...';
-                document.getElementById('ProvinsiKry').value = 'Loading...';
-                document.getElementById('AlamatKry').value = 'Loading...';
-
-                // Use the correct URL format with the karyawanId
-                fetch(`/keluarga-karyawan/get-karyawan-detail/${karyawanId}`)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok: ' + response.status);
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Employee data received:', data);
-
-                        // Fill in employee info fields
-                        document.getElementById('NikKtpUtama').value = data.NikKtp || '';
-                        document.getElementById('NrkKry').value = data.NrkKry || '';
-                        document.getElementById('TglMsk').value = data.formatted_tgl_msk || '';
-                        document.getElementById('MasaKerja').value = data.masa_kerja || '';
-                        document.getElementById('StsKaryawan').value = data.StsKaryawan || '';
-                        document.getElementById('StsKawinKry').value = data.StsKawinKry || '';
-                        document.getElementById('StsKeluargaKryInfo').value = data.StsKeluargaKry || '';
-                        document.getElementById('JumlahAnakKry').value = data.JumlahAnakKry || '0';
-                        document.getElementById('UmurKry').value = data.umur || '';
-                        document.getElementById('KotaKry').value = data.KotaKry || '';
-                        document.getElementById('ProvinsiKry').value = data.ProvinsiKry || '';
-                        document.getElementById('AlamatKry').value = data.AlamatKry || '';
-                    })
-                    .catch(error => {
-                        console.error('Error fetching employee data:', error);
-
-                        // Clear all fields on error
-                        clearEmployeeData();
-
-                        // Show error alert
-                        alert('Gagal memuat data karyawan. Silakan coba lagi.');
-                    });
+                // Load employee data on page load if ID is present (especially for edit form)
+                const initialKaryawanId = employeeSelect.value;
+                if (initialKaryawanId) {
+                    // Trigger the change event to load data
+                    const event = new Event('change');
+                    employeeSelect.dispatchEvent(event);
+                }
             }
 
             // Function to clear all employee data fields
@@ -1032,6 +1100,8 @@
                 document.getElementById('KotaKry').value = '';
                 document.getElementById('ProvinsiKry').value = '';
                 document.getElementById('AlamatKry').value = '';
+                document.getElementById('fotoKaryawan').src = "{{ asset('images/default-user.png') }}";
+                document.getElementById('fotoKaryawan').classList.remove('img-loading');
             }
 
             // Tab navigation variables

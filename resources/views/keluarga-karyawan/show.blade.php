@@ -8,10 +8,9 @@
             <div class="col-md-10">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-user me-2"></i>Detail Keluarga Karyawan</span>
+                        <span class="fw-bold"><i class="fas fa-user-friends me-2"></i>Detail Keluarga Karyawan</span>
                         <div>
-                            <a href="{{ route('keluarga-karyawan.edit', $keluargaKaryawan->id) }}"
-                                class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('keluarga-karyawan.edit', $keluargaKaryawan->id) }}" class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
                             <a href="{{ route('keluarga-karyawan.index') }}" class="btn btn-light btn-sm">
@@ -21,8 +20,8 @@
                     </div>
 
                     <div class="card-body">
-                        <!-- Nav tabs for viewing sections -->
-                        <ul class="nav nav-tabs mb-4" id="viewTabs" role="tablist">
+                        <!-- Nav tabs for form sections -->
+                        <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="info-utama-tab" data-bs-toggle="tab"
                                     data-bs-target="#info-utama" type="button" role="tab" aria-controls="info-utama"
@@ -32,8 +31,8 @@
                             </li>
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="info-pribadi-tab" data-bs-toggle="tab"
-                                    data-bs-target="#info-pribadi" type="button" role="tab"
-                                    aria-controls="info-pribadi" aria-selected="false">
+                                    data-bs-target="#info-pribadi" type="button" role="tab" aria-controls="info-pribadi"
+                                    aria-selected="false">
                                     <i class="fas fa-id-card me-1"></i> Informasi Keluarga
                                 </button>
                             </li>
@@ -51,7 +50,6 @@
                                     <i class="fas fa-phone me-1"></i> Kontak
                                 </button>
                             </li>
-
                         </ul>
 
                         <!-- Tab panes -->
@@ -65,104 +63,186 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-12">
-                                                <div class="info-group mb-3">
-                                                    <label class="info-label fw-bold">Nama</label>
-                                                    <div class="info-value">
-                                                        <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-user"></i></span>
-                                                            <div class="form-control">{{ $keluargaKaryawan->NamaKlg }}</div>
-                                                        </div>
+                                            <!-- Add photo container at the top of the form -->
+                                            <div class="col-md-12 mb-4 text-center">
+                                                <div class="form-group">
+                                                    <label class="form-label fw-bold mb-2">Foto Karyawan</label>
+                                                    <div class="mx-auto" style="width: 150px; height: 180px;">
+                                                        <img id="fotoKaryawan" src="{{ asset('images/default-user.png') }}"
+                                                            class="img-thumbnail shadow-sm" alt="Foto Karyawan"
+                                                            style="width: 100%; height: 100%; object-fit: cover;">
                                                     </div>
                                                 </div>
+                                            </div>
 
+                                            <div class="col-md-12">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Karyawan</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-user-tie"></i></span>
+                                                            <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                                             <div class="form-control">
-                                                                @if ($keluargaKaryawan->karyawan)
-                                                                    {{ $keluargaKaryawan->karyawan->NamaKry }}
-                                                                    @if ($keluargaKaryawan->karyawan->NikKry)
-                                                                        ({{ $keluargaKaryawan->karyawan->NikKry }})
-                                                                    @endif
-                                                                @else
-                                                                    <span class="text-muted fst-italic">Tidak ada
-                                                                        data</span>
-                                                                @endif
+                                                                {{ $keluargaKaryawan->karyawan->NamaKry ?? '-' }} - {{ $keluargaKaryawan->karyawan->NrkKry ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-12">
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Status Keluarga</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-users"></i></span>
-                                                                <div class="form-control">
-                                                                    @php
-                                                                        $badgeClass = 'bg-primary';
-                                                                        if (
-                                                                            in_array(
-                                                                                $keluargaKaryawan->StsKeluargaKry,
-                                                                                ['Suami', 'Istri'],
-                                                                            )
-                                                                        ) {
-                                                                            $badgeClass = 'bg-success';
-                                                                        } elseif (
-                                                                            $keluargaKaryawan->StsKeluargaKry === 'Anak'
-                                                                        ) {
-                                                                            $badgeClass = 'bg-info';
-                                                                        } elseif (
-                                                                            in_array(
-                                                                                $keluargaKaryawan->StsKeluargaKry,
-                                                                                ['Bapak', 'Ibu'],
-                                                                            )
-                                                                        ) {
-                                                                            $badgeClass = 'bg-warning text-dark';
-                                                                        }
-                                                                    @endphp
-                                                                    <span
-                                                                        class="badge {{ $badgeClass }}">{{ $keluargaKaryawan->StsKeluargaKry }}</span>
-                                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">NIK KTP</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                            <div class="form-control" id="NikKtpUtama">
+                                                                {{ $keluargaKaryawan->karyawan->NikKtp ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
-
-                                                    @if ($keluargaKaryawan->KetKeluargaKry)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Keterangan</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-sticky-note"></i></span>
-                                                                    <div class="form-control">
-                                                                        {{ $keluargaKaryawan->KetKeluargaKry }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
                                                 </div>
-
-
-                                                @if ($keluargaKaryawan->TanggalLhrKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Umur</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-birthday-cake"></i></span>
-                                                                <div class="form-control">{{ $keluargaKaryawan->umur }}
-                                                                    tahun</div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">NRK Karyawan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-id-badge"></i></span>
+                                                            <div class="form-control" id="NrkKry">
+                                                                {{ $keluargaKaryawan->karyawan->NrkKry ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tanggal Masuk</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
+                                                            <div class="form-control" id="TglMsk">
+                                                                {{ $keluargaKaryawan->karyawan->TglMsk ? date('d/m/Y', strtotime($keluargaKaryawan->karyawan->TglMsk)) : '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Masa Kerja</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-business-time"></i></span>
+                                                            <div class="form-control" id="MasaKerja">
+                                                                {{ $keluargaKaryawan->karyawan->masa_kerja ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Karyawan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-user-check"></i></span>
+                                                            <div class="form-control" id="StsKaryawan">
+                                                                {{ $keluargaKaryawan->karyawan->StsKaryawan ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Perkawinan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-ring"></i></span>
+                                                            <div class="form-control" id="StsKawinKry">
+                                                                {{ $keluargaKaryawan->karyawan->StsKawinKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Keluarga</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                                            <div class="form-control" id="StsKeluargaKryInfo">
+                                                                {{ $keluargaKaryawan->karyawan->StsKeluargaKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Jumlah Anak</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-child"></i></span>
+                                                            <div class="form-control" id="JumlahAnakKry">
+                                                                {{ $keluargaKaryawan->karyawan->JumlahAnakKry ?? '0' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Umur</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-birthday-cake"></i></span>
+                                                            <div class="form-control" id="UmurKry">
+                                                                {{ $keluargaKaryawan->karyawan->umur ? $keluargaKaryawan->karyawan->umur . ' tahun' : '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Kota</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-city"></i></span>
+                                                            <div class="form-control" id="KotaKry">
+                                                                {{ $keluargaKaryawan->karyawan->KotaKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Provinsi</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-map"></i></span>
+                                                            <div class="form-control" id="ProvinsiKry">
+                                                                {{ $keluargaKaryawan->karyawan->ProvinsiKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Alamat</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                                            <div class="form-control" id="AlamatKry">
+                                                                {{ $keluargaKaryawan->karyawan->alamat_lengkap ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -178,140 +258,190 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="row">
-                                            <div class="col-md-6">
-                                                @if ($keluargaKaryawan->NikKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">NIK</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-id-card"></i></span>
-                                                                <div class="form-control">{{ $keluargaKaryawan->NikKlg }}
-                                                                </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">NIK</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-id-card"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->NikKlg ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
-
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Nama</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->NamaKlg }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tempat Lahir</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->TempatLhrKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tanggal Lahir</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->TanggalLhrKlg ? date('d/m/Y', strtotime($keluargaKaryawan->TanggalLhrKlg)) : '-' }}
+                                                            </div>
+                                                        </div>
+                                                        <div class="age-info mt-2">
+                                                            @if($keluargaKaryawan->umur)
+                                                                <i class="fas fa-info-circle me-1"></i>Usia:
+                                                                <strong class="{{ $keluargaKaryawan->umur < 17 ? 'text-danger' : ($keluargaKaryawan->umur < 25 ? 'text-success' : ($keluargaKaryawan->umur < 55 ? 'text-primary' : 'text-warning')) }}">
+                                                                    {{ $keluargaKaryawan->umur }} tahun
+                                                                </strong>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
                                                 <div class="info-group mb-3">
                                                     <label class="info-label fw-bold">Jenis Kelamin</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
-                                                            <span class="input-group-text"><i
-                                                                    class="fas fa-venus-mars"></i></span>
+                                                            <span class="input-group-text"><i class="fas fa-venus-mars"></i></span>
                                                             <div class="form-control">
-                                                                @if ($keluargaKaryawan->SexKlg === 'L')
-                                                                    <i class="fas fa-mars text-primary me-1"></i> Laki-laki
+                                                                @if($keluargaKaryawan->SexKlg == 'L')
+                                                                    LAKI-LAKI
+                                                                @elseif($keluargaKaryawan->SexKlg == 'P')
+                                                                    PEREMPUAN
                                                                 @else
-                                                                    <i class="fas fa-venus text-danger me-1"></i> Perempuan
+                                                                    {{ $keluargaKaryawan->SexKlg ?? '-' }}
                                                                 @endif
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                @if ($keluargaKaryawan->TempatLhrKlg || $keluargaKaryawan->TanggalLhrKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Tempat, Tanggal Lahir</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-map-marker-alt"></i></span>
-                                                                <div class="form-control">
-                                                                    {{ $keluargaKaryawan->TempatLhrKlg ?? '-' }}{{ $keluargaKaryawan->TempatLhrKlg && $keluargaKaryawan->TanggalLhrKlg ? ', ' : '' }}
-                                                                    {{ $keluargaKaryawan->TanggalLhrKlg ? $keluargaKaryawan->TanggalLhrKlg->format('d F Y') : '' }}
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-
-                                                @if ($keluargaKaryawan->AgamaKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Agama</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-pray"></i></span>
-                                                                <div class="form-control">
-                                                                    {{ $keluargaKaryawan->AgamaKlg }}</div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
                                             </div>
-
                                             <div class="col-md-6">
-                                                @if ($keluargaKaryawan->StsKawinKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Status Kawin</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-ring"></i></span>
-                                                                <div class="form-control">
-                                                                    {{ $keluargaKaryawan->StsKawinKlg }}</div>
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Agama</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-pray"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->AgamaKlg ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
-
-                                                @if ($keluargaKaryawan->PekerjaanKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Pekerjaan</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-briefcase"></i></span>
-                                                                <div class="form-control">
-                                                                    {{ $keluargaKaryawan->PekerjaanKlg }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Keluarga</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-users"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->StsKeluargaKry }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
-
-                                                @if ($keluargaKaryawan->WargaNegaraKlg)
-                                                    <div class="info-group mb-3">
-                                                        <label class="info-label fw-bold">Warga Negara</label>
-                                                        <div class="info-value">
-                                                            <div class="input-group">
-                                                                <span class="input-group-text"><i
-                                                                        class="fas fa-flag"></i></span>
-                                                                <div class="form-control">
-                                                                    {{ $keluargaKaryawan->WargaNegaraKlg }}</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Status Kawin</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-ring"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->StsKawinKlg ?? '-' }}
                                                             </div>
                                                         </div>
                                                     </div>
-                                                @endif
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Keterangan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-sticky-note"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->KetKeluargaKry ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Alamat KTP</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-home"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->AlamatKtpKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Alamat Domisili</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-map-marked-alt"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->DomisiliKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Pekerjaan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->PekerjaanKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Warga Negara</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-flag"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->WargaNegaraKlg ?? 'INDONESIA' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-
-                                        @if ($keluargaKaryawan->AlamatKtpKlg)
-                                            <div class="info-group mb-3">
-                                                <label class="info-label fw-bold">Alamat KTP</label>
-                                                <div class="info-value">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text"><i class="fas fa-home"></i></span>
-                                                        <div class="form-control">{{ $keluargaKaryawan->AlamatKtpKlg }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
-
-                                        @if ($keluargaKaryawan->DomisiliKlg)
-                                            <div class="info-group mb-3">
-                                                <label class="info-label fw-bold">Alamat Domisili</label>
-                                                <div class="info-value">
-                                                    <div class="input-group">
-                                                        <span class="input-group-text"><i
-                                                                class="fas fa-map-marked-alt"></i></span>
-                                                        <div class="form-control">{{ $keluargaKaryawan->DomisiliKlg }}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -324,100 +454,56 @@
                                         <h5 class="mb-0"><i class="fas fa-phone me-2"></i>Informasi Kontak</h5>
                                     </div>
                                     <div class="card-body">
-                                        @if (
-                                            !$keluargaKaryawan->Telpon1Klg &&
-                                                !$keluargaKaryawan->Telpon2Klg &&
-                                                !$keluargaKaryawan->EmailKlg &&
-                                                !$keluargaKaryawan->InstagramKlg)
-                                            <div class="alert alert-info mb-0">
-                                                <i class="fas fa-info-circle me-2"></i>Tidak ada informasi kontak yang
-                                                tersedia.
-                                            </div>
-                                        @else
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    @if ($keluargaKaryawan->Telpon1Klg)
-                                                        <div class="info-group mb-12">
-                                                            <label class="info-label fw-bold">Telepon Utama</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-phone"></i></span>
-                                                                    <div class="form-control">
-                                                                        <a href="tel:{{ $keluargaKaryawan->Telpon1Klg }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $keluargaKaryawan->Telpon1Klg }}
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Telepon Utama</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->Telpon1Klg ?? '-' }}
                                                             </div>
                                                         </div>
-                                                    @endif
-
-                                                    @if ($keluargaKaryawan->Telpon2Klg)
-                                                        <div class="info-group mb-12">
-                                                            <label class="info-label fw-bold">Telepon Alternatif</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-phone-alt"></i></span>
-                                                                    <div class="form-control">
-                                                                        <a href="tel:{{ $keluargaKaryawan->Telpon2Klg }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $keluargaKaryawan->Telpon2Klg }}
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </div>
-
-                                                <div class="col-md-12">
-                                                    @if ($keluargaKaryawan->EmailKlg)
-                                                        <div class="info-group mb-12">
-                                                            <label class="info-label fw-bold">Email</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-envelope"></i></span>
-                                                                    <div class="form-control">
-                                                                        <a href="mailto:{{ $keluargaKaryawan->EmailKlg }}"
-                                                                            class="text-decoration-none">
-                                                                            {{ $keluargaKaryawan->EmailKlg }}
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Telepon Alternatif</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->Telpon2Klg ?? '-' }}
                                                             </div>
                                                         </div>
-                                                    @endif
-
-                                                    @if ($keluargaKaryawan->InstagramKlg)
-                                                        <div class="info-group mb-12">
-                                                            <label class="info-label fw-bold">Instagram</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fab fa-instagram"></i></span>
-                                                                    <div class="form-control">
-                                                                        @php
-                                                                            $igUsername = ltrim(
-                                                                                $keluargaKaryawan->InstagramKlg,
-                                                                                '@',
-                                                                            );
-                                                                        @endphp
-                                                                        <a href="https://instagram.com/{{ $igUsername }}"
-                                                                            class="text-decoration-none" target="_blank">
-                                                                            {{ $keluargaKaryawan->InstagramKlg }}
-                                                                        </a>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </div>
                                             </div>
-                                        @endif
+                                            <div class="col-md-6">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Email</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->EmailKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Instagram</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fab fa-instagram"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->InstagramKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -427,112 +513,72 @@
                                 aria-labelledby="info-pendidikan-tab">
                                 <div class="card border-secondary mb-4">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan
-                                        </h5>
+                                        <h5 class="mb-0"><i class="fas fa-graduation-cap me-2"></i>Informasi Pendidikan</h5>
                                     </div>
                                     <div class="card-body">
-                                        @if (
-                                            !$keluargaKaryawan->PendidikanTrhKlg &&
-                                                !$keluargaKaryawan->JurusanPdkKlg &&
-                                                !$keluargaKaryawan->InstitusiPdkKlg &&
-                                                !$keluargaKaryawan->TahunLlsKlg &&
-                                                !$keluargaKaryawan->GelarPdkKlg)
-                                            <div class="alert alert-info mb-0">
-                                                <i class="fas fa-info-circle me-2"></i>Tidak ada informasi pendidikan yang
-                                                tersedia.
-                                            </div>
-                                        @else
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    @if ($keluargaKaryawan->PendidikanTrhKlg)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Pendidikan Terakhir</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-graduation-cap"></i></span>
-                                                                    <div class="form-control">
-                                                                        @php
-                                                                            $pendidikanOptions = [
-                                                                                'SD' => 'SD',
-                                                                                'SMP' => 'SMP/Sederajat',
-                                                                                'SMA' => 'SMA/Sederajat',
-                                                                                'D1' => 'D1',
-                                                                                'D2' => 'D2',
-                                                                                'D3' => 'D3',
-                                                                                'D4' => 'D4',
-                                                                                'S1' => 'S1',
-                                                                                'S2' => 'S2',
-                                                                                'S3' => 'S3',
-                                                                            ];
-                                                                        @endphp
-                                                                        {{ $pendidikanOptions[$keluargaKaryawan->PendidikanTrhKlg] ?? $keluargaKaryawan->PendidikanTrhKlg }}
-                                                                    </div>
-                                                                </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Pendidikan Terakhir</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-graduation-cap"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->PendidikanTrhKlg ?? '-' }}
                                                             </div>
                                                         </div>
-                                                    @endif
-
-                                                    @if ($keluargaKaryawan->JurusanPdkKlg)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Jurusan</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-book"></i></span>
-                                                                    <div class="form-control">
-                                                                        {{ $keluargaKaryawan->JurusanPdkKlg }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
-
-                                                    @if ($keluargaKaryawan->GelarPdkKlg)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Gelar</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-award"></i></span>
-                                                                    <div class="form-control">
-                                                                        {{ $keluargaKaryawan->GelarPdkKlg }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </div>
-
-                                                <div class="col-md-12">
-                                                    @if ($keluargaKaryawan->InstitusiPdkKlg)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Institusi</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-university"></i></span>
-                                                                    <div class="form-control">
-                                                                        {{ $keluargaKaryawan->InstitusiPdkKlg }}</div>
-                                                                </div>
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Jurusan</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-book"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->JurusanPdkKlg ?? '-' }}
                                                             </div>
                                                         </div>
-                                                    @endif
-
-                                                    @if ($keluargaKaryawan->TahunLlsKlg)
-                                                        <div class="info-group mb-3">
-                                                            <label class="info-label fw-bold">Tahun Lulus</label>
-                                                            <div class="info-value">
-                                                                <div class="input-group">
-                                                                    <span class="input-group-text"><i
-                                                                            class="fas fa-calendar-check"></i></span>
-                                                                    <div class="form-control">
-                                                                        {{ $keluargaKaryawan->TahunLlsKlg }}</div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    @endif
+                                                    </div>
                                                 </div>
                                             </div>
-                                        @endif
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Institusi</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-university"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->InstitusiPdkKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Tahun Lulus</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-calendar-check"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->TahunLlsKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="info-group mb-3">
+                                                    <label class="info-label fw-bold">Gelar</label>
+                                                    <div class="info-value">
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i class="fas fa-award"></i></span>
+                                                            <div class="form-control">
+                                                                {{ $keluargaKaryawan->GelarPdkKlg ?? '-' }}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -553,7 +599,6 @@
         .info-label {
             margin-bottom: 0.3rem;
             display: block;
-            font-weight: 600;
         }
 
         .info-group {
@@ -565,8 +610,6 @@
             border: 1px solid #dee2e6;
             padding: 0.375rem 0.75rem;
             border-radius: 0.25rem;
-            display: flex;
-            align-items: center;
             min-height: 38px;
         }
 
@@ -579,9 +622,14 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
-        .input-group-text {
-            background-color: #e9ecef;
-            border: 1px solid #dee2e6;
+        .text-danger {
+            font-weight: bold;
+        }
+
+        .form-text {
+            margin-top: 0.25rem;
+            font-size: 0.875em;
+            color: #6c757d;
         }
 
         .nav-tabs .nav-link {
@@ -608,17 +656,98 @@
         .tab-content {
             padding-top: 1rem;
         }
+
+        /* Age info styles */
+        .age-info {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .text-success {
+            color: #198754 !important;
+        }
+
+        .text-primary {
+            color: #0d6efd !important;
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+
+        /* Styling for employee photo */
+        #fotoKaryawan {
+            transition: all 0.3s ease;
+            border: 2px solid #dee2e6;
+            object-fit: cover;
+        }
+
+        #fotoKaryawan:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Add a subtle loading animation */
+        .img-loading {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
     </style>
 @endpush
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            // Tab navigation
+            const triggerTabList = [].slice.call(document.querySelectorAll('#formTabs button'));
+            triggerTabList.forEach(function(triggerEl) {
+                const tabTrigger = new bootstrap.Tab(triggerEl);
+
+                triggerEl.addEventListener('click', function(event) {
+                    event.preventDefault();
+                    tabTrigger.show();
+                });
             });
+
+            // Load employee photo
+            const karyawanId = "{{ $keluargaKaryawan->IdKodeA04 }}";
+
+            if (karyawanId) {
+                // Set default photo while loading and add loading animation
+                const photoElement = document.getElementById('fotoKaryawan');
+                photoElement.classList.add('img-loading');
+
+                // Fetch employee details to get the photo
+                fetch(`/keluarga-karyawan/get-karyawan-detail/${karyawanId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok: ' + response.status);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Set employee photo and remove loading animation
+                        photoElement.classList.remove('img-loading');
+                        if (data.FotoKry) {
+                            photoElement.src = data.FotoKry;
+                        } else {
+                            photoElement.src = "{{ asset('images/default-user.png') }}";
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching employee data:', error);
+                        photoElement.classList.remove('img-loading');
+                    });
+            }
         });
     </script>
 @endpush

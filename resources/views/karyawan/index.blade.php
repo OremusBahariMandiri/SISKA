@@ -51,6 +51,7 @@
                                         <th>Umur</th>
                                         <th>Tanggal Masuk</th>
                                         <th>Masa Kerja</th>
+                                        <th width="5%">Foto</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th class="text-center" width="15%">Aksi</th>
                                     </tr>
@@ -110,6 +111,36 @@
                                             <td>{{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
                                             </td>
                                             <td>{{ $workDuration }}</td>
+                                            <td class="text-center">
+                                                @if ($karyawan->FileDokKry)
+                                                    @php
+                                                        $fileExtension = pathinfo(
+                                                            storage_path('app/public/' . $karyawan->FileDokKry),
+                                                            PATHINFO_EXTENSION,
+                                                        );
+                                                        $isImage = in_array(strtolower($fileExtension), [
+                                                            'jpg',
+                                                            'jpeg',
+                                                            'png',
+                                                            'gif',
+                                                        ]);
+                                                    @endphp
+
+                                                    @if ($isImage)
+                                                        <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                            class="employee-photo rounded-circle"
+                                                            alt="Foto {{ $karyawan->NamaKry }}">
+                                                    @else
+                                                        <div class="employee-photo-placeholder">
+                                                            {{ substr($karyawan->NamaKry, 0, 1) }}
+                                                        </div>
+                                                    @endif
+                                                @else
+                                                    <div class="employee-photo-placeholder">
+                                                        {{ substr($karyawan->NamaKry, 0, 1) }}
+                                                    </div>
+                                                @endif
+                                            </td>
                                             <td class="text-center">
                                                 @if ($karyawan->StsKaryawan == 'AKTIF')
                                                     <span class="badge bg-success">AKTIF</span>
@@ -408,6 +439,39 @@
         .filter-active {
             background-color: #e8f4ff !important;
             border-left: 3px solid #0d6efd !important;
+        }
+
+        /* Foto karyawan styling */
+        .employee-photo {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+
+        .employee-photo:hover {
+            transform: scale(2.5);
+            z-index: 100;
+            position: relative;
+            border: 2px solid #0d6efd;
+        }
+
+        .employee-photo-placeholder {
+            width: 40px;
+            height: 40px;
+            background-color: #e9ecef;
+            color: #495057;
+            font-weight: bold;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto;
+            font-size: 16px;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
     </style>
 @endpush
