@@ -71,12 +71,12 @@ class KeluargaKaryawan extends Model
 
     public function scopePasangan($query)
     {
-        return $query->whereIn('StsKeluargaKry', ['Istri', 'Suami']);
+        return $query->whereIn('StsKeluargaKry', ['ISTRI', 'SUAMI']);
     }
 
     public function scopeOrangTua($query)
     {
-        return $query->whereIn('StsKeluargaKry', ['Bapak', 'Ibu']);
+        return $query->whereIn('StsKeluargaKry', ['BAPAK', 'IBU']);
     }
 
     // Accessors

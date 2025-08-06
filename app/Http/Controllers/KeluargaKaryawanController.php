@@ -44,7 +44,7 @@ class KeluargaKaryawanController extends Controller
         $statusKawinOptions = ['BELUM KAWIN', 'KAWIN', 'CERAI HIDUP', 'CERAI MATI'];
 
         // Jenis kelamin options
-        $jenisKelaminOptions = ['L' => 'LAKI-LAKI', 'P' => 'PEREMPUAN'];
+        $jenisKelaminOptions = ['LAKI-LAKI', 'PEREMPUAN'];
 
         // Pendidikan options
         $pendidikanOptions = [
@@ -78,7 +78,7 @@ class KeluargaKaryawanController extends Controller
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'StsKeluargaKry' => 'required',
             'NamaKlg' => 'required|string|max:100',
-            'SexKlg' => 'required|in:L,P',
+            'SexKlg' => 'required',
             'TanggalLhrKlg' => 'nullable|date',
         ];
 
@@ -165,7 +165,7 @@ class KeluargaKaryawanController extends Controller
         $statusKawinOptions = ['BELUM KAWIN', 'KAWIN', 'CERAI HIDUP', 'CERAI MATI'];
 
         // Jenis kelamin options
-        $jenisKelaminOptions = ['L' => 'LAKI-LAKI', 'P' => 'PEREMPUAN'];
+        $jenisKelaminOptions = ['LAKI-LAKI', 'PEREMPUAN'];
 
         // Pendidikan options
         $pendidikanOptions = [
@@ -201,7 +201,7 @@ class KeluargaKaryawanController extends Controller
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'StsKeluargaKry' => 'required',
             'NamaKlg' => 'required|string|max:100',
-            'SexKlg' => 'required|in:L,P',
+            'SexKlg' => 'required',
             'TanggalLhrKlg' => 'nullable|date',
         ];
 
