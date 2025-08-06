@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\KaryawanExport;
 use App\Models\Karyawan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
@@ -277,4 +278,24 @@ class KaryawanController extends Controller
 
         return $contentTypes[$extension] ?? 'application/octet-stream';
     }
+
+        /**
+     * Export data karyawan ke Excel
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportExcel(Request $request)
+    {
+        // Dapatkan semua parameter filter dari request
+        $statusFilter = $request->get('status');
+        $namaFilter = $request->get('nama');
+        $tempatLahirFilter = $request->get('tempatLahir');
+        $umurRangeFilter = $request->get('umurRange');
+        $masaKerjaRangeFilter = $request->get('masaKerjaRange');
+
+        // Buat instance KaryawanExport dengan parameter filter
+        $exporter = new KaryawanExport();
+        return $exporter->export($statusFilter, $namaFilter, $tempatLahirFilter, $umurRangeFilter, $masaKerjaRangeFilter);
+    }
+
 }
