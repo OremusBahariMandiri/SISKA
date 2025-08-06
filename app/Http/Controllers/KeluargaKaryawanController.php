@@ -323,6 +323,7 @@ class KeluargaKaryawanController extends Controller
                 'umur' => $karyawan->umur ? "{$karyawan->umur} tahun" : '',
                 'masa_kerja' => $karyawan->masa_kerja,
                 'AlamatKry' => $karyawan->alamat_lengkap,
+                'FotoKry' => $karyawan->FileDokKry ? asset('storage/' . $karyawan->FileDokKry) : asset('images/default-user.png'),
             ];
 
             return response()->json($response);

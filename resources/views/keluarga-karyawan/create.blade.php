@@ -70,7 +70,8 @@
                                     aria-labelledby="info-utama-tab">
                                     <div class="card border-secondary mb-4">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan</h5>
+                                            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Karyawan
+                                            </h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
@@ -100,9 +101,21 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="col-md-12 mb-4 text-center">
+                                                    <div class="form-group">
+                                                        <label class="form-label fw-bold mb-2">Foto Karyawan</label>
+                                                        <div class="mx-auto" style="width: 150px; height: 180px;">
+                                                            <img id="fotoKaryawan"
+                                                                src="{{ asset('images/default-user.png') }}"
+                                                                class="img-thumbnail shadow-sm" alt="Foto Karyawan"
+                                                                style="width: 100%; height: 100%; object-fit: cover;">
+                                                        </div>
+                                                    </div>
+                                                </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="NikKtpUtama" class="form-label fw-bold">NIK KTP</label>
+                                                        <label for="NikKtpUtama" class="form-label fw-bold">NIK
+                                                            KTP</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-id-card"></i></span>
@@ -178,8 +191,8 @@
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-users"></i></span>
-                                                            <input type="text" class="form-control" id="StsKeluargaKryInfo"
-                                                                disabled>
+                                                            <input type="text" class="form-control"
+                                                                id="StsKeluargaKryInfo" disabled>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -219,7 +232,8 @@
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="form-group mb-3">
-                                                        <label for="ProvinsiKry" class="form-label fw-bold">Provinsi</label>
+                                                        <label for="ProvinsiKry"
+                                                            class="form-label fw-bold">Provinsi</label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-map"></i></span>
@@ -575,7 +589,8 @@
                                                             @enderror
                                                         </div>
                                                         <div class="form-text text-muted">
-                                                            <i class="fas fa-info-circle me-1"></i>Format Email: testing@gmail.com
+                                                            <i class="fas fa-info-circle me-1"></i>Format Email:
+                                                            testing@gmail.com
                                                         </div>
                                                     </div>
 
@@ -922,7 +937,8 @@
             function updateAge() {
                 if (tanggalLahirInput.value) {
                     const age = calculateAge(tanggalLahirInput.value);
-                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+                    usiaInfo.innerHTML =
+                        `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
 
                     // Add color coding for age
                     if (age < 17) {
@@ -977,6 +993,9 @@
                     document.getElementById('ProvinsiKry').value = 'Loading...';
                     document.getElementById('AlamatKry').value = 'Loading...';
 
+                    // Set default photo while loading
+                    document.getElementById('fotoKaryawan').src = "{{ asset('images/default-user.png') }}";
+
                     // Use the correct URL format with the karyawanId
                     fetch(`/keluarga-karyawan/get-karyawan-detail/${karyawanId}`)
                         .then(response => {
@@ -995,16 +1014,21 @@
                             document.getElementById('MasaKerja').value = data.masa_kerja || '';
                             document.getElementById('StsKaryawan').value = data.StsKaryawan || '';
                             document.getElementById('StsKawinKry').value = data.StsKawinKry || '';
-                            document.getElementById('StsKeluargaKryInfo').value = data.StsKeluargaKry || '';
+                            document.getElementById('StsKeluargaKryInfo').value = data.StsKeluargaKry ||
+                                '';
                             document.getElementById('JumlahAnakKry').value = data.JumlahAnakKry || '0';
                             document.getElementById('UmurKry').value = data.umur || '';
                             document.getElementById('KotaKry').value = data.KotaKry || '';
                             document.getElementById('ProvinsiKry').value = data.ProvinsiKry || '';
                             document.getElementById('AlamatKry').value = data.AlamatKry || '';
 
-                            // Optionally, we can set default values for family fields based on employee data
-                            // For example, if the family address is usually the same as employee's
-
+                            // Set employee photo
+                            if (data.FotoKry) {
+                                document.getElementById('fotoKaryawan').src = data.FotoKry;
+                            } else {
+                                document.getElementById('fotoKaryawan').src =
+                                    "{{ asset('images/default-user.png') }}";
+                            }
                         })
                         .catch(error => {
                             console.error('Error fetching employee data:', error);
@@ -1032,6 +1056,7 @@
                 document.getElementById('KotaKry').value = '';
                 document.getElementById('ProvinsiKry').value = '';
                 document.getElementById('AlamatKry').value = '';
+                document.getElementById('fotoKaryawan').src = "{{ asset('images/default-user.png') }}";
             }
 
             // Tab navigation variables
