@@ -335,4 +335,22 @@ class KeluargaKaryawanController extends Controller
             ], 404);
         }
     }
+    /**
+     * Export data keluarga karyawan ke Excel
+     *
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
+    public function exportExcel(Request $request)
+    {
+        // Dapatkan semua parameter filter dari request
+        $statusFilter = $request->get('status');
+        $namaFilter = $request->get('nama');
+        $jenisKelaminFilter = $request->get('jenisKelamin');
+        $karyawanFilter = $request->get('karyawan');
+        $umurRangeFilter = $request->get('umurRange');
+
+        // Buat instance KeluargaKaryawanExport dengan parameter filter
+        $exporter = new \App\Exports\KeluargaKaryawanExport();
+        return $exporter->export($statusFilter, $namaFilter, $jenisKelaminFilter, $karyawanFilter, $umurRangeFilter);
+    }
 }

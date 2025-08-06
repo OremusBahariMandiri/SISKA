@@ -9,9 +9,17 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-users me-2"></i>Manajemen Keluarga Karyawan</span>
-                        <a href="{{ route('keluarga-karyawan.create') }}" class="btn btn-light">
-                            <i class="fas fa-plus-circle me-1"></i> Tambah
-                        </a>
+                        <div>
+                            <button type="button" class="btn btn-light me-2" id="filterButton">
+                                <i class="fas fa-filter me-1"></i> Filter
+                            </button>
+                            <button type="button" class="btn btn-light me-2" id="exportButton">
+                                <i class="fas fa-download me-1"></i> Export
+                            </button>
+                            <a href="{{ route('keluarga-karyawan.create') }}" class="btn btn-light">
+                                <i class="fas fa-plus-circle me-1"></i> Tambah
+                            </a>
+                        </div>
                     </div>
 
                     <div class="card-body">
@@ -45,7 +53,12 @@
                                 </thead>
                                 <tbody>
                                     @foreach ($keluargaKaryawans as $keluarga)
-                                        <tr>
+                                        <tr data-status="{{ $keluarga->StsKeluargaKry }}"
+                                            data-nama="{{ $keluarga->NamaKlg }}"
+                                            data-jenis-kelamin="{{ $keluarga->SexKlg }}"
+                                            data-karyawan="{{ $keluarga->karyawan ? $keluarga->karyawan->IdKode : '' }}"
+                                            data-karyawan-nama="{{ $keluarga->karyawan ? $keluarga->karyawan->NamaKry : '' }}"
+                                            data-umur="{{ $keluarga->umur }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $keluarga->NamaKlg }}</td>
                                             <td>
@@ -89,8 +102,7 @@
                                                     <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                         data-bs-toggle="tooltip" title="Hapus"
                                                         data-id="{{ $keluarga->id }}"
-                                                        data-name="{{ $keluarga->NamaKlg }}"
-                                                        data-bs-toggle="tooltip" title="Hapus">
+                                                        data-name="{{ $keluarga->NamaKlg }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                 </div>
@@ -137,12 +149,136 @@
             </div>
         </div>
     </div>
+
+    <!-- Filter Modal -->
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header text-white" style="background-color: #02786e">
+                    <h5 class="modal-title" id="filterModalLabel">
+                        <i class="fas fa-filter me-2"></i>Filter Data Keluarga Karyawan
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="filterForm">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <!-- Status Filter -->
+                                <div class="mb-3">
+                                    <label for="filterStatus" class="form-label">Status</label>
+                                    <select class="form-select select2" id="filterStatus">
+                                        <option value="">Semua Status</option>
+                                        <option value="SUAMI">SUAMI</option>
+                                        <option value="ISTRI">ISTRI</option>
+                                        <option value="ANAK">ANAK</option>
+                                        <option value="BAPAK">BAPAK</option>
+                                        <option value="IBU">IBU</option>
+                                    </select>
+                                </div>
+
+                                <!-- Nama Filter -->
+                                <div class="mb-3">
+                                    <label for="filterNama" class="form-label">Nama</label>
+                                    <select class="form-select select2" id="filterNama">
+                                        <option value="">Semua Nama</option>
+                                        @foreach ($keluargaKaryawans->pluck('NamaKlg')->unique()->sort() as $nama)
+                                            <option value="{{ $nama }}">{{ $nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Jenis Kelamin Filter -->
+                                <div class="mb-3">
+                                    <label for="filterJenisKelamin" class="form-label">Jenis Kelamin</label>
+                                    <select class="form-select select2" id="filterJenisKelamin">
+                                        <option value="">Semua</option>
+                                        <option value="L">Laki-laki</option>
+                                        <option value="P">Perempuan</option>
+                                    </select>
+                                </div>
+
+                                <!-- Karyawan Filter -->
+                                <div class="mb-3">
+                                    <label for="filterKaryawan" class="form-label">Karyawan</label>
+                                    <select class="form-select select2" id="filterKaryawan">
+                                        <option value="">Semua Karyawan</option>
+                                        @foreach ($keluargaKaryawans->pluck('karyawan.NamaKry', 'karyawan.IdKode')->filter()->unique() as $id => $nama)
+                                            <option value="{{ $id }}">{{ $nama }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <!-- Umur Filter -->
+                                <div class="mb-3">
+                                    <label for="filterUmur" class="form-label">Rentang Umur</label>
+                                    <select class="form-select select2" id="filterUmur">
+                                        <option value="">Semua Umur</option>
+                                        <option value="0-5">0-5 tahun</option>
+                                        <option value="6-12">6-12 tahun</option>
+                                        <option value="13-17">13-17 tahun</option>
+                                        <option value="18-25">18-25 tahun</option>
+                                        <option value="26-35">26-35 tahun</option>
+                                        <option value="36-45">36-45 tahun</option>
+                                        <option value="46-55">46-55 tahun</option>
+                                        <option value="56-65">56-65 tahun</option>
+                                        <option value="66-100">> 65 tahun</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="resetFilter">
+                        <i class="fas fa-undo me-1"></i>Reset Filter
+                    </button>
+                    <button type="button" class="btn btn-primary" id="applyFilter">
+                        <i class="fas fa-check me-1"></i>Terapkan Filter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Export Options Modal -->
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="exportModalLabel">
+                        <i class="fas fa-download me-2"></i>Ekspor Data Keluarga Karyawan
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-grid gap-2">
+                        <button type="button" class="btn btn-success" id="exportExcel">
+                            <i class="fas fa-file-excel me-2"></i> Ekspor ke Excel
+                        </button>
+                        <button type="button" class="btn btn-danger" id="exportPdf">
+                            <i class="fas fa-file-pdf me-2"></i> Ekspor ke PDF
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="exportPrint">
+                            <i class="fas fa-print me-2"></i> Print
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('styles')
     <!-- DataTables CSS -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <style>
         /* CSS dengan spesifisitas tinggi untuk DataTables */
         .keluargaKryPage .dataTables_wrapper .dataTables_length,
@@ -241,6 +377,30 @@
         .keluargaKryPage #keluargaKryTable tbody tr.row-hover-active {
             animation: flashBorder 1s ease infinite;
         }
+
+        /* Highlight filtered rows */
+        tr.filtered-row {
+            background-color: rgba(0, 123, 255, 0.05) !important;
+        }
+
+        /* Select2 custom styling */
+        .select2-container--bootstrap-5 .select2-selection {
+            border: 1px solid #ced4da;
+            padding: 0.375rem 0.75rem;
+            height: auto;
+            min-height: 38px;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding-left: 0;
+            padding-right: 0;
+        }
+
+        /* Filter button active state */
+        .filter-active {
+            background-color: #e8f4ff !important;
+            border-left: 3px solid #0d6efd !important;
+        }
     </style>
 @endpush
 
@@ -250,23 +410,230 @@
     <script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap5.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <!-- Moment.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script>
         $(document).ready(function() {
-            // Inisialisasi DataTables jika belum ada
-            if (!$.fn.DataTable.isDataTable('#keluargaKryTable')) {
-                $('#keluargaKryTable').DataTable({
-                    responsive: true,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-                    }
+            // Initialize modals
+            var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+            var exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+
+            // Event listener for filter button
+            $('#filterButton').on('click', function() {
+                filterModal.show();
+            });
+
+            // Event listener for export button
+            $('#exportButton').on('click', function() {
+                exportModal.show();
+            });
+
+            // Initialize Select2 properly - with correct timing and parent
+            setTimeout(function() {
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    dropdownParent: $('#filterModal .modal-body'),
+                    placeholder: 'Pilih filter...',
+                    allowClear: true
                 });
+            }, 500); // Short delay to ensure modal is ready
+
+            // Initialize DataTables
+            var keluargaKryTable = $('#keluargaKryTable').DataTable(
+            //     {
+            //     responsive: true,
+            //     language: {
+            //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+            //     },
+            //     searching: true,
+            //     ordering: true,
+            //     lengthMenu: [
+            //         [10, 25, 50, -1],
+            //         [10, 25, 50, "Semua"]
+            //     ],
+            //     dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            //         "<'row'<'col-sm-12'tr>>" +
+            //         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            //     autoWidth: false
+            // }
+        );
+
+            // Apply filter function
+            $('#applyFilter').click(function() {
+                // Get filter values
+                var statusFilter = $('#filterStatus').val();
+                var namaFilter = $('#filterNama').val();
+                var jenisKelaminFilter = $('#filterJenisKelamin').val();
+                var karyawanFilter = $('#filterKaryawan').val();
+                var umurFilter = $('#filterUmur').val();
+
+                // Clear any existing filter functions first
+                $.fn.dataTable.ext.search = [];
+
+                // Apply custom filtering with a new function
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    var row = $(keluargaKryTable.row(dataIndex).node());
+                    var show = true;
+
+                    // Status filtering
+                    if (statusFilter && statusFilter !== '') {
+                        if (row.data('status') !== statusFilter) {
+                            show = false;
+                        }
+                    }
+
+                    // Nama filtering
+                    if (show && namaFilter && namaFilter !== '') {
+                        if (row.data('nama') !== namaFilter) {
+                            show = false;
+                        }
+                    }
+
+                    // Jenis Kelamin filtering
+                    if (show && jenisKelaminFilter && jenisKelaminFilter !== '') {
+                        if (row.data('jenis-kelamin') !== jenisKelaminFilter) {
+                            show = false;
+                        }
+                    }
+
+                    // Karyawan filtering
+                    if (show && karyawanFilter && karyawanFilter !== '') {
+                        if (row.data('karyawan') !== karyawanFilter) {
+                            show = false;
+                        }
+                    }
+
+                    // Umur filtering
+                    if (show && umurFilter && umurFilter !== '') {
+                        var age = parseInt(row.data('umur'));
+                        if (!isNaN(age)) {
+                            var ageRange = umurFilter.split('-');
+                            var minAge = parseInt(ageRange[0]);
+                            var maxAge = parseInt(ageRange[1]);
+
+                            if (age < minAge || age > maxAge) {
+                                show = false;
+                            }
+                        } else {
+                            show = false;
+                        }
+                    }
+
+                    // Add filtered-row class for styling
+                    if (show && (statusFilter || namaFilter || jenisKelaminFilter || karyawanFilter || umurFilter)) {
+                        row.addClass('filtered-row');
+                    } else {
+                        row.removeClass('filtered-row');
+                    }
+
+                    return show;
+                });
+
+                // Clear any existing classes first, then apply new ones after filtering
+                $('#keluargaKryTable tbody tr').removeClass('filtered-row');
+
+                // Draw table after filtering
+                keluargaKryTable.draw();
+
+                // Apply filter highlighting and close modal
+                highlightFilterButton();
+                filterModal.hide();
+            });
+
+            // Reset filter function
+            $('#resetFilter').click(function() {
+                // Reset all select2 filters
+                $('#filterStatus, #filterNama, #filterJenisKelamin, #filterKaryawan, #filterUmur').val(null)
+                    .trigger('change.select2');
+
+                // Clear ALL custom filtering functions
+                $.fn.dataTable.ext.search = [];
+
+                // Clear DataTable filtering and show all rows
+                keluargaKryTable.search('').columns().search('').draw();
+
+                // Remove highlight from rows
+                $('#keluargaKryTable tbody tr').removeClass('filtered-row');
+
+                // Remove filter button highlight
+                $('#filterButton').removeClass('filter-active');
+            });
+
+            // Export to Excel button
+            $('#exportExcel').on('click', function() {
+                // Get current filter values
+                var statusFilter = $('#filterStatus').val();
+                var namaFilter = $('#filterNama').val();
+                var jenisKelaminFilter = $('#filterJenisKelamin').val();
+                var karyawanFilter = $('#filterKaryawan').val();
+                var umurFilter = $('#filterUmur').val();
+
+                // Build URL with filter parameters
+                var exportUrl = "{{ route('exportexcelkeluargakaryawan') }}";
+                var params = [];
+
+                if (statusFilter) params.push('status=' + encodeURIComponent(statusFilter));
+                if (namaFilter) params.push('nama=' + encodeURIComponent(namaFilter));
+                if (jenisKelaminFilter) params.push('jenisKelamin=' + encodeURIComponent(jenisKelaminFilter));
+                if (karyawanFilter) params.push('karyawan=' + encodeURIComponent(karyawanFilter));
+                if (umurFilter) params.push('umurRange=' + encodeURIComponent(umurFilter));
+
+                // Add parameters to URL if any
+                if (params.length > 0) {
+                    exportUrl += '?' + params.join('&');
+                }
+
+                // Redirect to export URL with filter parameters
+                window.location.href = exportUrl;
+                exportModal.hide();
+            });
+
+            // PDF and Print buttons
+            $('#exportPdf').on('click', function() {
+                alert('Fitur export PDF sedang dalam pengembangan');
+                exportModal.hide();
+            });
+
+            $('#exportPrint').on('click', function() {
+                window.print();
+                exportModal.hide();
+            });
+
+            // Function to highlight filter button when filters are active
+            function highlightFilterButton() {
+                if ($('#filterStatus').val() ||
+                    $('#filterNama').val() ||
+                    $('#filterJenisKelamin').val() ||
+                    $('#filterKaryawan').val() ||
+                    $('#filterUmur').val()) {
+                    $('#filterButton').addClass('filter-active');
+                } else {
+                    $('#filterButton').removeClass('filter-active');
+                }
             }
 
             // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Handle row click for details view
+            $('#keluargaKryTable tbody').on('click', 'tr', function(e) {
+                // Don't follow link if clicking on buttons or links
+                if ($(e.target).is('button, a, i') || $(e.target).closest('button, a').length) {
+                    return;
+                }
+
+                // Get detail link URL
+                var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                if (detailLink) {
+                    window.location.href = detailLink;
+                }
             });
 
             // Handle delete confirmation
@@ -284,22 +651,7 @@
                 $('#deleteConfirmationModal').modal('show');
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
-            $('#keluargaKryTable tbody').on('click', 'tr', function(e) {
-                // Don't follow link if clicking on buttons or links
-                if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
-                    $(e.target).closest('button').length || $(e.target).closest('a').length) {
-                    return;
-                }
-
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
-            });
-
-            // Add flash effect when hovering over rows
+            // Add hover effects for rows
             $('#keluargaKryTable tbody').on('mouseenter', 'tr', function() {
                 $(this).addClass('row-hover-active');
             }).on('mouseleave', 'tr', function() {

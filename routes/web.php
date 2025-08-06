@@ -60,6 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
     Route::get('/keluarga-karyawan/get-karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])
     ->name('keluarga-karyawan.get-karyawan-detail');
+    Route::get('/export-excel-keluarga-karyawan', [KeluargaKaryawanController::class, 'exportExcel'])->name('exportexcelkeluargakaryawan');
 
     //Kategori Dokumen Route
     Route::resource('kategori-dokumen', KategoriDokumenController::class);

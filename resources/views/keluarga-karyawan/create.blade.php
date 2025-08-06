@@ -25,6 +25,13 @@
                             </div>
                         @endif
 
+                        <!-- Alert for validation errors -->
+                        <div class="alert alert-danger" id="validationAlert" style="display: none;">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span>Mohon periksa kembali form. Beberapa field wajib belum diisi dengan benar.</span>
+                            <ul id="validationMessages" class="mt-2 mb-0"></ul>
+                        </div>
+
                         <form action="{{ route('keluarga-karyawan.store') }}" method="POST" id="keluargaForm">
                             @csrf
                             <input type="text" class="form-control" id="IdKode" name="IdKode"
@@ -739,7 +746,7 @@
                                     <button type="button" id="nextTabBtn" class="btn btn-primary me-2">
                                         Selanjutnya <i class="fas fa-arrow-right ms-1"></i>
                                     </button>
-                                    <button type="submit" id="submitBtn" class="btn btn-success"
+                                    <button type="button" id="submitBtn" class="btn btn-success"
                                         style="display: none;">
                                         <i class="fas fa-save me-1"></i> Simpan Data
                                     </button>
@@ -747,6 +754,27 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog"
+        aria-labelledby="confirmationModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Simpan Data</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menyimpan data keluarga karyawan baru ini?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubmit">Ya, Simpan</button>
                 </div>
             </div>
         </div>
@@ -882,6 +910,16 @@
         #usiaInfo.text-warning {
             color: #ffc107 !important;
         }
+
+        /* Styling for validation alert */
+        #validationAlert {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        #validationMessages {
+            margin-top: 10px;
+        }
     </style>
     <!-- Include Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
@@ -915,6 +953,13 @@
                 // Fallback to regular select
                 $('#IdKodeA04').addClass('form-select');
             }
+
+            // Form validation variables
+            const form = document.getElementById('keluargaForm');
+            const validationAlert = document.getElementById('validationAlert');
+            const validationMessages = document.getElementById('validationMessages');
+            const confirmationModal = new bootstrap.Modal(document.getElementById('confirmationModal'));
+            const confirmSubmitBtn = document.getElementById('confirmSubmit');
 
             // Age calculation function
             const tanggalLahirInput = document.getElementById('TanggalLhrKlg');
@@ -1163,48 +1208,80 @@
                 });
             });
 
-            // Form submission
-            const form = document.getElementById('keluargaForm');
-            if (form) {
-                form.addEventListener('submit', function(event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
+            // Submit button click - Show confirmation modal
+            submitBtn.addEventListener('click', function(event) {
+                // Validate all required fields before showing confirmation
+                let isValid = true;
+                const invalidFieldsList = [];
 
-                        // Highlight missing required fields across all tabs
-                        document.querySelectorAll('[required]').forEach(function(input) {
-                            if (!input.value) {
-                                input.classList.add('is-invalid');
+                // Check all required fields across all tabs
+                document.querySelectorAll('[required]').forEach(function(input) {
+                    if (!input.value) {
+                        isValid = false;
+                        input.classList.add('is-invalid');
 
-                                // Create error message if it doesn't exist
-                                if (!input.nextElementSibling || !input.nextElementSibling.classList
-                                    .contains('invalid-feedback')) {
-                                    const feedback = document.createElement('div');
-                                    feedback.className = 'invalid-feedback';
-                                    feedback.textContent = 'Field ini wajib diisi';
-                                    input.parentNode.insertBefore(feedback, input
-                                        .nextElementSibling);
-                                }
-                            } else {
-                                input.classList.remove('is-invalid');
-                            }
-                        });
-
-                        // Find tab with first error and show it
-                        for (let i = 0; i < tabs.length; i++) {
-                            const tabElement = document.getElementById(tabs[i]);
-                            if (tabElement) {
-                                const invalidField = tabElement.querySelector('.is-invalid');
-                                if (invalidField) {
-                                    showTab(i);
-                                    invalidField.focus();
-                                    break;
-                                }
-                            }
+                        // Get field label for error message
+                        let fieldName = "";
+                        const label = input.closest('.form-group').querySelector('label');
+                        if (label) {
+                            fieldName = label.textContent.replace('*', '').trim();
                         }
+
+                        invalidFieldsList.push(fieldName);
+
+                        // Create error message if it doesn't exist
+                        if (!input.nextElementSibling || !input.nextElementSibling.classList
+                            .contains('invalid-feedback')) {
+                            const feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            feedback.textContent = 'Field ini wajib diisi';
+                            input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                        }
+                    } else {
+                        input.classList.remove('is-invalid');
                     }
                 });
-            }
+
+                if (!isValid) {
+                    // Show validation error alert
+                    validationMessages.innerHTML = '';
+                    invalidFieldsList.forEach(function(field) {
+                        const li = document.createElement('li');
+                        li.textContent = field;
+                        validationMessages.appendChild(li);
+                    });
+
+                    validationAlert.style.display = 'block';
+
+                    // Find tab with first error and show it
+                    for (let i = 0; i < tabs.length; i++) {
+                        const tabElement = document.getElementById(tabs[i]);
+                        const invalidField = tabElement.querySelector('.is-invalid');
+
+                        if (invalidField) {
+                            showTab(i);
+                            invalidField.focus();
+                            break;
+                        }
+                    }
+
+                    // Scroll to the validation alert
+                    validationAlert.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                } else {
+                    // Hide validation alert if shown previously
+                    validationAlert.style.display = 'none';
+
+                    // Show confirmation modal
+                    confirmationModal.show();
+                }
+            });
+
+            // Confirm submit button click - Submit the form
+            confirmSubmitBtn.addEventListener('click', function() {
+                form.submit();
+            });
 
             // Remove invalid class when input changes
             document.querySelectorAll('input, select, textarea').forEach(function(input) {
@@ -1212,11 +1289,23 @@
                     if (this.hasAttribute('required') && this.value) {
                         this.classList.remove('is-invalid');
                     }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
+                    }
                 });
 
                 input.addEventListener('change', function() {
                     if (this.hasAttribute('required') && this.value) {
                         this.classList.remove('is-invalid');
+                    }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
                     }
                 });
             });
