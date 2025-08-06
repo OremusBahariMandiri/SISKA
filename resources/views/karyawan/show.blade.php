@@ -74,13 +74,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-group mb-3">
+                                                <div class="info-group mb-1">
                                                     <label class="info-label fw-bold">Tanggal Masuk</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-calendar-plus"></i></span>
-                                                            <div class="form-control">
+                                                            <div class="form-control" id="tanggalMasuk">
                                                                 {{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
                                                             </div>
                                                         </div>
@@ -127,13 +127,13 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-group mb-3">
+                                                <div class="info-group mb-1">
                                                     <label class="info-label fw-bold">Tanggal Lahir</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-calendar"></i></span>
-                                                            <div class="form-control">
+                                                            <div class="form-control" id="tanggalLahir">
                                                                 {{ $karyawan->TanggalLhrKry ? date('d-m-Y', strtotime($karyawan->TanggalLhrKry)) : '-' }}
                                                             </div>
                                                         </div>
@@ -156,7 +156,7 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-6">
-                                                <div class="info-group mb-3">
+                                                <div class="info-group mb-3 mt-1">
                                                     <label class="info-label fw-bold">Agama</label>
                                                     <div class="info-value">
                                                         <div class="input-group">
@@ -558,9 +558,7 @@
                                         @if ($karyawan->FileDokKry)
                                             @php
                                                 $fileExtension = pathinfo(
-                                                    storage_path(
-                                                        'app/public/' . $karyawan->FileDokKry,
-                                                    ),
+                                                    storage_path('app/public/' . $karyawan->FileDokKry),
                                                     PATHINFO_EXTENSION,
                                                 );
                                                 $isImage = in_array(strtolower($fileExtension), [
@@ -579,9 +577,9 @@
                                                             <div class="card">
                                                                 <div class="card-body text-center">
                                                                     <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
-                                                                         alt="Foto {{ $karyawan->NamaKry }}"
-                                                                         class="img-fluid img-thumbnail"
-                                                                         style="max-height: 300px;">
+                                                                        alt="Foto {{ $karyawan->NamaKry }}"
+                                                                        class="img-fluid img-thumbnail"
+                                                                        style="max-height: 300px;">
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -724,6 +722,33 @@
         .tab-content {
             padding-top: 1rem;
         }
+
+        /* Age and work duration info styles */
+        .age-info,
+        .masa-kerja-info {
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .text-success {
+            color: #198754 !important;
+        }
+
+        .text-primary {
+            color: #0d6efd !important;
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+
+        .text-info {
+            color: #0dcaf0 !important;
+        }
     </style>
 @endpush
 
@@ -740,6 +765,123 @@
                     tabTrigger.show();
                 });
             });
+
+            // Calculate age from birth date
+            function calculateAge(birthDate) {
+                const today = new Date();
+                const birthDateObj = new Date(birthDate);
+
+                let age = today.getFullYear() - birthDateObj.getFullYear();
+                const monthDiff = today.getMonth() - birthDateObj.getMonth();
+
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDateObj.getDate())) {
+                    age--;
+                }
+
+                return age;
+            }
+
+            // Calculate work duration from join date
+            function calculateWorkDuration(startDate) {
+                const today = new Date();
+                const startDateObj = new Date(startDate);
+
+                let years = today.getFullYear() - startDateObj.getFullYear();
+                let months = today.getMonth() - startDateObj.getMonth();
+
+                if (months < 0) {
+                    years--;
+                    months += 12;
+                }
+
+                return {
+                    years,
+                    months
+                };
+            }
+
+            // Add age information if birth date exists
+            const birthDateElement = document.getElementById('tanggalLahir');
+            if (birthDateElement && birthDateElement.textContent.trim() !== '-') {
+                // Parse the date from "dd-mm-yyyy" format
+                const parts = birthDateElement.textContent.trim().split('-');
+                if (parts.length === 3) {
+                    const birthDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const age = calculateAge(birthDate);
+
+                    // Create and append age badge
+                    const ageInfo = document.createElement('div');
+                    ageInfo.className = 'age-info mt-2';
+
+                    let ageClass = '';
+                    if (age < 17) {
+                        ageClass = 'text-danger';
+                    } else if (age >= 17 && age < 25) {
+                        ageClass = 'text-success';
+                    } else if (age >= 25 && age < 55) {
+                        ageClass = 'text-primary';
+                    } else {
+                        ageClass = 'text-warning';
+                    }
+
+                    ageInfo.innerHTML =
+                        `<i class="fas fa-info-circle me-1"></i>Usia: <strong class="${ageClass}">${age} tahun</strong>`;
+
+                    // Find the parent div.info-group and append after it
+                    const parentGroup = birthDateElement.closest('.info-group');
+                    parentGroup.after(ageInfo);
+                }
+            }
+
+            // Add work duration information if join date exists
+            const joinDateElement = document.getElementById('tanggalMasuk');
+            if (joinDateElement && joinDateElement.textContent.trim() !== '-') {
+                // Parse the date from "dd-mm-yyyy" format
+                const parts = joinDateElement.textContent.trim().split('-');
+                if (parts.length === 3) {
+                    const joinDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                    const duration = calculateWorkDuration(joinDate);
+
+                    // Create and append work duration badge
+                    const durationInfo = document.createElement('div');
+                    durationInfo.className = 'masa-kerja-info mt-2';
+
+                    let durationText = '';
+                    if (duration.years > 0) {
+                        durationText += `${duration.years} tahun`;
+                    }
+
+                    if (duration.months > 0) {
+                        if (durationText) {
+                            durationText += ` ${duration.months} bulan`;
+                        } else {
+                            durationText += `${duration.months} bulan`;
+                        }
+                    }
+
+                    if (!durationText) {
+                        durationText = 'Kurang dari 1 bulan';
+                    }
+
+                    let durationClass = '';
+                    if (duration.years < 1) {
+                        durationClass = 'text-info';
+                    } else if (duration.years >= 1 && duration.years < 3) {
+                        durationClass = 'text-primary';
+                    } else if (duration.years >= 3 && duration.years < 10) {
+                        durationClass = 'text-success';
+                    } else {
+                        durationClass = 'text-warning';
+                    }
+
+                    durationInfo.innerHTML =
+                        `<i class="fas fa-business-time me-1"></i>Masa Kerja: <strong class="${durationClass}">${durationText}</strong>`;
+
+                    // Find the parent div.info-group and append after it
+                    const parentGroup = joinDateElement.closest('.info-group');
+                    parentGroup.after(durationInfo);
+                }
+            }
         });
     </script>
 @endpush
