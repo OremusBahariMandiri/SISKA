@@ -54,6 +54,7 @@ Route::middleware(['auth'])->group(function () {
     //Karyawan Route
     Route::resource('karyawan', KaryawanController::class);
     Route::get('karyawan/{id}/view-document', [KaryawanController::class, 'viewDocument'])->name('karyawan.view-document');
+    Route::get('exportexcelkaryawan', [App\Http\Controllers\KaryawanController::class, 'exportExcel'])->name('exportexcelkaryawan');
 
     //Keluarga Karyawan Route
     Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
