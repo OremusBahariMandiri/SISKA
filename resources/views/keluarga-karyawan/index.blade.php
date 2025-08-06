@@ -64,21 +64,21 @@
                                             <td>
                                                 @php
                                                     $badgeClass = 'bg-primary';
-                                                    if (in_array($keluarga->StsKeluargaKry, ['Suami', 'Istri'])) {
+                                                    if (in_array($keluarga->StsKeluargaKry, ['SUAMI', 'ISTRI'])) {
                                                         $badgeClass = 'bg-success';
-                                                    } elseif ($keluarga->StsKeluargaKry === 'Anak') {
+                                                    } elseif ($keluarga->StsKeluargaKry === 'ANAK') {
                                                         $badgeClass = 'bg-info';
-                                                    } elseif (in_array($keluarga->StsKeluargaKry, ['Bapak', 'Ibu'])) {
+                                                    } elseif (in_array($keluarga->StsKeluargaKry, ['BAPAK', 'IBU'])) {
                                                         $badgeClass = 'bg-warning text-dark';
                                                     }
                                                 @endphp
                                                 <span class="badge {{ $badgeClass }}">{{ $keluarga->StsKeluargaKry }}</span>
                                             </td>
                                             <td>
-                                                @if ($keluarga->SexKlg === 'L')
-                                                    <i class="fas fa-mars text-primary me-1"></i> Laki-laki
+                                                @if ($keluarga->SexKlg === 'LAKI-LAKI')
+                                                    <i class="fas fa-mars text-primary me-1"></i> LAKI-LAKI
                                                 @else
-                                                    <i class="fas fa-venus text-danger me-1"></i> Perempuan
+                                                    <i class="fas fa-venus text-danger me-1"></i> PEREMPUAN
                                                 @endif
                                             </td>
                                             <td>

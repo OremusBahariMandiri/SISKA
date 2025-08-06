@@ -357,10 +357,10 @@
                                                                 <option value="" selected disabled>Pilih Jenis
                                                                     Kelamin
                                                                 </option>
-                                                                @foreach ($jenisKelaminOptions as $value => $label)
+                                                                @foreach ($jenisKelaminOptions as $value)
                                                                     <option value="{{ $value }}"
                                                                         {{ old('SexKlg') == $value ? 'selected' : '' }}>
-                                                                        {{ $label }}
+                                                                        {{ $value }}
                                                                     </option>
                                                                 @endforeach
                                                             </select>
