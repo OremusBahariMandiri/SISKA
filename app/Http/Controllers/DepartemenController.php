@@ -72,24 +72,28 @@ class DepartemenController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Departemen $departemen)
+    public function show($id)
     {
+        $departemen = Departemen::findOrFail($id);
         return view('departemen.show', compact('departemen'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Departemen $departemen)
+    public function edit($id)
     {
+        $departemen = Departemen::findOrFail($id);
         return view('departemen.edit', compact('departemen'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Departemen $departemen)
+    public function update(Request $request, $id)
     {
+        $departemen = Departemen::findOrFail($id);
+
         $request->validate([
             'GolonganDep' => 'required|string|max:255',
             'Departemen' => 'required|string|max:255',
@@ -114,15 +118,26 @@ class DepartemenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Departemen $departemen)
+    // public function destroy(Departemen $departemen)
+    // {
+    //     try {
+    //         $departemen->delete();
+    //         return redirect()->route('departemen.index')
+    //             ->with('success', 'Departemen berhasil dihapus.');
+    //     } catch (\Exception $e) {
+    //         return redirect()->route('departemen.index')
+    //             ->with('error', 'Departemen tidak dapat dihapus karena masih digunakan.');
+    //     }
+    // }
+
+    public function destroy($id)
     {
-        try {
-            $departemen->delete();
-            return redirect()->route('departemen.index')
-                ->with('success', 'Departemen berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->route('departemen.index')
-                ->with('error', 'Departemen tidak dapat dihapus karena masih digunakan.');
-        }
+        $departemen = Departemen::findOrFail($id);
+
+
+        $departemen->delete();
+
+        return redirect()->route('departemen.index')
+            ->with('success', 'Departemen berhasil dihapus.');
     }
 }
