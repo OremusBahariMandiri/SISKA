@@ -42,17 +42,17 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                                    <input type="text" class="form-control" id="NamaPrsh" name="NamaPrsh"
-                                                        value="{{ old('NamaPrsh') }}" required>
+                                                    <input type="text" class="form-control" id="NamaPrsh"
+                                                        name="NamaPrsh" value="{{ old('NamaPrsh') }}" required>
                                                 </div>
                                             </div>
                                             <div class="form-group mb-3">
-                                                <label for="SingkatanPrsh" class="form-label fw-bold">Singkatan Perusahaan <span
-                                                        class="text-danger">*</span></label>
+                                                <label for="SingkatanPrsh" class="form-label fw-bold">Singkatan Perusahaan
+                                                    <span class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-house"></i></span>
-                                                    <input type="text" class="form-control" id="SingkatanPrsh" name="SingkatanPrsh"
-                                                        value="{{ old('SingkatanPrsh') }}" required>
+                                                    <input type="text" class="form-control" id="SingkatanPrsh"
+                                                        name="SingkatanPrsh" value="{{ old('SingkatanPrsh') }}" required>
                                                 </div>
                                             </div>
 
@@ -60,7 +60,8 @@
                                                 <label for="AlamatPrsh" class="form-label fw-bold">Alamat <span
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-map-marker-alt"></i></span>
                                                     <textarea class="form-control" id="AlamatPrsh" name="AlamatPrsh" rows="3" required>{{ old('AlamatPrsh') }}</textarea>
                                                 </div>
                                             </div>
@@ -70,8 +71,8 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-phone"></i></span>
-                                                    <input type="text" class="form-control" id="TelpPrsh" name="TelpPrsh"
-                                                        value="{{ old('TelpPrsh') }}" required>
+                                                    <input type="text" class="form-control" id="TelpPrsh"
+                                                        name="TelpPrsh" value="{{ old('TelpPrsh') }}" required>
                                                 </div>
                                             </div>
 
@@ -79,8 +80,8 @@
                                                 <label for="TelpPrsh2" class="form-label fw-bold">Telepon 2</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-phone-alt"></i></span>
-                                                    <input type="text" class="form-control" id="TelpPrsh2" name="TelpPrsh2"
-                                                        value="{{ old('TelpPrsh2') }}">
+                                                    <input type="text" class="form-control" id="TelpPrsh2"
+                                                        name="TelpPrsh2" value="{{ old('TelpPrsh2') }}">
                                                 </div>
                                             </div>
 
@@ -89,8 +90,8 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                                    <input type="email" class="form-control" id="EmailPrsh" name="EmailPrsh"
-                                                        value="{{ old('EmailPrsh') }}" required>
+                                                    <input type="email" class="form-control" id="EmailPrsh"
+                                                        name="EmailPrsh" value="{{ old('EmailPrsh') }}" required>
                                                 </div>
                                             </div>
 
@@ -98,8 +99,8 @@
                                                 <label for="EmailPrsh2" class="form-label fw-bold">Email 2</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                                    <input type="email" class="form-control" id="EmailPrsh2" name="EmailPrsh2"
-                                                        value="{{ old('EmailPrsh2') }}">
+                                                    <input type="email" class="form-control" id="EmailPrsh2"
+                                                        name="EmailPrsh2" value="{{ old('EmailPrsh2') }}">
                                                 </div>
                                             </div>
 
@@ -107,8 +108,8 @@
                                                 <label for="WebPrsh" class="form-label fw-bold">Website</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-globe"></i></span>
-                                                    <input type="text" class="form-control" id="WebPrsh" name="WebPrsh"
-                                                        value="{{ old('WebPrsh') }}">
+                                                    <input type="text" class="form-control" id="WebPrsh"
+                                                        name="WebPrsh" value="{{ old('WebPrsh') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -119,15 +120,17 @@
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
                                         <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                            <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Informasi Bisnis & Manajemen</h5>
+                                            <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Informasi Bisnis &
+                                                Manajemen</h5>
                                         </div>
                                         <div class="card-body">
                                             <div class="form-group mb-3">
                                                 <label for="TglBerdiri" class="form-label fw-bold">Tanggal Berdiri</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                                    <input type="date" class="form-control" id="TglBerdiri" name="TglBerdiri"
-                                                        value="{{ old('TglBerdiri') }}">
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-calendar-alt"></i></span>
+                                                    <input type="date" class="form-control" id="TglBerdiri"
+                                                        name="TglBerdiri" value="{{ old('TglBerdiri') }}">
                                                 </div>
                                             </div>
 
@@ -136,8 +139,8 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-industry"></i></span>
-                                                    <input type="text" class="form-control" id="BidangUsh" name="BidangUsh"
-                                                        value="{{ old('BidangUsh') }}" required>
+                                                    <input type="text" class="form-control" id="BidangUsh"
+                                                        name="BidangUsh" value="{{ old('BidangUsh') }}" required>
                                                 </div>
                                             </div>
 
@@ -145,8 +148,8 @@
                                                 <label for="IzinUsh" class="form-label fw-bold">Izin Usaha</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                                                    <input type="text" class="form-control" id="IzinUsh" name="IzinUsh"
-                                                        value="{{ old('IzinUsh') }}">
+                                                    <input type="text" class="form-control" id="IzinUsh"
+                                                        name="IzinUsh" value="{{ old('IzinUsh') }}">
                                                 </div>
                                             </div>
 
@@ -155,14 +158,22 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-tags"></i></span>
                                                     <select class="form-select" id="GolonganUsh" name="GolonganUsh">
-                                                        <option value="" selected disabled>Pilih Golongan Usaha</option>
-                                                        <option value="MIKRO" {{ old('GolonganUsh') == 'MIKRO' ? 'selected' : '' }}>
+                                                        <option value="" selected disabled>Pilih Golongan Usaha
+                                                        </option>
+                                                        <option value="-"
+                                                            {{ old('GolonganUsh') == '-' ? 'selected' : '' }}>
+                                                            -</option>
+                                                        <option value="MIKRO"
+                                                            {{ old('GolonganUsh') == 'MIKRO' ? 'selected' : '' }}>
                                                             MIKRO</option>
-                                                        <option value="KECIL" {{ old('GolonganUsh') == 'KECIL' ? 'selected' : '' }}>
+                                                        <option value="KECIL"
+                                                            {{ old('GolonganUsh') == 'KECIL' ? 'selected' : '' }}>
                                                             KECIL</option>
                                                         <option value="MENENGAH"
-                                                            {{ old('GolonganUsh') == 'MENENGAH' ? 'selected' : '' }}>MENENGAH</option>
-                                                        <option value="BESAR" {{ old('GolonganUsh') == 'BESAR' ? 'selected' : '' }}>
+                                                            {{ old('GolonganUsh') == 'MENENGAH' ? 'selected' : '' }}>
+                                                            MENENGAH</option>
+                                                        <option value="BESAR"
+                                                            {{ old('GolonganUsh') == 'BESAR' ? 'selected' : '' }}>
                                                             BESAR</option>
                                                     </select>
                                                 </div>
@@ -173,8 +184,8 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                                    <input type="text" class="form-control" id="DirekturUtm" name="DirekturUtm"
-                                                        value="{{ old('DirekturUtm') }}" required>
+                                                    <input type="text" class="form-control" id="DirekturUtm"
+                                                        name="DirekturUtm" value="{{ old('DirekturUtm') }}" required>
                                                 </div>
                                             </div>
 
@@ -182,13 +193,14 @@
                                                 <label for="Direktur" class="form-label fw-bold">Direktur</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                                    <input type="text" class="form-control" id="Direktur" name="Direktur"
-                                                        value="{{ old('Direktur') }}">
+                                                    <input type="text" class="form-control" id="Direktur"
+                                                        name="Direktur" value="{{ old('Direktur') }}">
                                                 </div>
                                             </div>
 
                                             <div class="form-group mb-3">
-                                                <label for="KomisarisUtm" class="form-label fw-bold">Komisaris Utama</label>
+                                                <label for="KomisarisUtm" class="form-label fw-bold">Komisaris
+                                                    Utama</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                                     <input type="text" class="form-control" id="KomisarisUtm"
@@ -200,8 +212,8 @@
                                                 <label for="Komisaris" class="form-label fw-bold">Komisaris</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                                    <input type="text" class="form-control" id="Komisaris" name="Komisaris"
-                                                        value="{{ old('Komisaris') }}">
+                                                    <input type="text" class="form-control" id="Komisaris"
+                                                        name="Komisaris" value="{{ old('Komisaris') }}">
                                                 </div>
                                             </div>
                                         </div>
@@ -330,7 +342,8 @@
 
         // Email validation function
         function isValidEmail(email) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            const re =
+                /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
             return re.test(String(email).toLowerCase());
         }
     </script>

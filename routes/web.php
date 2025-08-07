@@ -1,10 +1,12 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\DokumenKarirController;
 use App\Http\Controllers\DokumenKaryawanController;
 use App\Http\Controllers\DokumenKontrakController;
 use App\Http\Controllers\DokumenLegalitasController;
+use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JenisDokumenController;
 use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriDokumenController;
@@ -12,6 +14,7 @@ use App\Http\Controllers\KeluargaKaryawanController;
 use App\Http\Controllers\PerusahaanController;
 use App\Http\Controllers\UserAccessController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WilayahKerjaController;
 use App\Models\DokumenKarir;
 use App\Models\DokumenKaryawan;
 use Illuminate\Support\Facades\Route;
@@ -59,7 +62,7 @@ Route::middleware(['auth'])->group(function () {
     //Keluarga Karyawan Route
     Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
     Route::get('/keluarga-karyawan/get-karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])
-    ->name('keluarga-karyawan.get-karyawan-detail');
+        ->name('keluarga-karyawan.get-karyawan-detail');
     Route::get('/export-excel-keluarga-karyawan', [KeluargaKaryawanController::class, 'exportExcel'])->name('exportexcelkeluargakaryawan');
 
     //Kategori Dokumen Route
@@ -67,6 +70,15 @@ Route::middleware(['auth'])->group(function () {
 
     //Jenis Dokumen Route
     Route::resource('jenis-dokumen', JenisDokumenController::class);
+
+    //Jabatan Route
+    Route::resource('jabatan', JabatanController::class);
+
+    //Departemen Route
+    Route::resource('departemen', DepartemenController::class);
+
+    //Wilayah Kerja Route
+    Route::resource('wilayah-kerja', WilayahKerjaController::class);
 
     //Dokumen Karyawan Route
     Route::resource('dokumen-karyawan', DokumenKaryawanController::class);

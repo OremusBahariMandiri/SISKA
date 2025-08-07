@@ -23,22 +23,27 @@
 
                 {{-- Data Master Dropdown --}}
                 @php
-                    $dataMasterActive = request()->is('users*') ||
-                                       request()->is('perusahaan*') ||
-                                       request()->is('karyawan*') ||
-                                       request()->is('keluarga-karyawan*') ||
-                                       request()->is('kategori-dokumen*') ||
-                                       request()->is('jenis-dokumen*');
+                    $dataMasterActive =
+                        request()->is('users*') ||
+                        request()->is('perusahaan*') ||
+                        request()->is('karyawan*') ||
+                        request()->is('keluarga-karyawan*') ||
+                        request()->is('kategori-dokumen*') ||
+                        request()->is('jenis-dokumen*') ||
+                        request()->is('jabatan') ||
+                        request()->is('departemen') ||
+                        request()->is('wilayah-kerja');
                 @endphp
                 <li class="nav-item has-submenu">
-                    <a class="nav-link sidebar-menu-item {{ $dataMasterActive ? 'active' : '' }}"
-                       href="#" data-menu="dataMaster">
+                    <a class="nav-link sidebar-menu-item {{ $dataMasterActive ? 'active' : '' }}" href="#"
+                        data-menu="dataMaster">
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <div class="menu-icon-text">
                                 <i class="fas fa-database"></i>
                                 <span class="nav-text">Data Master</span>
                             </div>
-                            <i class="fas fa-chevron-down submenu-indicator {{ $dataMasterActive ? 'rotated' : '' }}"></i>
+                            <i
+                                class="fas fa-chevron-down submenu-indicator {{ $dataMasterActive ? 'rotated' : '' }}"></i>
                         </div>
                     </a>
                     <ul class="sidebar-submenu {{ $dataMasterActive ? 'show' : '' }}" id="dataMaster">
@@ -107,19 +112,50 @@
                                 </a>
                             </li>
                         @endif
+                        {{-- Jenis Dokumen --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('jabatan'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('jabatan*') ? 'active' : '' }}"
+                                    href="{{ route('jabatan.index') }}">
+                                    <i class="fas fa-clipboard-user"></i>
+                                    <span>Jabatan</span>
+                                </a>
+                            </li>
+                        @endif
+                        {{-- Departemen Dokumen --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('departemen'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('departemen*') ? 'active' : '' }}"
+                                    href="{{ route('departemen.index') }}">
+                                    <i class="fas fa-building"></i>
+                                    <span>Departemen</span>
+                                </a>
+                            </li>
+                        @endif
+                        {{-- Wilayah Kerja Dokumen --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('wilayah-kerja'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('wilayah-kerja*') ? 'active' : '' }}"
+                                    href="{{ route('wilayah-kerja.index') }}">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Wilayah Kerja</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
 
                 {{-- Manajemen Dokumen Dropdown --}}
                 @php
-                    $dokumenActive = request()->is('dokumen-karyawan*') ||
-                                    request()->is('dokumen-kontrak*') ||
-                                    request()->is('dokumen-karir*') ||
-                                    request()->is('dokumen-legalitas*');
+                    $dokumenActive =
+                        request()->is('dokumen-karyawan*') ||
+                        request()->is('dokumen-kontrak*') ||
+                        request()->is('dokumen-karir*') ||
+                        request()->is('dokumen-legalitas*');
                 @endphp
                 <li class="nav-item has-submenu">
-                    <a class="nav-link sidebar-menu-item {{ $dokumenActive ? 'active' : '' }}"
-                       href="#" data-menu="manajemenDokumen">
+                    <a class="nav-link sidebar-menu-item {{ $dokumenActive ? 'active' : '' }}" href="#"
+                        data-menu="manajemenDokumen">
                         <div class="d-flex align-items-center justify-content-between w-100">
                             <div class="menu-icon-text">
                                 <i class="fas fa-file-alt"></i>
