@@ -72,3 +72,45 @@ CREATE TABLE B04DokLegalitas (
     FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
     FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
 );
+
+CREATE TABLE A08DmJabatan (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    IdKode VARCHAR(20),
+    GolonganJbt VARCHAR(100),
+    Jabatan VARCHAR(100),
+    SingkatanJbtn VARCHAR(100),
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    created_at VARCHAR(50),
+    updated_at VARCHAR(50),
+    FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
+    FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
+)
+
+CREATE TABLE A09DmDepartemen (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    IdKode VARCHAR(20),
+    GolonganDep VARCHAR(100),
+    Departemen VARCHAR(100),
+    SingkatanDep VARCHAR(100),
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    created_at VARCHAR(50),
+    updated_at VARCHAR(50),
+    FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
+    FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
+)
+
+CREATE TABLE A10DmWilayahKrj (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    IdKode VARCHAR(20),
+    GolonganWilker VARCHAR(100),
+    WilayahKerja VARCHAR(100),
+    SingkatanWilker VARCHAR(100),
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    created_at VARCHAR(50),
+    updated_at VARCHAR(50),
+    FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
+    FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
+)
