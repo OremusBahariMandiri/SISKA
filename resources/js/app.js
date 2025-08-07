@@ -11,9 +11,6 @@ window.$ = window.jQuery = $;
 import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
 
-// Import Select2 initialization function
-import initializeSelect2 from './select2-config';
-
 // Import DataTables (if needed)
 import 'datatables.net';
 import 'datatables.net-bs5';
@@ -26,7 +23,7 @@ import '../css/app.css';
 // Import the sidebar CSS explicitly
 import '../css/sidebar.css';
 
-// Flag to prevent double initialization
+// Flag untuk mencegah inisialisasi ganda
 if (window.appInitialized) {
     console.log("App already initialized, skipping");
 } else {
@@ -35,9 +32,6 @@ if (window.appInitialized) {
     // Initialize components when document is ready
     document.addEventListener('DOMContentLoaded', function() {
         console.log("Initializing app.js components");
-
-        // Initialize Select2 - IMPORTANT: Call the function here
-        initializeSelect2();
 
         // Initialize DataTables
         initDataTables();
