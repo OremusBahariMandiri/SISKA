@@ -520,6 +520,9 @@
                                                             <select class="form-select" id="PendidikanTrhKry"
                                                                 name="PendidikanTrhKry" required>
                                                                 <option value="" disabled>Pilih Pendidikan</option>
+                                                                <option value="-"
+                                                                {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == '-' ? 'selected' : '' }}>
+                                                                -</option>
                                                                 <option value="SD"
                                                                     {{ old('PendidikanTrhKry', $karyawan->PendidikanTrhKry) == 'SD' ? 'selected' : '' }}>
                                                                     SD</option>

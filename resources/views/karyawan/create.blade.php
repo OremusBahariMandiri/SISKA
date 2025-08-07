@@ -506,6 +506,9 @@
                                                                 name="PendidikanTrhKry" required>
                                                                 <option value="" selected disabled>Pilih Pendidikan
                                                                 </option>
+                                                                <option value="-"
+                                                                {{ old('PendidikanTrhKry') == '-' ? 'selected' : '' }}>
+                                                                -</option>
                                                                 <option value="SD"
                                                                     {{ old('PendidikanTrhKry') == 'SD' ? 'selected' : '' }}>
                                                                     SD</option>
