@@ -89,14 +89,31 @@ class User extends Authenticatable
 
         // Cek akses berdasarkan menu dan action
         foreach ($this->userAccess as $access) {
-            if ($access->menu_acs == $menu) {
+            if ($access->MenuAcs == $menu) {
                 if ($action === null) {
                     return true; // Hanya cek menu tanpa action
                 }
 
-                // Cek akses spesifik
-                $actionField = $action . '_acs';
-                return isset($access->$actionField) && $access->$actionField;
+                // Jika action adalah 'index', maka cek juga MonitoringAcs
+                if ($action === 'index' && $access->MonitoringAcs) {
+                    return true;
+                }
+
+                // Map action to corresponding access field
+                $actionMap = [
+                    'tambah' => 'TambahAcs',
+                    'ubah' => 'UbahAcs',
+                    'hapus' => 'HapusAcs',
+                    'download' => 'DownloadAcs',
+                    'detail' => 'DetailAcs',
+                    'monitoring' => 'MonitoringAcs',
+                ];
+
+                // Check if the action exists in the map
+                if (isset($actionMap[$action])) {
+                    $actionField = $actionMap[$action];
+                    return (bool) $access->$actionField;
+                }
             }
         }
 

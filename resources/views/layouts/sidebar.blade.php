@@ -33,7 +33,22 @@
                         request()->is('jabatan') ||
                         request()->is('departemen') ||
                         request()->is('wilayah-kerja');
+
+                    // Check if user has access to any Data Master submenu
+                    $hasDataMasterAccess = Auth::user()->is_admin ||
+                        Auth::user()->hasAccess('pengguna') ||
+                        Auth::user()->hasAccess('hak_akses') ||
+                        Auth::user()->hasAccess('perusahaan') ||
+                        Auth::user()->hasAccess('karyawan') ||
+                        Auth::user()->hasAccess('keluarga-karyawan') ||
+                        Auth::user()->hasAccess('kategori_dokumen') ||
+                        Auth::user()->hasAccess('jenis-dokumen') ||
+                        Auth::user()->hasAccess('jabatan') ||
+                        Auth::user()->hasAccess('departemen') ||
+                        Auth::user()->hasAccess('wilayah-kerja');
                 @endphp
+
+                @if($hasDataMasterAccess)
                 <li class="nav-item has-submenu">
                     <a class="nav-link sidebar-menu-item {{ $dataMasterActive ? 'active' : '' }}" href="#"
                         data-menu="dataMaster">
@@ -112,7 +127,7 @@
                                 </a>
                             </li>
                         @endif
-                        {{-- Jenis Dokumen --}}
+                        {{-- Jabatan --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('jabatan'))
                             <li class="nav-item">
                                 <a class="submenu-link {{ request()->is('jabatan*') ? 'active' : '' }}"
@@ -122,7 +137,7 @@
                                 </a>
                             </li>
                         @endif
-                        {{-- Departemen Dokumen --}}
+                        {{-- Departemen --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('departemen'))
                             <li class="nav-item">
                                 <a class="submenu-link {{ request()->is('departemen*') ? 'active' : '' }}"
@@ -132,7 +147,7 @@
                                 </a>
                             </li>
                         @endif
-                        {{-- Wilayah Kerja Dokumen --}}
+                        {{-- Wilayah Kerja --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('wilayah-kerja'))
                             <li class="nav-item">
                                 <a class="submenu-link {{ request()->is('wilayah-kerja*') ? 'active' : '' }}"
@@ -144,6 +159,7 @@
                         @endif
                     </ul>
                 </li>
+                @endif
 
                 {{-- Manajemen Dokumen Dropdown --}}
                 @php
@@ -152,7 +168,16 @@
                         request()->is('dokumen-kontrak*') ||
                         request()->is('dokumen-karir*') ||
                         request()->is('dokumen-legalitas*');
+
+                    // Check if user has access to any Dokumen submenu
+                    $hasDokumenAccess = Auth::user()->is_admin ||
+                        Auth::user()->hasAccess('dokumen-karyawan') ||
+                        Auth::user()->hasAccess('dokumen-kontrak') ||
+                        Auth::user()->hasAccess('dokumen-karir') ||
+                        Auth::user()->hasAccess('dokumen-legalitas');
                 @endphp
+
+                @if($hasDokumenAccess)
                 <li class="nav-item has-submenu">
                     <a class="nav-link sidebar-menu-item {{ $dokumenActive ? 'active' : '' }}" href="#"
                         data-menu="manajemenDokumen">
@@ -210,6 +235,7 @@
                         @endif
                     </ul>
                 </li>
+                @endif
             </ul>
         </div>
     </div>

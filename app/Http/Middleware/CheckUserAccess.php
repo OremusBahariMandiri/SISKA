@@ -14,6 +14,8 @@ class CheckUserAccess
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  string  $menu
+     * @param  string|null  $action
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next, $menu, $action = null): Response
@@ -29,11 +31,18 @@ class CheckUserAccess
             return $next($request);
         }
 
-        // Cek apakah user memiliki akses
-        if (!$user->hasAccess($menu, $action)) {
-            abort(403, 'Akses ditolak.');
+        // Jika action adalah 'index', cek juga apakah user memiliki akses 'monitoring'
+        if ($action === 'index') {
+            if ($user->hasAccess($menu, 'index') || $user->hasAccess($menu, 'monitoring')) {
+                return $next($request);
+            }
+        } else {
+            // Cek apakah user memiliki akses
+            if ($user->hasAccess($menu, $action)) {
+                return $next($request);
+            }
         }
 
-        return $next($request);
+        abort(403, 'Akses ditolak.');
     }
 }

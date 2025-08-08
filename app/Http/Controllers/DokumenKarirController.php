@@ -18,11 +18,11 @@ class DokumenKarirController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:dokumen_karir')->only('index', 'show');
-        $this->middleware('check.access:dokumen_karir,tambah')->only('create', 'store');
-        $this->middleware('check.access:dokumen_karir,ubah')->only('edit', 'update');
-        $this->middleware('check.access:dokumen_karir,hapus')->only('destroy');
-        $this->middleware('check.access:dokumen_karir,download')->only('download');
+        $this->middleware('check.access:dokumen-karir')->only('index', 'show');
+        $this->middleware('check.access:dokumen-karir,tambah')->only('create', 'store');
+        $this->middleware('check.access:dokumen-karir,ubah')->only('edit', 'update');
+        $this->middleware('check.access:dokumen-karir,hapus')->only('destroy');
+        $this->middleware('check.access:dokumen-karir,download')->only('download');
     }
 
     public function index()

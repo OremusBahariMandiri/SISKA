@@ -14,10 +14,10 @@ class KeluargaKaryawanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:keluarga_karyawan')->only('index', 'show');
-        $this->middleware('check.access:keluarga_karyawan,tambah')->only('create', 'store');
-        $this->middleware('check.access:keluarga_karyawan,ubah')->only('edit', 'update');
-        $this->middleware('check.access:keluarga_karyawan,hapus')->only('destroy');
+        $this->middleware('check.access:keluarga-karyawan')->only('index', 'show');
+        $this->middleware('check.access:keluarga-karyawan,tambah')->only('create', 'store');
+        $this->middleware('check.access:keluarga-karyawan,ubah')->only('edit', 'update');
+        $this->middleware('check.access:keluarga-karyawan,hapus')->only('destroy');
     }
 
     public function index()

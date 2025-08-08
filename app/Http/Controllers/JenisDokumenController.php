@@ -14,10 +14,10 @@ class JenisDokumenController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:jenis_dokumen')->only('index', 'show');
-        $this->middleware('check.access:jenis_dokumen,tambah')->only('create', 'store');
-        $this->middleware('check.access:jenis_dokumen,ubah')->only('edit', 'update');
-        $this->middleware('check.access:jenis_dokumen,hapus')->only('destroy');
+        $this->middleware('check.access:jenis-dokumen')->only('index', 'show');
+        $this->middleware('check.access:jenis-dokumen,tambah')->only('create', 'store');
+        $this->middleware('check.access:jenis-dokumen,ubah')->only('edit', 'update');
+        $this->middleware('check.access:jenis-dokumen,hapus')->only('destroy');
     }
 
     public function index()

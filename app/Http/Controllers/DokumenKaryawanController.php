@@ -18,12 +18,12 @@ class DokumenKaryawanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:dokumen_karyawan')->only('index', 'show');
-        $this->middleware('check.access:dokumen_karyawan,tambah')->only('create', 'store');
-        $this->middleware('check.access:dokumen_karyawan,ubah')->only('edit', 'update');
-        $this->middleware('check.access:dokumen_karyawan,hapus')->only('destroy');
-        $this->middleware('check.access:dokumen_karyawan,download')->only('download');
-        $this->middleware('check.access:dokumen_karyawan,monitoring')->only('monitoring');
+        $this->middleware('check.access:dokumen-karyawan')->only('index', 'show');
+        $this->middleware('check.access:dokumen-karyawan,tambah')->only('create', 'store');
+        $this->middleware('check.access:dokumen-karyawan,ubah')->only('edit', 'update');
+        $this->middleware('check.access:dokumen-karyawan,hapus')->only('destroy');
+        $this->middleware('check.access:dokumen-karyawan,download')->only('download');
+        $this->middleware('check.access:dokumen-karyawan,monitoring')->only('monitoring');
     }
 
     public function index()

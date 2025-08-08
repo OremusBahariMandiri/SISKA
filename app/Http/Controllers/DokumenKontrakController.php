@@ -18,12 +18,12 @@ class DokumenKontrakController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:dokumen_kontrak')->only('index', 'show');
-        $this->middleware('check.access:dokumen_kontrak,tambah')->only('create', 'store');
-        $this->middleware('check.access:dokumen_kontrak,ubah')->only('edit', 'update');
-        $this->middleware('check.access:dokumen_kontrak,hapus')->only('destroy');
-        $this->middleware('check.access:dokumen_kontrak,download')->only('download');
-        $this->middleware('check.access:dokumen_kontrak,monitoring')->only('monitoring');
+        $this->middleware('check.access:dokumen-kontrak')->only('index', 'show');
+        $this->middleware('check.access:dokumen-kontrak,tambah')->only('create', 'store');
+        $this->middleware('check.access:dokumen-kontrak,ubah')->only('edit', 'update');
+        $this->middleware('check.access:dokumen-kontrak,hapus')->only('destroy');
+        $this->middleware('check.access:dokumen-kontrak,download')->only('download');
+        $this->middleware('check.access:dokumen-kontrak,monitoring')->only('monitoring');
     }
 
     public function index()
