@@ -18,12 +18,12 @@ class DokumenLegalitasController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:dokumen_legalitas')->only('index', 'show');
-        $this->middleware('check.access:dokumen_legalitas,tambah')->only('create', 'store');
-        $this->middleware('check.access:dokumen_legalitas,ubah')->only('edit', 'update');
-        $this->middleware('check.access:dokumen_legalitas,hapus')->only('destroy');
-        $this->middleware('check.access:dokumen_legalitas,download')->only('download');
-        $this->middleware('check.access:dokumen_legalitas,monitoring')->only('monitoring');
+        $this->middleware('check.access:dokumen-legalitas')->only('index', 'show');
+        $this->middleware('check.access:dokumen-legalitas,tambah')->only('create', 'store');
+        $this->middleware('check.access:dokumen-legalitas,ubah')->only('edit', 'update');
+        $this->middleware('check.access:dokumen-legalitas,hapus')->only('destroy');
+        $this->middleware('check.access:dokumen-legalitas,download')->only('download');
+        $this->middleware('check.access:dokumen-legalitas,monitoring')->only('monitoring');
     }
 
     public function index()
