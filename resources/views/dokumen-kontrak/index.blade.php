@@ -16,9 +16,11 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
-                            <a href="{{ route('dokumen-kontrak.create') }}" class="btn btn-light">
-                                <i class="fas fa-plus-circle me-1"></i> Tambah
-                            </a>
+                            @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                                <a href="{{ route('dokumen-kontrak.create') }}" class="btn btn-light">
+                                    <i class="fas fa-plus-circle me-1"></i> Tambah
+                                </a>
+                            @endif
                         </div>
                     </div>
 
@@ -59,6 +61,7 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
+                                        <th>Perusahaan</th>
                                         <th>Kategori</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
@@ -76,7 +79,8 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->KategoriDok }}</td>
+                                            <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-'}}</td>
+                                            <td>{{ $dokumen->kategoriDok->KategoriDok}}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -121,23 +125,31 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    <a href="{{ route('dokumen-kontrak.show', $dokumen->Id) }}"
-                                                        class="btn btn-sm text-white" data-bs-toggle="tooltip"
-                                                        title="Detail" style="background-color: #4a90e2;">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="{{ route('dokumen-kontrak.edit', $dokumen->Id) }}"
-                                                        class="btn btn-sm text-white" data-bs-toggle="tooltip"
-                                                        title="Edit" style="background-color: #8e44ad;">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('dokumen-kontrak.show', $dokumen->Id) }}"
+                                                            class="btn btn-sm text-white" data-bs-toggle="tooltip"
+                                                            title="Detail" style="background-color: #4a90e2;">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @endif
 
-                                                    <button type="button" class="btn btn-sm text-white delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        style="background-color: #f700ff;" data-id="{{ $dokumen->Id }}"
-                                                        data-name="{{ $dokumen->NoRegDok }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('dokumen-kontrak.edit', $dokumen->Id) }}"
+                                                            class="btn btn-sm text-white" data-bs-toggle="tooltip"
+                                                            title="Edit" style="background-color: #8e44ad;">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm text-white delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            style="background-color: #f700ff;"
+                                                            data-id="{{ $dokumen->Id }}"
+                                                            data-name="{{ $dokumen->NoRegDok }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -174,7 +186,7 @@
 
                                 <div class="mb-3">
                                     <label for="filter_karyawan" class="form-label">Nama Karyawan</label>
-                                    <select class="form-select" id="filter_karyawan">
+                                    <select class="form-select select2" id="filter_karyawan">
                                         <option value="">Semua Karyawan</option>
                                         @foreach ($dokumenKontrak->pluck('karyawan.NamaKry')->unique() as $namaKaryawan)
                                             @if ($namaKaryawan)
@@ -186,7 +198,7 @@
 
                                 <div class="mb-3">
                                     <label for="filter_kategori" class="form-label">Kategori</label>
-                                    <select class="form-select" id="filter_kategori">
+                                    <select class="form-select select2" id="filter_kategori">
                                         <option value="">Semua Kategori</option>
                                         @foreach ($dokumenKontrak->pluck('KategoriDok')->unique() as $kategori)
                                             @if ($kategori)
@@ -198,7 +210,7 @@
 
                                 <div class="mb-3">
                                     <label for="filter_jenis" class="form-label">Jenis Dokumen</label>
-                                    <select class="form-select" id="filter_jenis">
+                                    <select class="form-select select2" id="filter_jenis">
                                         <option value="">Semua Jenis</option>
                                         @foreach ($dokumenKontrak->pluck('JenisDok')->unique() as $jenis)
                                             @if ($jenis)
@@ -232,7 +244,7 @@
 
                                 <div class="mb-3">
                                     <label for="filter_status" class="form-label">Status Dokumen</label>
-                                    <select class="form-select" id="filter_status">
+                                    <select class="form-select select2" id="filter_status">
                                         <option value="">Semua Status</option>
                                         <option value="Valid">Berlaku</option>
                                         <option value="Warning">Segera Habis</option>
@@ -323,6 +335,10 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.2.2/css/buttons.bootstrap5.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/select/1.3.4/css/select.bootstrap5.min.css">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css"
+        rel="stylesheet" />
     <style>
         /* CSS dengan spesifisitas tinggi untuk DataTables */
         .dokumenKontrakPage .dataTables_wrapper .dataTables_length,
@@ -508,6 +524,19 @@
         .dt-buttons {
             display: none !important;
         }
+
+        /* Select2 custom styling */
+        .select2-container--bootstrap-5 .select2-selection {
+            border: 1px solid #ced4da;
+            padding: 0.375rem 0.75rem;
+            height: auto;
+            min-height: 38px;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+            padding-left: 0;
+            padding-right: 0;
+        }
     </style>
 @endpush
 
@@ -527,8 +556,15 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.print.min.js"></script>
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize modals
+            var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+            var exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+            var deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+
             // Indonesian language configuration for DataTables
             const indonesianLanguage = {
                 "emptyTable": "Tidak ada data yang tersedia pada tabel ini",
@@ -556,6 +592,27 @@
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
             var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            // Initialize Select2 for filter dropdowns
+            setTimeout(function() {
+                $('.select2').select2({
+                    theme: 'bootstrap-5',
+                    width: '100%',
+                    dropdownParent: $('#filterModal .modal-body'),
+                    placeholder: 'Pilih filter...',
+                    allowClear: true
+                });
+            }, 500);
+
+            // Event listener for filter button
+            $('#filterButton').on('click', function() {
+                filterModal.show();
+            });
+
+            // Event listener for export button
+            $('#exportButton').on('click', function() {
+                exportModal.show();
             });
 
             // Prevent DataTables reinit error
@@ -931,15 +988,6 @@
                 }
             });
 
-            // Event untuk filter dan export button
-            $('#filterButton').on('click', function() {
-                $('#filterModal').modal('show');
-            });
-
-            $('#exportButton').on('click', function() {
-                $('#exportModal').modal('show');
-            });
-
             // Modifikasi event handler untuk tombol Apply Filter
             $('#applyFilter').on('click', function() {
                 // Terapkan filter untuk kolom-kolom
@@ -963,6 +1011,10 @@
             $('#resetFilter').on('click', function() {
                 // Reset the form fields
                 $('#filterForm')[0].reset();
+
+                // Reset Select2 fields specifically
+                $('#filter_karyawan, #filter_kategori, #filter_jenis, #filter_status').val(null).trigger(
+                    'change');
 
                 // Remove active class from filter button
                 $('#filterButton').removeClass('filter-active');
@@ -1033,7 +1085,7 @@
                 $('#deleteForm').attr('action', "{{ url('dokumen-kontrak') }}/" + id);
 
                 // Show the delete confirmation modal
-                $('#deleteConfirmationModal').modal('show');
+                deleteConfirmationModal.show();
             });
 
             // Add necessary styling for SweetAlert to override Bootstrap modals
@@ -1077,11 +1129,14 @@
                     return;
                 }
 
-                // Dapatkan URL detail
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                // Check if user has detail access before redirecting
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Dapatkan URL detail
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
+                @endif
             });
 
             // Form untuk export

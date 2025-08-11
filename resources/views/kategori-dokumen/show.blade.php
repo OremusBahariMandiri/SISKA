@@ -10,7 +10,8 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-folder me-2"></i>Detail Kategori Dokumen</span>
                         <div>
-                            <a href="{{ route('kategori-dokumen.edit', $kategoriDokumen->id) }}" class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('kategori-dokumen.edit', $kategoriDokumen->id) }}"
+                                class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
                             <a href="{{ route('kategori-dokumen.index') }}" class="btn btn-light btn-sm">
@@ -34,6 +35,15 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="info-group mb-3">
+                                    <label class="info-label fw-bold">Golongan Dokumen</label>
+                                    <div class="info-value">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                            <div class="form-control">{{ $kategoriDokumen->GolDok }}</div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -43,7 +53,7 @@
                                 <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Jenis Dokumen Terkait</h5>
                             </div>
                             <div class="card-body">
-                                @if($kategoriDokumen->jenisDokumen->count() > 0)
+                                @if ($kategoriDokumen->jenisDokumen->count() > 0)
                                     <div class="table-responsive">
                                         <table class="table table-bordered table-striped table-hover">
                                             <thead class="table-light">
@@ -54,7 +64,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($kategoriDokumen->jenisDokumen as $index => $jenis)
+                                                @foreach ($kategoriDokumen->jenisDokumen as $index => $jenis)
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
                                                         <td>{{ $jenis->IdKode }}</td>

@@ -23,7 +23,38 @@ class KeluargaKaryawanController extends Controller
     public function index()
     {
         $keluargaKaryawans = KeluargaKaryawan::with('karyawan')->get();
-        return view('keluarga-karyawan.index', compact('keluargaKaryawans'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'keluarga-karyawan')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('keluarga-karyawan.index', compact('keluargaKaryawans', 'userPermissions'));
     }
 
     public function create()

@@ -26,10 +26,42 @@ class DokumenKaryawanController extends Controller
         $this->middleware('check.access:dokumen-karyawan,monitoring')->only('monitoring');
     }
 
+    // Update the index method in DokumenKaryawanController
     public function index()
     {
         $dokumenKaryawan = DokumenKaryawan::with(['karyawan'])->get();
-        return view('dokumen-karyawan.index', compact('dokumenKaryawan'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'dokumen-karyawan')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('dokumen-karyawan.index', compact('dokumenKaryawan', 'userPermissions'));
     }
 
     public function create()

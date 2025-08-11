@@ -16,9 +16,11 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
+                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                             <a href="{{ route('keluarga-karyawan.create') }}" class="btn btn-light">
                                 <i class="fas fa-plus-circle me-1"></i> Tambah
                             </a>
+                            @endif
                         </div>
                     </div>
 
@@ -90,21 +92,29 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
+                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                     <a href="{{ route('keluarga-karyawan.show', $keluarga->id) }}"
                                                         class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                     <a href="{{ route('keluarga-karyawan.edit', $keluarga->id) }}"
                                                         class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
                                                         title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                     <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                         data-bs-toggle="tooltip" title="Hapus"
                                                         data-id="{{ $keluarga->id }}"
                                                         data-name="{{ $keluarga->NamaKlg }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -420,6 +430,7 @@
             // Initialize modals
             var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
             var exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+            var deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
 
             // Event listener for filter button
             $('#filterButton').on('click', function() {
@@ -629,11 +640,14 @@
                     return;
                 }
 
+                // Check if user has detail access before redirecting
+                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                 // Get detail link URL
                 var detailLink = $(this).find('a[title="Detail"]').attr('href');
                 if (detailLink) {
                     window.location.href = detailLink;
                 }
+                @endif
             });
 
             // Handle delete confirmation
@@ -648,7 +662,7 @@
                 $('#deleteForm').attr('action', "{{ url('keluarga-karyawan') }}/" + id);
 
                 // Show modal
-                $('#deleteConfirmationModal').modal('show');
+                deleteConfirmationModal.show();
             });
 
             // Add hover effects for rows

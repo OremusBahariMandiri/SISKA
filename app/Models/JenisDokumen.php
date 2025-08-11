@@ -14,6 +14,7 @@ class JenisDokumen extends Model
     protected $fillable = [
         'IdKode',
         'IdKodeA06',
+        'GolDok',
         'JenisDok',
         'created_by',
         'updated_by'

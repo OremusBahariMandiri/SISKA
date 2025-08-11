@@ -24,6 +24,7 @@ class DokumenKontrak extends Model
     protected $fillable = [
         'IdKode',
         'IdKodeA04',
+        'NamaPrsh',
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
@@ -55,6 +56,16 @@ class DokumenKontrak extends Model
     public function karyawan()
     {
         return $this->belongsTo(Karyawan::class, 'IdKodeA04', 'IdKode');
+    }
+
+    public function kategoriDok()
+    {
+        return $this->belongsTo(KategoriDokumen::class, 'KategoriDok', 'IdKode');
+    }
+
+    public function perusahaan()
+    {
+        return $this->belongsTo(Perusahaan::class, 'NamaPrsh', 'IdKode');
     }
 
     // Relationship with A01DmUser (created by)

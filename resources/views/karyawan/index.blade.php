@@ -16,9 +16,11 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
+                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                             <a href="{{ route('karyawan.create') }}" class="btn btn-light">
                                 <i class="fas fa-plus-circle me-1"></i> Tambah
                             </a>
+                            @endif
                         </div>
                     </div>
 
@@ -158,21 +160,29 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
+                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                     <a href="{{ route('karyawan.show', $karyawan->id) }}"
                                                         class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                     <a href="{{ route('karyawan.edit', $karyawan->id) }}"
                                                         class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
                                                         title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                     <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                         data-bs-toggle="tooltip" title="Hapus"
                                                         data-id="{{ $karyawan->id }}"
                                                         data-name="{{ $karyawan->NamaKry }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -304,6 +314,38 @@
                             <i class="fas fa-print me-2"></i> Print
                         </button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" aria-labelledby="deleteConfirmationModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteConfirmationModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Apakah Anda yakin ingin menghapus karyawan <strong id="karyawanNameToDelete"></strong>?</p>
+                    <p class="text-danger"><i class="fas fa-info-circle me-1"></i>Tindakan ini tidak dapat dibatalkan!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i>Batal
+                    </button>
+                    <form id="deleteForm" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-1"></i>Hapus
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -491,6 +533,7 @@
         $(document).ready(function() {
             // Initialize modal
             var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+            var deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
 
             // Event listener for filter button
             $('#filterButton').on('click', function() {
@@ -510,23 +553,23 @@
 
             // Initialize DataTables - FIXED: removed parentheses after selector
             var karyawanTable = $('#karyawanTable').DataTable(
-                //     {
-                //     responsive: true,
-                //     language: {
-                //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-                //     },
-                //     searching: true,
-                //     ordering: true,
-                //     lengthMenu: [
-                //         [10, 25, 50, -1],
-                //         [10, 25, 50, "Semua"]
-                //     ],
-                //     dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-                //         "<'row'<'col-sm-12'tr>>" +
-                //         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-                //     autoWidth: false
-                // }
-            );
+            //     {
+            //     responsive: true,
+            //     language: {
+            //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+            //     },
+            //     searching: true,
+            //     ordering: true,
+            //     lengthMenu: [
+            //         [10, 25, 50, -1],
+            //         [10, 25, 50, "Semua"]
+            //     ],
+            //     dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+            //         "<'row'<'col-sm-12'tr>>" +
+            //         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            //     autoWidth: false
+            // }
+        );
 
             // Apply filter function - Improved implementation for more reliable filtering
             $('#applyFilter').click(function() {
@@ -697,11 +740,14 @@
                     return;
                 }
 
+                // Check if user has detail access before redirecting
+                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                 // Get detail link URL
                 var detailLink = $(this).find('a[title="Detail"]').attr('href');
                 if (detailLink) {
                     window.location.href = detailLink;
                 }
+                @endif
             });
 
             // Handle delete confirmation
@@ -709,28 +755,14 @@
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
-                if (confirm('Apakah Anda yakin ingin menghapus karyawan: ' + name + '?')) {
-                    // Create and submit form dynamically
-                    var form = $('<form>', {
-                        'method': 'POST',
-                        'action': Laravel.baseUrl + '/karyawan/' + id
-                    });
+                // Set employee name in modal
+                $('#karyawanNameToDelete').text(name);
 
-                    form.append($('<input>', {
-                        'name': '_method',
-                        'type': 'hidden',
-                        'value': 'DELETE'
-                    }));
+                // Set form action URL with explicit URL construction
+                $('#deleteForm').attr('action', "{{ url('karyawan') }}/" + id);
 
-                    form.append($('<input>', {
-                        'name': '_token',
-                        'type': 'hidden',
-                        'value': Laravel.csrfToken
-                    }));
-
-                    $('body').append(form);
-                    form.submit();
-                }
+                // Show modal
+                deleteConfirmationModal.show();
             });
 
             // Add hover effects for rows

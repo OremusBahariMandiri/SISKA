@@ -9,9 +9,11 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-building me-2"></i>Manajemen Perusahaan</span>
+                        @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                         <a href="{{ route('perusahaan.create') }}" class="btn btn-light">
                             <i class="fas fa-plus-circle me-1"></i> Tambah
                         </a>
+                        @endif
                     </div>
 
                     <div class="card-body">
@@ -57,22 +59,29 @@
                                             <td>{{ $perusahaan->DirekturUtm }}</td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
+                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                     <a href="{{ route('perusahaan.show', $perusahaan->id) }}"
                                                         class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                     <a href="{{ route('perusahaan.edit', $perusahaan->id) }}"
                                                         class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
                                                         title="Edit">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                     <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                         data-bs-toggle="tooltip" title="Hapus"
                                                         data-id="{{ $perusahaan->id }}"
-                                                        data-name="{{ $perusahaan->NamaPrsh }}"
-                                                        data-bs-toggle="tooltip" title="Hapus">
+                                                        data-name="{{ $perusahaan->NamaPrsh }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -272,11 +281,14 @@
                     return;
                 }
 
+                // Check if user has detail access before redirecting
+                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                 // Get detail link URL
                 var detailLink = $(this).find('a[title="Detail"]').attr('href');
                 if (detailLink) {
                     window.location.href = detailLink;
                 }
+                @endif
             });
 
             // Add flash effect when hovering over rows

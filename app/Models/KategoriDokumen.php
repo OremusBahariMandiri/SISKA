@@ -13,6 +13,7 @@ class KategoriDokumen extends Model
 
     protected $fillable = [
         'IdKode',
+        'GolDok',
         'KategoriDok',
         'created_by',
         'updated_by'

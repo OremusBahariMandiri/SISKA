@@ -58,6 +58,19 @@
                                     </div>
 
                                     <div class="form-group mb-3">
+                                        <label for="GolDok" class="form-label fw-bold">Golongan Dokumen <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+                                            <input type="text" class="form-control @error('GolDok') is-invalid @enderror" id="GolDok" name="GolDok"
+                                                value="{{ old('GolDok') }}" required placeholder="Masukkan golongan dokumen">
+                                            @error('GolDok')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group mb-3">
                                         <label for="JenisDok" class="form-label fw-bold">Nama Jenis Dokumen <span
                                                 class="text-danger">*</span></label>
                                         <div class="input-group">
