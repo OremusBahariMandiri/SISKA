@@ -67,6 +67,7 @@ class Karyawan extends Model
         return $this->hasMany(KeluargaKaryawan::class, 'IdKodeA04', 'IdKode');
     }
 
+
     public function dokumen()
     {
         return $this->hasMany(DokumenKaryawan::class, 'IdKodeA04', 'IdKode');

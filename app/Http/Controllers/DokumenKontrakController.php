@@ -203,7 +203,7 @@ class DokumenKontrakController extends Controller
 
     public function show(DokumenKontrak $dokumenKontrak)
     {
-        $dokumenKontrak->load(['karyawan']);
+        $dokumenKontrak->load(['karyawan','KategoriDok']);
         return view('dokumen-kontrak.show', compact('dokumenKontrak'));
     }
 

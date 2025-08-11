@@ -36,14 +36,29 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="form-group mb-3">
+                                        <label for="GolDok" class="form-label fw-bold">Golongan Dokumen <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
+                                            <input type="text" class="form-control @error('GolDok') is-invalid @enderror"
+                                                id="GolDok" name="GolDok" value="{{ old('GolDok') }}" required
+                                                placeholder="Masukkan golongan dokumen">
+                                            @error('GolDok')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                    <div class="form-group mb-3">
                                         <label for="IdKodeA06" class="form-label fw-bold">Kategori Dokumen <span
                                                 class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                            <select class="form-select @error('IdKodeA06') is-invalid @enderror" id="IdKodeA06" name="IdKodeA06" required>
+                                            <select class="form-select @error('IdKodeA06') is-invalid @enderror"
+                                                id="IdKodeA06" name="IdKodeA06" required>
                                                 <option value="" selected disabled>Pilih Kategori Dokumen</option>
-                                                @foreach($kategoriDokumens as $kategori)
-                                                    <option value="{{ $kategori->IdKode }}" {{ old('IdKodeA06') == $kategori->IdKode ? 'selected' : '' }}>
+                                                @foreach ($kategoriDokumens as $kategori)
+                                                    <option value="{{ $kategori->IdKode }}"
+                                                        {{ old('IdKodeA06') == $kategori->IdKode ? 'selected' : '' }}>
                                                         {{ $kategori->KategoriDok }}
                                                     </option>
                                                 @endforeach
@@ -57,32 +72,22 @@
                                         </div>
                                     </div>
 
-                                    <div class="form-group mb-3">
-                                        <label for="GolDok" class="form-label fw-bold">Golongan Dokumen <span
-                                                class="text-danger">*</span></label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-layer-group"></i></span>
-                                            <input type="text" class="form-control @error('GolDok') is-invalid @enderror" id="GolDok" name="GolDok"
-                                                value="{{ old('GolDok') }}" required placeholder="Masukkan golongan dokumen">
-                                            @error('GolDok')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-                                    </div>
 
                                     <div class="form-group mb-3">
                                         <label for="JenisDok" class="form-label fw-bold">Nama Jenis Dokumen <span
                                                 class="text-danger">*</span></label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                                            <input type="text" class="form-control @error('JenisDok') is-invalid @enderror" id="JenisDok" name="JenisDok"
-                                                value="{{ old('JenisDok') }}" required>
+                                            <input type="text"
+                                                class="form-control @error('JenisDok') is-invalid @enderror" id="JenisDok"
+                                                name="JenisDok" value="{{ old('JenisDok') }}" required>
                                             @error('JenisDok')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                         <div class="form-text">
-                                            <i class="fas fa-info-circle me-1"></i>Contoh: SOP, Instruksi Kerja, Pedoman, dll.
+                                            <i class="fas fa-info-circle me-1"></i>Contoh: SOP, Instruksi Kerja, Pedoman,
+                                            dll.
                                         </div>
                                     </div>
                                 </div>

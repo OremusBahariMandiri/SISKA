@@ -10,7 +10,8 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Detail Jenis Dokumen</span>
                         <div>
-                            <a href="{{ route('jenis-dokumen.edit', $jenisDokumen->id   ) }}" class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('jenis-dokumen.edit', $jenisDokumen->id) }}"
+                                class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
                             <a href="{{ route('jenis-dokumen.index') }}" class="btn btn-light btn-sm">
@@ -26,23 +27,24 @@
                             </div>
                             <div class="card-body">
 
+                                <div class="info-group mb-3">
+                                    <label class="info-label fw-bold">Golongan Dokumen</label>
+                                    <div class="info-value">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                            <div class="form-control">
+                                                {{ $jenisDokumen->kategoriDokumen->GolDok ?? 'Tidak tersedia' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="info-group mb-3">
                                     <label class="info-label fw-bold">Kategori Dokumen</label>
                                     <div class="info-value">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                            <div class="form-control">{{ $jenisDokumen->kategoriDokumen->KategoriDok ?? 'Tidak tersedia' }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="info-group mb-3">
-                                    <label class="info-label fw-bold">Golongan Dokumen</label>
-                                    <div class="info-value">
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                            <div class="form-control">{{ $jenisDokumen->kategoriDokumen->GolDok ?? 'Tidak tersedia' }}</div>
+                                            <div class="form-control">
+                                                {{ $jenisDokumen->kategoriDokumen->KategoriDok ?? 'Tidak tersedia' }}</div>
                                         </div>
                                     </div>
                                 </div>
@@ -76,7 +78,8 @@
                     <h5 class="modal-title" id="deleteModalLabel">
                         <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center">
@@ -92,7 +95,8 @@
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         <i class="fas fa-times me-2"></i>Batal
                     </button>
-                    <form action="{{ route('jenis-dokumen.destroy', $jenisDokumen->IdKode) }}" method="POST" class="d-inline">
+                    <form action="{{ route('jenis-dokumen.destroy', $jenisDokumen->IdKode) }}" method="POST"
+                        class="d-inline">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">

@@ -24,6 +24,9 @@ class DokumenKarir extends Model
     protected $fillable = [
         'IdKode',
         'IdKodeA04',
+        'IdKodeA08',
+        'IdKodeA09',
+        'IdKodeA10',
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
@@ -55,6 +58,26 @@ class DokumenKarir extends Model
     public function karyawan()
     {
         return $this->belongsTo(Karyawan::class, 'IdKodeA04', 'IdKode');
+    }
+
+    public function kategori()
+    {
+        return $this->belongsTo(KategoriDokumen::class, 'KategoriDok', 'IdKode');
+    }
+
+    public function jabatan()
+    {
+        return $this->belongsTo(Jabatan::class, 'IdKodeA08', 'IdKode');
+    }
+
+    public function departemen()
+    {
+        return $this->belongsTo(Departemen::class, 'IdKodeA09', 'IdKode');
+    }
+
+    public function wilker()
+    {
+        return $this->belongsTo(WilayahKerja::class, 'IdKodeA10', 'IdKode');
     }
 
     // Relationship with A01DmUser (created by)

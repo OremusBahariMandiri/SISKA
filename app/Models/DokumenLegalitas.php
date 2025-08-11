@@ -57,6 +57,11 @@ class DokumenLegalitas extends Model
         return $this->belongsTo(Karyawan::class, 'IdKodeA04', 'IdKode');
     }
 
+    public function kategori()
+    {
+        return $this->belongsTo(Karyawan::class, 'KategoriDok', 'IdKode');
+    }
+
     // Relationship with A01DmUser (created by)
     public function createdByUser()
     {

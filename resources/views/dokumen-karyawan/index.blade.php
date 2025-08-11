@@ -78,7 +78,7 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->KategoriDok}}</td>
+                                            <td>{{ $dokumen->kategoriDok->KategoriDok ?? '-' }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)

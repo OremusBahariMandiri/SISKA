@@ -13,12 +13,16 @@
                             <button type="button" class="btn btn-light me-2" id="filterButton">
                                 <i class="fas fa-filter me-1"></i> Filter
                             </button>
+                            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
+                            @endif
+                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                             <a href="{{ route('dokumen-karir.create') }}" class="btn btn-light">
                                 <i class="fas fa-plus-circle me-1"></i> Tambah
                             </a>
+                            @endif
                         </div>
                     </div>
 
@@ -61,6 +65,9 @@
                                         <th>Nama Karyawan</th>
                                         <th>Kategori</th>
                                         <th>Jenis</th>
+                                        <th>Jabatan</th>
+                                        <th>Departemen</th>
+                                        <th>Wilker</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
@@ -76,8 +83,11 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->KategoriDok }}</td>
+                                            <td>{{ $dokumen->kategori->KategoriDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
+                                            <td>{{ $dokumen->jabatan->Jabatan }}</td>
+                                            <td>{{ $dokumen->departemen->Departemen }}</td>
+                                            <td>{{ $dokumen->wilker->WilayahKerja }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
                                                     {{ $dokumen->TglTerbitDok->format('d/m/Y') }}
@@ -122,24 +132,30 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
+                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                     <a href="{{ route('dokumen-karir.show', $dokumen->Id) }}"
                                                         class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                         title="Detail" style="background-color: #4a90e2;">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
+                                                    @endif
+
+                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                     <a href="{{ route('dokumen-karir.edit', $dokumen->Id) }}"
                                                         class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                         title="Edit" style="background-color: #8e44ad;">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
+                                                    @endif
 
+                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                     <button type="button" class="btn btn-sm text-white delete-confirm"
                                                         data-bs-toggle="tooltip" title="Hapus"
                                                         style="background-color: #f700ff;" data-id="{{ $dokumen->Id }}"
-                                                        data-name="{{ $dokumen->NoRegDok }}" data-bs-toggle="tooltip"
-                                                        title="Hapus">
+                                                        data-name="{{ $dokumen->NoRegDok }}">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -938,9 +954,11 @@
                 $('#filterModal').modal('show');
             });
 
+            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
             $('#exportButton').on('click', function() {
                 $('#exportModal').modal('show');
             });
+            @endif
 
             // Modifikasi event handler untuk tombol Apply Filter
             $('#applyFilter').on('click', function() {
@@ -1002,6 +1020,7 @@
                 }
             }
 
+            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
             // Export buttons
             $('#exportExcel').on('click', function() {
                 $('.excel-export-btn').trigger('click');
@@ -1017,6 +1036,7 @@
                 $('.print-export-btn').trigger('click');
                 $('#exportModal').modal('hide');
             });
+            @endif
 
             // Handle Delete Confirmation
             $(document).on('click', '.delete-confirm', function(e) {
@@ -1079,28 +1099,31 @@
                     return;
                 }
 
+                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                 // Dapatkan URL detail
                 var detailLink = $(this).find('a[title="Detail"]').attr('href');
                 if (detailLink) {
                     window.location.href = detailLink;
                 }
+                @endif
             });
 
             // Form untuk export
+            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
             $(`
-    <form id="exportForm" action="{{ route('dokumen-karir.export-excel') }}" method="POST" class="d-none">
-    @csrf
-    <input type="hidden" name="filter_noreg" id="export_filter_noreg">
-    <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
-    <input type="hidden" name="filter_kategori" id="export_filter_kategori">
-    <input type="hidden" name="filter_jenis" id="export_filter_jenis">
-    <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
-    <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
-    <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
-    <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
-    <input type="hidden" name="filter_status" id="export_filter_status">
-    </form>
-    `).insertAfter('#dokumenKarirTable');
+            <form id="exportForm" action="{{ route('dokumen-karir.export-excel') }}" method="POST" class="d-none">
+            @csrf
+            <input type="hidden" name="filter_noreg" id="export_filter_noreg">
+            <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
+            <input type="hidden" name="filter_kategori" id="export_filter_kategori">
+            <input type="hidden" name="filter_jenis" id="export_filter_jenis">
+            <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
+            <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
+            <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
+            <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
+            <input type="hidden" name="filter_status" id="export_filter_status">
+            </form>
+            `).insertAfter('#dokumenKarirTable');
 
             // Update event handler untuk tombol Export Excel
             $('#exportExcel').on('click', function() {
@@ -1125,6 +1148,7 @@
                 $('#exportForm').submit();
                 $('#exportModal').modal('hide');
             });
+            @endif
 
             // Tambahkan efek flash saat baris di-hover
             $('#dokumenKarirTable tbody').on('mouseenter', 'tr', function() {
