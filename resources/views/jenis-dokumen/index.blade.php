@@ -9,10 +9,10 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Manajemen Jenis Dokumen</span>
-                        @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
-                        <a href="{{ route('jenis-dokumen.create') }}" class="btn btn-light">
-                            <i class="fas fa-plus-circle me-1"></i> Tambah
-                        </a>
+                        @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                            <a href="{{ route('jenis-dokumen.create') }}" class="btn btn-light">
+                                <i class="fas fa-plus-circle me-1"></i> Tambah
+                            </a>
                         @endif
                     </div>
 
@@ -38,9 +38,9 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
+                                        <th>Golongan Dokumen</th>
                                         <th>Jenis Dokumen</th>
                                         <th>Kategori Dokumen</th>
-                                        <th>Golongan Dokumen</th>
                                         <th width="20%" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -48,39 +48,40 @@
                                     @foreach ($jenisDokumens as $jenis)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $jenis->GolDok }}</td>
                                             <td>{{ $jenis->JenisDok }}</td>
                                             <td>
-                                                @if($jenis->kategoriDokumen)
+                                                @if ($jenis->kategoriDokumen)
                                                     {{ $jenis->kategoriDokumen->KategoriDok }}
                                                 @else
                                                     <span class="text-muted fst-italic">Tidak ada kategori</span>
                                                 @endif
                                             </td>
-                                            <td>{{ $jenis->GolDok }}</td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                                                    <a href="{{ route('jenis-dokumen.show', $jenis->id) }}"
-                                                        class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('jenis-dokumen.show', $jenis->id) }}"
+                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip"
+                                                            title="Detail">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
-                                                    <a href="{{ route('jenis-dokumen.edit', $jenis->id) }}"
-                                                        class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
-                                                        title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('jenis-dokumen.edit', $jenis->id) }}"
+                                                            class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                            title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
-                                                    <button type="button" class="btn btn-sm btn-danger delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        data-id="{{ $jenis->id }}"
-                                                        data-name="{{ $jenis->JenisDok }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm btn-danger delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            data-id="{{ $jenis->id }}"
+                                                            data-name="{{ $jenis->JenisDok }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </td>
@@ -282,12 +283,12 @@
                 }
 
                 // Check if user has detail access before redirecting
-                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Get detail link URL
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
                 @endif
             });
 

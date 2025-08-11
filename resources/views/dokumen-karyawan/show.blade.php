@@ -53,7 +53,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->KategoriDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKaryawan->KategoriDok->KategoriDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>

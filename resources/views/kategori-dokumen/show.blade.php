@@ -27,15 +27,6 @@
                             </div>
                             <div class="card-body">
                                 <div class="info-group mb-3">
-                                    <label class="info-label fw-bold">Nama Kategori</label>
-                                    <div class="info-value">
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                            <div class="form-control">{{ $kategoriDokumen->KategoriDok }}</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="info-group mb-3">
                                     <label class="info-label fw-bold">Golongan Dokumen</label>
                                     <div class="info-value">
                                         <div class="input-group">
@@ -44,6 +35,16 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="info-group mb-3">
+                                    <label class="info-label fw-bold">Nama Kategori</label>
+                                    <div class="info-value">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                            <div class="form-control">{{ $kategoriDokumen->KategoriDok }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
 

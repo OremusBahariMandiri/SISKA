@@ -6,6 +6,9 @@ use App\Models\DokumenKarir;
 use App\Models\Karyawan;
 use App\Models\KategoriDokumen;
 use App\Models\JenisDokumen;
+use App\Models\Jabatan;
+use App\Models\Departemen;
+use App\Models\WilayahKerja;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -27,8 +30,39 @@ class DokumenKarirController extends Controller
 
     public function index()
     {
-        $dokumenKarir = DokumenKarir::with(['karyawan'])->get();
-        return view('dokumen-karir.index', compact('dokumenKarir'));
+        $dokumenKarir = DokumenKarir::with(['karyawan', 'jabatan', 'departemen', 'wilker','kategori'])->get();
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'dokumen-karir')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('dokumen-karir.index', compact('dokumenKarir', 'userPermissions'));
     }
 
     public function create()
@@ -36,6 +70,9 @@ class DokumenKarirController extends Controller
         $karyawan = Karyawan::all();
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+        $jabatan = Jabatan::all();
+        $departemen = Departemen::all();
+        $wilker = WilayahKerja::all();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
@@ -54,7 +91,7 @@ class DokumenKarirController extends Controller
         // Generate ID otomatis
         $newId = $this->generateId('B03', 'B03DokKarir');
 
-        return view('dokumen-karir.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
+        return view('dokumen-karir.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId', 'jabatan', 'departemen', 'wilker'));
     }
 
     public function store(Request $request)
@@ -62,6 +99,9 @@ class DokumenKarirController extends Controller
         $request->validate([
             'NoRegDok' => 'required|unique:B03DokKarir,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
+            'IdKodeA08' => 'required|exists:A08DmJabatan,IdKode',
+            'IdKodeA09' => 'required|exists:A09DmDepartemen,IdKode',
+            'IdKodeA10' => 'required|exists:A10DmWilayahKrj,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -110,6 +150,9 @@ class DokumenKarirController extends Controller
         $data = [
             'IdKode' => $IdKode,
             'IdKodeA04' => $request->IdKodeA04,
+            'IdKodeA08' => $request->IdKodeA08,
+            'IdKodeA09' => $request->IdKodeA09,
+            'IdKodeA10' => $request->IdKodeA10,
             'NoRegDok' => $request->NoRegDok,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
@@ -167,7 +210,7 @@ class DokumenKarirController extends Controller
 
     public function show(DokumenKarir $dokumenKarir)
     {
-        $dokumenKarir->load(['karyawan']);
+        $dokumenKarir->load(['karyawan', 'jabatan', 'departemen', 'wilker','kategori']);
         return view('dokumen-karir.show', compact('dokumenKarir'));
     }
 
@@ -176,6 +219,9 @@ class DokumenKarirController extends Controller
         $karyawan = Karyawan::all();
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+        $jabatan = Jabatan::all();
+        $departemen = Departemen::all();
+        $wilker = WilayahKerja::all();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
@@ -191,7 +237,7 @@ class DokumenKarirController extends Controller
             ];
         }
 
-        return view('dokumen-karir.edit', compact('dokumenKarir', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
+        return view('dokumen-karir.edit', compact('dokumenKarir', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'jabatan', 'departemen', 'wilker'));
     }
 
     public function update(Request $request, DokumenKarir $dokumenKarir)
@@ -199,6 +245,9 @@ class DokumenKarirController extends Controller
         $request->validate([
             'NoRegDok' => 'required|unique:B03DokKarir,NoRegDok,' . $dokumenKarir->Id . ',Id',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
+            'IdKodeA08' => 'required|exists:A08DmJabatan,IdKode',
+            'IdKodeA09' => 'required|exists:A09DmDepartemen,IdKode',
+            'IdKodeA10' => 'required|exists:A10DmWilayahKrj,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -239,6 +288,9 @@ class DokumenKarirController extends Controller
 
         $data = [
             'IdKodeA04' => $request->IdKodeA04,
+            'IdKodeA08' => $request->IdKodeA08,
+            'IdKodeA09' => $request->IdKodeA09,
+            'IdKodeA10' => $request->IdKodeA10,
             'NoRegDok' => $request->NoRegDok,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
@@ -276,7 +328,7 @@ class DokumenKarirController extends Controller
 
             // Get karyawan name
             $karyawan = Karyawan::where('IdKode', $request->IdKodeA04)->first();
-            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKaryawan) : 'unknown';
+            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKry) : 'unknown';
 
             // Format tanggal berakhir
             $tglBerakhir = $request->ValidasiDok == 'Tetap' ? 'Permanent' : Carbon::parse($request->TglBerakhirDok)->format('Ymd');
@@ -384,5 +436,38 @@ class DokumenKarirController extends Controller
             ->get();
 
         return response()->json($jenisDokumen);
+    }
+
+    public function searchKaryawan(Request $request)
+    {
+        $term = $request->get('q');
+
+        $karyawan = Karyawan::where('NamaKry', 'LIKE', '%' . $term . '%')
+            ->orWhere('NIP', 'LIKE', '%' . $term . '%')
+            ->select('IdKode', 'NamaKry', 'NIP')
+            ->limit(10)
+            ->get();
+
+        return response()->json($karyawan);
+    }
+
+    public function getKaryawanDetails($id)
+    {
+        $karyawan = Karyawan::with(['jabatan', 'departemen', 'wilker'])
+            ->where('IdKode', $id)
+            ->first();
+
+        if ($karyawan) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'jabatan' => $karyawan->jabatan ? $karyawan->jabatan->IdKode : null,
+                    'departemen' => $karyawan->departemen ? $karyawan->departemen->IdKode : null,
+                    'wilker' => $karyawan->wilker ? $karyawan->wilker->IdKode : null,
+                ]
+            ]);
+        }
+
+        return response()->json(['success' => false]);
     }
 }

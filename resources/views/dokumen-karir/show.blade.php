@@ -24,7 +24,7 @@
                             <!-- Basic Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                     </div>
                                     <div class="card-body">
@@ -49,11 +49,41 @@
                                         </div>
 
                                         <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Jabatan</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
+                                                    <div class="form-control">{{ $dokumenKarir->jabatan->GolonganJbt ?? '' }} - {{ $dokumenKarir->jabatan->Jabatan ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Departemen</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                    <div class="form-control">{{ $dokumenKarir->departemen->GolonganDep ?? '' }} - {{ $dokumenKarir->departemen->Departemen ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Wilayah Kerja</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                                                    <div class="form-control">{{ $dokumenKarir->wilker->GolonganWilker ?? '' }} - {{ $dokumenKarir->wilker->WilayahKerja ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Kategori Dokumen</label>
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $dokumenKarir->KategoriDok }}</div>
+                                                    <div class="form-control">{{ $dokumenKarir->kategori->KategoriDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -84,7 +114,7 @@
                             <!-- Validity and Date Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                         <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
                                     </div>
                                     <div class="card-body">
@@ -175,7 +205,7 @@
 
                         <!-- File Information -->
                         <div class="card border-secondary">
-                            <div class="card-header bg-secondary bg-opacity-25 text-white">
+                            <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                 <h5 class="mb-0"><i class="fas fa-file me-2"></i>Dokumen & Status</h5>
                             </div>
                             <div class="card-body">

@@ -44,6 +44,11 @@ class DokumenKaryawan extends Model
         return $this->belongsTo(Karyawan::class, 'IdKodeA04', 'IdKode');
     }
 
+    public function kategori()
+    {
+        return $this->hasMany(KategoriDokumen::class, 'KategoriDok', 'IdKode');
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by', 'IdKode');
@@ -68,13 +73,13 @@ class DokumenKaryawan extends Model
     public function scopeAkanExpired($query, $days = 30)
     {
         return $query->where('TglBerakhirDok', '<=', now()->addDays($days))
-                    ->where('StatusDok', 'Berlaku');
+            ->where('StatusDok', 'Berlaku');
     }
 
     public function scopeExpired($query)
     {
         return $query->where('TglBerakhirDok', '<', now())
-                    ->where('StatusDok', 'Berlaku');
+            ->where('StatusDok', 'Berlaku');
     }
 
     // Accessors

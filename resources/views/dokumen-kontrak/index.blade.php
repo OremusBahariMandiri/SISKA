@@ -61,9 +61,9 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
-                                        <th>Perusahaan</th>
                                         <th>Kategori</th>
                                         <th>Jenis</th>
+                                        <th>Perusahaan</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
@@ -79,9 +79,9 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-'}}</td>
-                                            <td>{{ $dokumen->kategoriDok->KategoriDok}}</td>
+                                            <td>{{ $dokumen->kategoriDok->KategoriDok ?? '-' }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
+                                            <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-' }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
                                                     {{ \Carbon\Carbon::parse($dokumen->TglTerbitDok)->format('d/m/Y') }}

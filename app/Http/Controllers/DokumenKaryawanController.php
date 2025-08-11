@@ -29,7 +29,7 @@ class DokumenKaryawanController extends Controller
     // Update the index method in DokumenKaryawanController
     public function index()
     {
-        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'])->get();
+        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'],'kategori')->get();
 
         // Get user permissions for this menu
         $userPermissions = [];
@@ -200,7 +200,7 @@ class DokumenKaryawanController extends Controller
 
     public function show(DokumenKaryawan $dokumenKaryawan)
     {
-        $dokumenKaryawan->load(['karyawan']);
+        $dokumenKaryawan->load(['karyawan','kategori']);
         return view('dokumen-karyawan.show', compact('dokumenKaryawan'));
     }
 

@@ -38,8 +38,8 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th>Kategori Dokumen</th>
                                         <th>Golongan Dokumen</th>
+                                        <th>Kategori Dokumen</th>
                                         <th width="20%" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -47,8 +47,8 @@
                                     @foreach ($kategoriDokumens as $kategori)
                                         <tr>
                                             <td>{{ $loop->iteration }}</td>
-                                            <td>{{ $kategori->KategoriDok }}</td>
                                             <td>{{ $kategori->GolDok }}</td>
+                                            <td>{{ $kategori->KategoriDok }}</td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))

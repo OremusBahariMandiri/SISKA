@@ -28,7 +28,7 @@ class DokumenLegalitasController extends Controller
 
     public function index()
     {
-        $dokumenLegalitas = DokumenLegalitas::with(['karyawan'])->get();
+        $dokumenLegalitas = DokumenLegalitas::with(['karyawan','kategori'])->get();
         return view('dokumen-legalitas.index', compact('dokumenLegalitas'));
     }
 
@@ -170,7 +170,7 @@ class DokumenLegalitasController extends Controller
     public function show(DokumenLegalitas $dokumenLegalita)
     {
         $dokumenLegalitas = $dokumenLegalita;
-        $dokumenLegalitas->load(['karyawan']);
+        $dokumenLegalitas->load(['karyawan','kategori']);
 
         // Initialize empty collections for any counts in the view
         $expired = collect();
