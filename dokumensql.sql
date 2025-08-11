@@ -114,3 +114,14 @@ CREATE TABLE A10DmWilayahKrj (
     FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
     FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
 )
+
+ALTER TABLE B02DokKontrak
+ADD NamaPrsh VARCHAR (20),
+ADD CONSTRAINT fk_dokkontrak_perusahaan
+FOREIGN KEY (NamaPrsh) REFERENCES A03DmPerusahaan(IdKode);
+
+ALTER TABLE A06DmKategoriDok
+ADD GolDok VARCHAR (200)
+
+ALTER TABLE A07DmJenisDok
+ADD GolDok VARCHAR (200)

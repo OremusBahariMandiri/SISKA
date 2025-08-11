@@ -35,6 +35,17 @@
                                 </div>
                                 <div class="card-body">
                                     <input type="text" class="form-control" id="IdKode" value="{{ $kategoriDokumen->IdKode }}" hidden>
+
+                                    <div class="form-group mb-3">
+                                        <label for="GolDok" class="form-label fw-bold">Golongan Dokumen <span
+                                                class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-tags"></i></span>
+                                            <input type="text" class="form-control" id="GolDok" name="GolDok"
+                                                value="{{ old('GolDok', $kategoriDokumen->GolDok) }}" required>
+                                        </div>
+                                    </div>
+
                                     <div class="form-group mb-3">
                                         <label for="KategoriDok" class="form-label fw-bold">Nama Kategori <span
                                                 class="text-danger">*</span></label>
@@ -111,7 +122,13 @@
                                 const feedback = document.createElement('div');
                                 feedback.className = 'invalid-feedback';
                                 feedback.textContent = 'Field ini wajib diisi';
-                                input.parentNode.insertBefore(feedback, input.nextElementSibling);
+
+                                // For select elements in input-group, insert after the input-group
+                                if (input.parentNode.classList.contains('input-group')) {
+                                    input.parentNode.parentNode.insertBefore(feedback, input.parentNode.nextElementSibling);
+                                } else {
+                                    input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                                }
                             }
                         } else {
                             input.classList.remove('is-invalid');

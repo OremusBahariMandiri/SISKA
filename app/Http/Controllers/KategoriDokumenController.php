@@ -22,7 +22,38 @@ class KategoriDokumenController extends Controller
     public function index()
     {
         $kategoriDokumens = KategoriDokumen::all();
-        return view('kategori-dokumen.index', compact('kategoriDokumens'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'kategori-dokumen')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('kategori-dokumen.index', compact('kategoriDokumens', 'userPermissions'));
     }
 
     public function create()
@@ -36,7 +67,8 @@ class KategoriDokumenController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'KategoriDok' => 'required|unique:A06DmKategoriDok,KategoriDok',
+            'KategoriDok' => 'required',
+            'GolDok' => 'required',
         ]);
 
         // Generate ID if not present
@@ -49,6 +81,7 @@ class KategoriDokumenController extends Controller
         KategoriDokumen::create([
             'IdKode' => $IdKode,
             'KategoriDok' => $request->KategoriDok,
+            'GolDok' => $request->GolDok,
             'created_by' => auth()->user()->IdKode ?? null,
         ]);
 
@@ -73,11 +106,13 @@ class KategoriDokumenController extends Controller
         $kategoriDokumen = KategoriDokumen::findOrFail($id);
 
         $request->validate([
-            'KategoriDok' => 'required|unique:A06DmKategoriDok,KategoriDok,'.$id,
+            'KategoriDok' => 'required',
+            'GolDok' => 'required',
         ]);
 
         $kategoriDokumen->update([
             'KategoriDok' => $request->KategoriDok,
+            'GolDok' => $request->GolDok,
             'updated_by' => auth()->user()->IdKode ?? null,
         ]);
 

@@ -23,7 +23,38 @@ class JenisDokumenController extends Controller
     public function index()
     {
         $jenisDokumens = JenisDokumen::with('kategoriDokumen')->get();
-        return view('jenis-dokumen.index', compact('jenisDokumens'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'jenis-dokumen')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('jenis-dokumen.index', compact('jenisDokumens', 'userPermissions'));
     }
 
     public function create()
@@ -41,8 +72,10 @@ class JenisDokumenController extends Controller
     {
         $request->validate([
             'IdKodeA06' => 'required|exists:A06DmKategoriDok,IdKode',
+            'GolDok' => 'required',
             'JenisDok' => 'required|unique:A07DmJenisDok,JenisDok',
         ], [
+            'GolDok.required' => 'Golongan dokumen harus dipilih',
             'IdKodeA06.required' => 'Kategori dokumen harus dipilih',
             'IdKodeA06.exists' => 'Kategori dokumen tidak valid',
             'JenisDok.required' => 'Nama jenis dokumen harus diisi',
@@ -59,6 +92,7 @@ class JenisDokumenController extends Controller
         JenisDokumen::create([
             'IdKode' => $IdKode,
             'IdKodeA06' => $request->IdKodeA06,
+            'GolDok' => $request->GolDok,
             'JenisDok' => $request->JenisDok,
             'created_by' => auth()->user()->IdKode ?? null,
         ]);
@@ -87,7 +121,9 @@ class JenisDokumenController extends Controller
         $request->validate([
             'IdKodeA06' => 'required|exists:A06DmKategoriDok,IdKode',
             'JenisDok' => 'required|unique:A07DmJenisDok,JenisDok,'.$id,
+            'GolDok' => 'required',
         ], [
+            'GolDok.required' => 'Golongan dokumen harus dipilih',
             'IdKodeA06.required' => 'Kategori dokumen harus dipilih',
             'IdKodeA06.exists' => 'Kategori dokumen tidak valid',
             'JenisDok.required' => 'Nama jenis dokumen harus diisi',
@@ -96,6 +132,7 @@ class JenisDokumenController extends Controller
 
         $jenisDokumen->update([
             'IdKodeA06' => $request->IdKodeA06,
+            'GolDok' => $request->GolDok,
             'JenisDok' => $request->JenisDok,
             'updated_by' => auth()->user()->IdKode ?? null,
         ]);

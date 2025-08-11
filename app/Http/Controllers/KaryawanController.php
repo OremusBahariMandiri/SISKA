@@ -25,7 +25,38 @@ class KaryawanController extends Controller
     public function index()
     {
         $karyawans = Karyawan::all();
-        return view('karyawan.index', compact('karyawans'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'karyawan')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('karyawan.index', compact('karyawans', 'userPermissions'));
     }
 
     public function create()
@@ -279,7 +310,7 @@ class KaryawanController extends Controller
         return $contentTypes[$extension] ?? 'application/octet-stream';
     }
 
-        /**
+    /**
      * Export data karyawan ke Excel
      *
      * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
@@ -297,5 +328,4 @@ class KaryawanController extends Controller
         $exporter = new KaryawanExport();
         return $exporter->export($statusFilter, $namaFilter, $tempatLahirFilter, $umurRangeFilter, $masaKerjaRangeFilter);
     }
-
 }

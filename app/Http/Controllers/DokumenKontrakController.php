@@ -6,6 +6,7 @@ use App\Models\DokumenKontrak;
 use App\Models\Karyawan;
 use App\Models\KategoriDokumen;
 use App\Models\JenisDokumen;
+use App\Models\Perusahaan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -28,13 +29,45 @@ class DokumenKontrakController extends Controller
 
     public function index()
     {
-        $dokumenKontrak = DokumenKontrak::with(['karyawan'])->get();
-        return view('dokumen-kontrak.index', compact('dokumenKontrak'));
+        $dokumenKontrak = DokumenKontrak::with(['karyawan'],'kategoriDok','perusahaan')->get();
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'dokumen-kontrak')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('dokumen-kontrak.index', compact('dokumenKontrak', 'userPermissions'));
     }
 
     public function create()
     {
         $karyawan = Karyawan::all();
+        $perusahaan = Perusahaan::all();
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
 
@@ -55,7 +88,7 @@ class DokumenKontrakController extends Controller
         // Generate ID otomatis
         $newId = $this->generateId('B02', 'B02DokKontrak');
 
-        return view('dokumen-kontrak.create', compact('karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
+        return view('dokumen-kontrak.create', compact('karyawan', 'perusahaan','kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
     }
 
     public function store(Request $request)
@@ -63,6 +96,7 @@ class DokumenKontrakController extends Controller
         $request->validate([
             'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -111,6 +145,7 @@ class DokumenKontrakController extends Controller
         $data = [
             'IdKode' => $IdKode,
             'IdKodeA04' => $request->IdKodeA04,
+            'NamaPrsh' => $request->NamaPrsh,
             'NoRegDok' => $request->NoRegDok,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
@@ -175,6 +210,7 @@ class DokumenKontrakController extends Controller
     public function edit(DokumenKontrak $dokumenKontrak)
     {
         $karyawan = Karyawan::all();
+        $perusahaan = Perusahaan::all();
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
 
@@ -192,7 +228,7 @@ class DokumenKontrakController extends Controller
             ];
         }
 
-        return view('dokumen-kontrak.edit', compact('dokumenKontrak', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
+        return view('dokumen-kontrak.edit', compact('dokumenKontrak','perusahaan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
     }
 
     public function update(Request $request, DokumenKontrak $dokumenKontrak)
@@ -200,6 +236,7 @@ class DokumenKontrakController extends Controller
         $request->validate([
             'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok,' . $dokumenKontrak->Id,
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
@@ -241,6 +278,7 @@ class DokumenKontrakController extends Controller
         $data = [
             'IdKodeA04' => $request->IdKodeA04,
             'NoRegDok' => $request->NoRegDok,
+            'NamaPrsh' => $request->NamaPrsh,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
             'KetDok' => $request->KetDok,

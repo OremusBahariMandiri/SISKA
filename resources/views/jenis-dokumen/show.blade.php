@@ -38,6 +38,16 @@
                                 </div>
 
                                 <div class="info-group mb-3">
+                                    <label class="info-label fw-bold">Golongan Dokumen</label>
+                                    <div class="info-value">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                            <div class="form-control">{{ $jenisDokumen->kategoriDokumen->GolDok ?? 'Tidak tersedia' }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="info-group mb-3">
                                     <label class="info-label fw-bold">Nama Jenis Dokumen</label>
                                     <div class="info-value">
                                         <div class="input-group">
