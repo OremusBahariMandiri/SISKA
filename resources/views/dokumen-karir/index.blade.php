@@ -71,6 +71,7 @@
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
                                         <th>Peringatan</th>
+                                        <th>Catatan</th>
                                         <th>Lihat Dokumen</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
@@ -123,6 +124,7 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $dokumen->KetDok }}</td>
                                             <td class="text-center">
                                                 @if ($dokumen->FileDok)
                                                     <div class="btn-group">
