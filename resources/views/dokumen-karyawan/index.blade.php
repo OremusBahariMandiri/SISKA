@@ -16,7 +16,7 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
-                            @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                                 <a href="{{ route('dokumen-karyawan.create') }}" class="btn btn-light">
                                     <i class="fas fa-plus-circle me-1"></i> Tambah
                                 </a>
@@ -61,12 +61,12 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
-                                        <th>Kategori</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
                                         <th>Peringatan</th>
+                                        <th>File</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
                                     </tr>
@@ -78,7 +78,6 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->kategoriDok->KategoriDok ?? '-' }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -114,6 +113,13 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td>
+                                                <a href="{{ route('dokumen-karyawan.viewDocument', $dokumen->id) }}"
+                                                    class="btn btn-sm text-white" data-bs-toggle="tooltip" title="View"
+                                                    style="background-color: #2980b9;" target="_blank">
+                                                    <i class="fas fa-eye"></i>Lihat
+                                                </a>
+                                            </td>
                                             <td class="text-center">
                                                 @if ($dokumen->StatusDok == 'Berlaku')
                                                     <span class="badge" style="background-color: blue">Berlaku</span>
@@ -121,10 +127,11 @@
                                                     <span class="badge bg-danger">Tidak Berlaku</span>
                                                 @endif
                                             </td>
-                                            <!-- Replace the action buttons section in dokumen-karyawan.index -->
+
+                                            <!-- Bagian tombol aksi sesuai dengan hak akses -->
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                         <a href="{{ route('dokumen-karyawan.show', $dokumen->id) }}"
                                                             class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                             title="Detail" style="background-color: #4a90e2;">
@@ -132,7 +139,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                         <a href="{{ route('dokumen-karyawan.edit', $dokumen->id) }}"
                                                             class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                             title="Edit" style="background-color: #8e44ad;">
@@ -140,16 +147,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if (auth()->user()->is_admin || ($userPermissions['download'] ?? false))
-                                                        <a href="{{ route('dokumen-karyawan.viewDocument', $dokumen->id) }}"
-                                                            class="btn btn-sm text-white" data-bs-toggle="tooltip"
-                                                            title="View" style="background-color: #2980b9;"
-                                                            target="_blank">
-                                                            <i class="fas fa-file-alt"></i>
-                                                        </a>
-                                                    @endif
-
-                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                         <button type="button" class="btn btn-sm text-white delete-confirm"
                                                             data-bs-toggle="tooltip" title="Hapus"
                                                             style="background-color: #f700ff;"

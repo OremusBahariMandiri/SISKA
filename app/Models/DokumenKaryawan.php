@@ -46,7 +46,8 @@ class DokumenKaryawan extends Model
 
     public function kategori()
     {
-        return $this->hasMany(KategoriDokumen::class, 'KategoriDok', 'IdKode');
+        // Changed from hasMany to belongsTo with correct foreign/local key mapping
+        return $this->belongsTo(KategoriDokumen::class, 'KategoriDok', 'IdKode');
     }
 
     public function createdBy()

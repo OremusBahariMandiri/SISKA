@@ -10,6 +10,7 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class DokumenKaryawanController extends Controller
 {
@@ -29,7 +30,7 @@ class DokumenKaryawanController extends Controller
     // Update the index method in DokumenKaryawanController
     public function index()
     {
-        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'],'kategori')->get();
+        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'])->get();
 
         // Get user permissions for this menu
         $userPermissions = [];
@@ -92,13 +93,37 @@ class DokumenKaryawanController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA04.exists' => 'Karyawan yang dipilih tidak valid',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglTerbitDok.date' => 'Format Tanggal Terbit tidak valid',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.date' => 'Format Tanggal Berakhir tidak valid',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.file' => 'File Dokumen tidak valid',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
+            'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Generate ID if not present
         if (empty($request->IdKode)) {
@@ -227,16 +252,39 @@ class DokumenKaryawanController extends Controller
         return view('dokumen-karyawan.edit', compact('dokumenKaryawan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
     }
 
-
     public function update(Request $request, DokumenKaryawan $dokumenKaryawan)
     {
-        $request->validate([
-            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok,' . $dokumenKaryawan->id,
+        $validator = Validator::make($request->all(), [
+            'NoRegDok' => 'required|unique:B01DmDokKaryawan,NoRegDok,' . $dokumenKaryawan->id . ',id',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA04.exists' => 'Karyawan yang dipilih tidak valid',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglTerbitDok.date' => 'Format Tanggal Terbit tidak valid',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.date' => 'Format Tanggal Berakhir tidak valid',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.file' => 'File Dokumen tidak valid',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
+            'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Calculate validity period automatically
         $masaBerlaku = 'Tetap';
@@ -291,6 +339,10 @@ class DokumenKaryawanController extends Controller
             // Delete old file if exists
             if ($dokumenKaryawan->FileDok) {
                 Storage::disk('public')->delete('documents/karyawan/' . $dokumenKaryawan->FileDok);
+                // Check alternative location if file not found in main location
+                if (!Storage::disk('public')->exists('documents/karyawan/' . $dokumenKaryawan->FileDok)) {
+                    Storage::disk('public')->delete('documents/' . $dokumenKaryawan->FileDok);
+                }
             }
 
             $file = $request->file('FileDok');
@@ -310,7 +362,7 @@ class DokumenKaryawanController extends Controller
 
             // Get karyawan name
             $karyawan = Karyawan::where('IdKode', $request->IdKodeA04)->first();
-            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKaryawan) : 'unknown';
+            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKry) : 'unknown';
 
             // Format tanggal berakhir
             $tglBerakhir = $request->ValidasiDok == 'Tetap' ? 'Permanent' : Carbon::parse($request->TglBerakhirDok)->format('Ymd');
@@ -338,6 +390,10 @@ class DokumenKaryawanController extends Controller
         // Delete file if exists
         if ($dokumenKaryawan->FileDok) {
             Storage::disk('public')->delete('documents/karyawan/' . $dokumenKaryawan->FileDok);
+            // Check alternative location if file not found in main location
+            if (!Storage::disk('public')->exists('documents/karyawan/' . $dokumenKaryawan->FileDok)) {
+                Storage::disk('public')->delete('documents/' . $dokumenKaryawan->FileDok);
+            }
         }
 
         $dokumenKaryawan->delete();
@@ -352,10 +408,16 @@ class DokumenKaryawanController extends Controller
             return back()->with('error', 'File tidak ditemukan.');
         }
 
+        // Check in the new location first
         $path = storage_path('app/public/documents/karyawan/' . $dokumenKaryawan->FileDok);
 
+        // If not found, try the old location
         if (!file_exists($path)) {
-            return back()->with('error', 'File tidak ditemukan.');
+            $path = storage_path('app/public/documents/' . $dokumenKaryawan->FileDok);
+
+            if (!file_exists($path)) {
+                return back()->with('error', 'File tidak ditemukan.');
+            }
         }
 
         // File already has the formatted name
@@ -441,12 +503,12 @@ class DokumenKaryawanController extends Controller
             return back()->with('error', 'File tidak ditemukan.');
         }
 
-        // File path
+        // File path - check in new location first
         $filePath = storage_path('app/public/documents/karyawan/' . $dokumenKaryawan->FileDok);
 
         // Check if file exists
         if (!file_exists($filePath)) {
-            // Try alternative path (in case path in database is different)
+            // Try alternative path (old location)
             $alternativePath = storage_path('app/public/documents/' . $dokumenKaryawan->FileDok);
 
             if (file_exists($alternativePath)) {
