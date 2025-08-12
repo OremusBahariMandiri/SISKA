@@ -17,7 +17,7 @@ class DokumenKaryawan extends Model
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
-        'KetDok',
+        'k',
         'ValidasiDok',
         'TglTerbitDok',
         'TglBerakhirDok',

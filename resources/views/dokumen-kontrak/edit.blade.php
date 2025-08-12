@@ -415,10 +415,7 @@
                                                                         class="btn btn-sm btn-success ms-1" target="_blank" title="Lihat Dokumen">
                                                                         <i class="fas fa-eye"></i>
                                                                     </a>
-                                                                    <a href="{{ route('dokumen-kontrak.download', $dokumenKontrak->Id) }}"
-                                                                        class="btn btn-sm btn-primary ms-1" title="Download Dokumen">
-                                                                        <i class="fas fa-download"></i>
-                                                                    </a>
+                                                                   
                                                                 </div>
                                                             </div>
                                                         </div>

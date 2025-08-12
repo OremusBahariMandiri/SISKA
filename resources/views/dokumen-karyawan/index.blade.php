@@ -61,11 +61,13 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
+                                        <th>Kategori</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
                                         <th>Peringatan</th>
+                                        <th>Catatan</th>
                                         <th>File</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
@@ -78,6 +80,7 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
+                                            <td>{{ $dokumen->kategori->KategoriDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -113,8 +116,9 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $dokumen->KetDok }}</td>
                                             <td>
-                                                <a href="{{ route('dokumen-karyawan.viewDocument', $dokumen->id) }}"
+                                                <a href="{{ route('viewdocumentkaryawan', $dokumen->id) }}"
                                                     class="btn btn-sm text-white" data-bs-toggle="tooltip" title="View"
                                                     style="background-color: #2980b9;" target="_blank">
                                                     <i class="fas fa-eye"></i>Lihat
