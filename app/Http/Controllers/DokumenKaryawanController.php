@@ -10,6 +10,8 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class DokumenKaryawanController extends Controller
@@ -225,7 +227,7 @@ class DokumenKaryawanController extends Controller
 
     public function show(DokumenKaryawan $dokumenKaryawan)
     {
-        $dokumenKaryawan->load(['karyawan','kategori']);
+        $dokumenKaryawan->load(['karyawan', 'kategori']);
         return view('dokumen-karyawan.show', compact('dokumenKaryawan'));
     }
 
@@ -252,6 +254,8 @@ class DokumenKaryawanController extends Controller
         return view('dokumen-karyawan.edit', compact('dokumenKaryawan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
     }
 
+    // This is the updated update method for the DokumenKaryawanController.php file
+
     public function update(Request $request, DokumenKaryawan $dokumenKaryawan)
     {
         $validator = Validator::make($request->all(), [
@@ -262,6 +266,7 @@ class DokumenKaryawanController extends Controller
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'KetDok' => 'nullable|string', // Add explicit validation for KetDok
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -285,6 +290,14 @@ class DokumenKaryawanController extends Controller
                 ->withInput()
                 ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
         }
+
+        // Debug: Log the raw request data and the KetDok value
+        Log::info('Update request raw data:', [
+            'all' => $request->all(),
+            'KetDok' => $request->input('KetDok'),
+            'KetDokBackup' => $request->input('KetDokBackup'),
+            'post_params' => $_POST,
+        ]);
 
         // Calculate validity period automatically
         $masaBerlaku = 'Tetap';
@@ -319,12 +332,34 @@ class DokumenKaryawanController extends Controller
             }
         }
 
+        // Try to get KetDok from various possible sources
+        $ketDokValue = null;
+
+        // First try the direct input
+        if ($request->has('KetDok')) {
+            $ketDokValue = $request->input('KetDok');
+        }
+        // Then try the backup field if it exists
+        elseif ($request->has('KetDokBackup')) {
+            $ketDokValue = $request->input('KetDokBackup');
+        }
+        // Finally, if no value is found, maintain the current value
+        else {
+            $ketDokValue = $dokumenKaryawan->KetDok;
+        }
+
+        // Log the determined value
+        Log::info('Determined KetDok value:', [
+            'ketDokValue' => $ketDokValue,
+        ]);
+
+        // Explicitly include KetDok in the data array
         $data = [
             'IdKodeA04' => $request->IdKodeA04,
             'NoRegDok' => $request->NoRegDok,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
-            'KetDok' => $request->KetDok,
+            'KetDok' => $ketDokValue, // Use the determined value
             'ValidasiDok' => $request->ValidasiDok,
             'TglTerbitDok' => $request->TglTerbitDok,
             'TglBerakhirDok' => $request->ValidasiDok == 'Tetap' ? null : $request->TglBerakhirDok,
@@ -379,7 +414,29 @@ class DokumenKaryawanController extends Controller
             $data['FileDok'] = $fileName;
         }
 
-        $dokumenKaryawan->update($data);
+        // Debug: Log the data that will be used for the update
+        Log::info('Update data prepared:', [
+            'data' => $data,
+            'KetDok_in_data' => $data['KetDok'],
+        ]);
+
+        // Update the model with the prepared data - Use direct DB update for reliability
+        $updateResult = DB::table('B01DmDokKaryawan')
+            ->where('id', $dokumenKaryawan->id)
+            ->update($data);
+
+        Log::info('DB update result:', [
+            'updateResult' => $updateResult,
+        ]);
+
+        // Refresh the model to get the latest data
+        $dokumenKaryawan = DokumenKaryawan::find($dokumenKaryawan->id);
+
+        // Debug: Log the updated model to verify changes
+        Log::info('Updated model:', [
+            'model' => $dokumenKaryawan->toArray(),
+            'KetDok_after_update' => $dokumenKaryawan->KetDok,
+        ]);
 
         return redirect()->route('dokumen-karyawan.index')
             ->with('success', 'Dokumen Karyawan berhasil diperbarui.');
