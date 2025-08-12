@@ -244,56 +244,45 @@
     <script>
         $(document).ready(function() {
             // Inisialisasi DataTables jika belum ada
-            if (!$.fn.DataTable.isDataTable('#kategoriDokTable')) {
-                $('#kategoriDokTable').DataTable({
+            if (!$.fn.DataTable.isDataTable('#jenisDokTable')) {
+                $('#jenisDokTable').DataTable({
                     responsive: true,
                     language: {
                         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-                    },
-                    drawCallback: function() {
-                        // Reinitialize tooltips after table redraw (pagination, etc)
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
-                            '[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function(tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-                        console.log("Table redrawn, tooltips reinitialized");
                     }
                 });
             }
 
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
+            // Initialize tooltips dengan event delegation
+            $(document).on('mouseenter', '[data-bs-toggle="tooltip"]', function() {
+                if (!$(this).attr('data-bs-original-title')) {
+                    new bootstrap.Tooltip(this);
+                }
             });
 
-            // Handle delete confirmation dengan event delegation
-            $(document).off('click', '.delete-confirm').on('click', '.delete-confirm', function(e) {
+            // GUNAKAN EVENT DELEGATION untuk delete confirmation
+            // Ini akan menggantikan $('.delete-confirm').on('click', ...)
+            $(document).on('click', '.delete-confirm', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
 
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
-                console.log("Delete button clicked:", {
-                    id,
-                    name
-                });
+                console.log("Delete clicked for:", name, "ID:", id);
 
-                // Set kategori name in modal
-                $('#kategoriNameToDelete').text(name);
+                // Set jenis name in modal
+                $('#jenisNameToDelete').text(name);
 
                 // Set form action URL with explicit URL construction
-                $('#deleteForm').attr('action', "{{ url('kategori-dokumen') }}/" + id);
+                $('#deleteForm').attr('action', "{{ url('jenis-dokumen') }}/" + id);
 
                 // Show modal
-                var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                deleteModal.show();
+                $('#deleteConfirmationModal').modal('show');
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail dengan event delegation
-            $(document).on('click', '#kategoriDokTable tbody tr', function(e) {
+            // Event delegation untuk klik baris tabel
+            $(document).on('click', '#jenisDokTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
                     $(e.target).closest('button').length || $(e.target).closest('a').length) {
@@ -310,10 +299,10 @@
                 @endif
             });
 
-            // Add flash effect when hovering over rows dengan event delegation
-            $(document).on('mouseenter', '#kategoriDokTable tbody tr', function() {
+            // Event delegation untuk hover effects
+            $(document).on('mouseenter', '#jenisDokTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
-            }).on('mouseleave', '#kategoriDokTable tbody tr', function() {
+            }).on('mouseleave', '#jenisDokTable tbody tr', function() {
                 $(this).removeClass('row-hover-active');
             });
 
