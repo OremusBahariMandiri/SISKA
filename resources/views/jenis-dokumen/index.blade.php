@@ -9,7 +9,7 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Manajemen Jenis Dokumen</span>
-                        @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                        @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                             <a href="{{ route('jenis-dokumen.create') }}" class="btn btn-light">
                                 <i class="fas fa-plus-circle me-1"></i> Tambah
                             </a>
@@ -59,7 +59,7 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                         <a href="{{ route('jenis-dokumen.show', $jenis->id) }}"
                                                             class="btn btn-sm btn-info" data-bs-toggle="tooltip"
                                                             title="Detail">
@@ -67,7 +67,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                         <a href="{{ route('jenis-dokumen.edit', $jenis->id) }}"
                                                             class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
                                                             title="Edit">
@@ -75,7 +75,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                         <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                             data-bs-toggle="tooltip" title="Hapus"
                                                             data-id="{{ $jenis->id }}"
@@ -244,38 +244,56 @@
     <script>
         $(document).ready(function() {
             // Inisialisasi DataTables jika belum ada
-            if (!$.fn.DataTable.isDataTable('#jenisDokTable')) {
-                $('#jenisDokTable').DataTable({
+            if (!$.fn.DataTable.isDataTable('#kategoriDokTable')) {
+                $('#kategoriDokTable').DataTable({
                     responsive: true,
                     language: {
                         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+                    },
+                    drawCallback: function() {
+                        // Reinitialize tooltips after table redraw (pagination, etc)
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                            '[data-bs-toggle="tooltip"]'));
+                        tooltipTriggerList.map(function(tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl);
+                        });
+                        console.log("Table redrawn, tooltips reinitialized");
                     }
                 });
             }
 
             // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
-            // Handle delete confirmation
-            $('.delete-confirm').on('click', function() {
+            // Handle delete confirmation dengan event delegation
+            $(document).off('click', '.delete-confirm').on('click', '.delete-confirm', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
-                // Set jenis name in modal
-                $('#jenisNameToDelete').text(name);
+                console.log("Delete button clicked:", {
+                    id,
+                    name
+                });
+
+                // Set kategori name in modal
+                $('#kategoriNameToDelete').text(name);
 
                 // Set form action URL with explicit URL construction
-                $('#deleteForm').attr('action', "{{ url('jenis-dokumen') }}/" + id);
+                $('#deleteForm').attr('action', "{{ url('kategori-dokumen') }}/" + id);
 
                 // Show modal
-                $('#deleteConfirmationModal').modal('show');
+                var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                deleteModal.show();
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
-            $('#jenisDokTable tbody').on('click', 'tr', function(e) {
+            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail dengan event delegation
+            $(document).on('click', '#kategoriDokTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
                     $(e.target).closest('button').length || $(e.target).closest('a').length) {
@@ -283,19 +301,19 @@
                 }
 
                 // Check if user has detail access before redirecting
-                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Get detail link URL
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
                 @endif
             });
 
-            // Add flash effect when hovering over rows
-            $('#jenisDokTable tbody').on('mouseenter', 'tr', function() {
+            // Add flash effect when hovering over rows dengan event delegation
+            $(document).on('mouseenter', '#kategoriDokTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
-            }).on('mouseleave', 'tr', function() {
+            }).on('mouseleave', '#kategoriDokTable tbody tr', function() {
                 $(this).removeClass('row-hover-active');
             });
 
