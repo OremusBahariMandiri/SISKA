@@ -126,7 +126,7 @@
                                             </td>
                                             <td>{{ $dokumen->KetDok }}</td>
                                             <td class="text-center">
-                                                @if ($dokumen->FileDok)
+                                            @if ($dokumen->FileDok)
                                                     <div class="btn-group">
                                                         <a href="{{ route('dokumen-karir.viewDocument', $dokumen->Id) }}"
                                                             target="_blank" class="btn btn-sm btn-info"
