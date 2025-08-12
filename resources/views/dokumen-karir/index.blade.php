@@ -13,15 +13,15 @@
                             <button type="button" class="btn btn-light me-2" id="filterButton">
                                 <i class="fas fa-filter me-1"></i> Filter
                             </button>
-                            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
-                            <button type="button" class="btn btn-light me-2" id="exportButton">
-                                <i class="fas fa-download me-1"></i> Export
-                            </button>
+                            @if (auth()->user()->is_admin || ($userPermissions['download'] ?? false))
+                                <button type="button" class="btn btn-light me-2" id="exportButton">
+                                    <i class="fas fa-download me-1"></i> Export
+                                </button>
                             @endif
-                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
-                            <a href="{{ route('dokumen-karir.create') }}" class="btn btn-light">
-                                <i class="fas fa-plus-circle me-1"></i> Tambah
-                            </a>
+                            @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                                <a href="{{ route('dokumen-karir.create') }}" class="btn btn-light">
+                                    <i class="fas fa-plus-circle me-1"></i> Tambah
+                                </a>
                             @endif
                         </div>
                     </div>
@@ -63,8 +63,7 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
-                                        <th>Kategori</th>
-                                        <th>Jenis</th>
+                                        <th>Jenjang Karir</th>
                                         <th>Jabatan</th>
                                         <th>Departemen</th>
                                         <th>Wilker</th>
@@ -72,6 +71,7 @@
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
                                         <th>Peringatan</th>
+                                        <th>Lihat Dokumen</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
                                     </tr>
@@ -83,7 +83,6 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->kategori->KategoriDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>{{ $dokumen->jabatan->Jabatan }}</td>
                                             <td>{{ $dokumen->departemen->Departemen }}</td>
@@ -109,6 +108,7 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+
                                             <td>
                                                 @if ($dokumen->TglPengingat)
                                                     {{ $dokumen->TglPengingat->format('d/m/Y') }}
@@ -124,6 +124,19 @@
                                                 @endif
                                             </td>
                                             <td class="text-center">
+                                                @if ($dokumen->FileDok)
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('dokumen-karir.viewDocument', $dokumen->Id) }}"
+                                                            target="_blank" class="btn btn-sm btn-info"
+                                                            data-bs-toggle="tooltip" title="Lihat Dokumen">
+                                                            <i class="fas fa-eye"></i> Lihat
+                                                        </a>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
                                                 @if ($dokumen->StatusDok == 'Berlaku')
                                                     <span class="badge" style="background-color: blue">Berlaku</span>
                                                 @else
@@ -132,29 +145,30 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                                                    <a href="{{ route('dokumen-karir.show', $dokumen->Id) }}"
-                                                        class="btn btn-sm text-white" data-bs-toggle="tooltip"
-                                                        title="Detail" style="background-color: #4a90e2;">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('dokumen-karir.show', $dokumen->Id) }}"
+                                                            class="btn btn-sm text-white" data-bs-toggle="tooltip"
+                                                            title="Detail" style="background-color: #4a90e2;">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
-                                                    <a href="{{ route('dokumen-karir.edit', $dokumen->Id) }}"
-                                                        class="btn btn-sm text-white" data-bs-toggle="tooltip"
-                                                        title="Edit" style="background-color: #8e44ad;">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('dokumen-karir.edit', $dokumen->Id) }}"
+                                                            class="btn btn-sm text-white" data-bs-toggle="tooltip"
+                                                            title="Edit" style="background-color: #8e44ad;">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
-                                                    <button type="button" class="btn btn-sm text-white delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        style="background-color: #f700ff;" data-id="{{ $dokumen->Id }}"
-                                                        data-name="{{ $dokumen->NoRegDok }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm text-white delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            style="background-color: #f700ff;"
+                                                            data-id="{{ $dokumen->Id }}"
+                                                            data-name="{{ $dokumen->NoRegDok }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </td>
@@ -202,7 +216,7 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-3">
+                                {{-- <div class="mb-3">
                                     <label for="filter_kategori" class="form-label">Kategori</label>
                                     <select class="form-select" id="filter_kategori">
                                         <option value="">Semua Kategori</option>
@@ -212,7 +226,7 @@
                                             @endif
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
 
                                 <div class="mb-3">
                                     <label for="filter_jenis" class="form-label">Jenis Dokumen</label>
@@ -954,10 +968,10 @@
                 $('#filterModal').modal('show');
             });
 
-            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
-            $('#exportButton').on('click', function() {
-                $('#exportModal').modal('show');
-            });
+            @if (auth()->user()->is_admin || ($userPermissions['download'] ?? false))
+                $('#exportButton').on('click', function() {
+                    $('#exportModal').modal('show');
+                });
             @endif
 
             // Modifikasi event handler untuk tombol Apply Filter
@@ -1020,22 +1034,22 @@
                 }
             }
 
-            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
-            // Export buttons
-            $('#exportExcel').on('click', function() {
-                $('.excel-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
-            });
+            @if (auth()->user()->is_admin || ($userPermissions['download'] ?? false))
+                // Export buttons
+                $('#exportExcel').on('click', function() {
+                    $('.excel-export-btn').trigger('click');
+                    $('#exportModal').modal('hide');
+                });
 
-            $('#exportPdf').on('click', function() {
-                $('.pdf-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
-            });
+                $('#exportPdf').on('click', function() {
+                    $('.pdf-export-btn').trigger('click');
+                    $('#exportModal').modal('hide');
+                });
 
-            $('#exportPrint').on('click', function() {
-                $('.print-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
-            });
+                $('#exportPrint').on('click', function() {
+                    $('.print-export-btn').trigger('click');
+                    $('#exportModal').modal('hide');
+                });
             @endif
 
             // Handle Delete Confirmation
@@ -1099,18 +1113,18 @@
                     return;
                 }
 
-                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                // Dapatkan URL detail
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Dapatkan URL detail
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
                 @endif
             });
 
             // Form untuk export
-            @if(auth()->user()->is_admin || ($userPermissions['download'] ?? false))
-            $(`
+            @if (auth()->user()->is_admin || ($userPermissions['download'] ?? false))
+                $(`
             <form id="exportForm" action="{{ route('dokumen-karir.export-excel') }}" method="POST" class="d-none">
             @csrf
             <input type="hidden" name="filter_noreg" id="export_filter_noreg">
@@ -1125,29 +1139,29 @@
             </form>
             `).insertAfter('#dokumenKarirTable');
 
-            // Update event handler untuk tombol Export Excel
-            $('#exportExcel').on('click', function() {
-                // Salin nilai filter saat ini ke form export
-                $('#export_filter_noreg').val($('#filter_noreg').val());
-                $('#export_filter_karyawan').val($('#filter_karyawan').val());
-                $('#export_filter_kategori').val($('#filter_kategori').val());
-                $('#export_filter_jenis').val($('#filter_jenis').val());
-                $('#export_filter_tgl_terbit_from').val($('#filter_tgl_terbit_from').val());
-                $('#export_filter_tgl_terbit_to').val($('#filter_tgl_terbit_to').val());
-                $('#export_filter_tgl_berakhir_from').val($('#filter_tgl_berakhir_from').val());
-                $('#export_filter_tgl_berakhir_to').val($('#filter_tgl_berakhir_to').val());
+                // Update event handler untuk tombol Export Excel
+                $('#exportExcel').on('click', function() {
+                    // Salin nilai filter saat ini ke form export
+                    $('#export_filter_noreg').val($('#filter_noreg').val());
+                    $('#export_filter_karyawan').val($('#filter_karyawan').val());
+                    $('#export_filter_kategori').val($('#filter_kategori').val());
+                    $('#export_filter_jenis').val($('#filter_jenis').val());
+                    $('#export_filter_tgl_terbit_from').val($('#filter_tgl_terbit_from').val());
+                    $('#export_filter_tgl_terbit_to').val($('#filter_tgl_terbit_to').val());
+                    $('#export_filter_tgl_berakhir_from').val($('#filter_tgl_berakhir_from').val());
+                    $('#export_filter_tgl_berakhir_to').val($('#filter_tgl_berakhir_to').val());
 
-                // Konversi status visual ke nilai filter
-                let statusFilter = '';
-                if ($('#filter_status').val() === 'Valid') statusFilter = 'Valid';
-                else if ($('#filter_status').val() === 'Warning') statusFilter = 'Warning';
-                else if ($('#filter_status').val() === 'Expired') statusFilter = 'Expired';
-                $('#export_filter_status').val(statusFilter);
+                    // Konversi status visual ke nilai filter
+                    let statusFilter = '';
+                    if ($('#filter_status').val() === 'Valid') statusFilter = 'Valid';
+                    else if ($('#filter_status').val() === 'Warning') statusFilter = 'Warning';
+                    else if ($('#filter_status').val() === 'Expired') statusFilter = 'Expired';
+                    $('#export_filter_status').val(statusFilter);
 
-                // Submit form export
-                $('#exportForm').submit();
-                $('#exportModal').modal('hide');
-            });
+                    // Submit form export
+                    $('#exportForm').submit();
+                    $('#exportModal').modal('hide');
+                });
             @endif
 
             // Tambahkan efek flash saat baris di-hover
