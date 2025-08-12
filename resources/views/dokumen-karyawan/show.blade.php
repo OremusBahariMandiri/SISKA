@@ -24,7 +24,7 @@
                             <!-- Basic Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                     </div>
                                     <div class="card-body">
@@ -43,7 +43,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->karyawan->NamaKaryawan ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKaryawan->karyawan->NamaKry ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -53,7 +53,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->KategoriDok->KategoriDok ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKaryawan->kategori->KategoriDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -84,7 +84,7 @@
                             <!-- Validity and Date Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                         <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
                                     </div>
                                     <div class="card-body">
@@ -175,7 +175,7 @@
 
                         <!-- File Information -->
                         <div class="card border-secondary">
-                            <div class="card-header bg-secondary bg-opacity-25 text-white">
+                            <div class="card-header bg-secondary bg-opacity-25 text-dark">
                                 <h5 class="mb-0"><i class="fas fa-file me-2"></i>Dokumen & Status</h5>
                             </div>
                             <div class="card-body">
@@ -208,18 +208,37 @@
                                             <label class="info-label fw-bold">File Dokumen</label>
                                             <div class="info-value">
                                                 @if($dokumenKaryawan->FileDok)
-                                                    <div class="d-flex gap-2">
-                                                        {{-- <a href="{{ route('dokumen-karyawan.download', $dokumenKaryawan->id) }}"
-                                                            class="btn btn-primary">
-                                                            <i class="fas fa-download me-1"></i> Download
-                                                        </a> --}}
-                                                        <a href="{{ route('dokumen-karyawan.viewDocument', $dokumenKaryawan->id) }}"
-                                                            class="btn btn-info" target="_blank">
-                                                            <i class="fas fa-eye me-1"></i> Lihat
-                                                        </a>
-                                                    </div>
-                                                    <div class="mt-2 small">
-                                                        <i class="fas fa-file me-1"></i> {{ $dokumenKaryawan->FileDok }}
+                                                    @php
+                                                        $fileExt = pathinfo($dokumenKaryawan->FileDok, PATHINFO_EXTENSION);
+                                                        $iconClass = 'fas fa-file fa-2x text-secondary';
+
+                                                        if ($fileExt === 'pdf') {
+                                                            $iconClass = 'fas fa-file-pdf fa-2x text-danger';
+                                                        } elseif (in_array($fileExt, ['jpg', 'jpeg', 'png'])) {
+                                                            $iconClass = 'fas fa-file-image fa-2x text-primary';
+                                                        } elseif (in_array($fileExt, ['doc', 'docx'])) {
+                                                            $iconClass = 'fas fa-file-word fa-2x text-primary';
+                                                        } elseif (in_array($fileExt, ['xls', 'xlsx'])) {
+                                                            $iconClass = 'fas fa-file-excel fa-2x text-success';
+                                                        }
+                                                    @endphp
+                                                    <div class="card border-info">
+                                                        <div class="card-body p-3">
+                                                            <div class="d-flex">
+                                                                <div class="me-3 flex-shrink-0">
+                                                                    <i class="{{ $iconClass }}"></i>
+                                                                </div>
+                                                                <div class="flex-grow-1">
+                                                                    <h6 class="mb-1 filename-multiline">{{ $dokumenKaryawan->FileDok }}</h6>
+                                                                    <div class="d-flex mt-2">
+                                                                        <a href="{{ route('dokumen-karyawan.viewDocument', $dokumenKaryawan->id) }}"
+                                                                            class="btn btn-sm btn-outline-primary me-2" target="_blank">
+                                                                            <i class="fas fa-eye me-1"></i> Lihat
+                                                                        </a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 @else
                                                     <div class="alert alert-warning mb-0">
@@ -281,6 +300,40 @@
         .input-group-text {
             background-color: #e9ecef;
             border: 1px solid #dee2e6;
+        }
+
+        .badge {
+            font-size: 0.9rem;
+            padding: 0.4rem 0.6rem;
+        }
+
+        /* Multiline filename style */
+        .filename-multiline {
+            word-break: break-word;
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 576px) {
+            .d-flex {
+                flex-direction: column;
+                align-items: flex-start !important;
+            }
+
+            .d-flex .me-3 {
+                margin-right: 0 !important;
+                margin-bottom: 0.75rem;
+            }
+
+            .d-flex.mt-2 {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            .d-flex.mt-2 .btn {
+                margin-bottom: 0.5rem;
+            }
         }
     </style>
 @endpush
