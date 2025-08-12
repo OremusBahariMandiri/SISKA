@@ -11,6 +11,7 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class DokumenKontrakController extends Controller
 {
@@ -29,7 +30,7 @@ class DokumenKontrakController extends Controller
 
     public function index()
     {
-        $dokumenKontrak = DokumenKontrak::with(['karyawan'],'kategoriDok','perusahaan')->get();
+        $dokumenKontrak = DokumenKontrak::with(['karyawan', 'kategoriDok', 'perusahaan'])->get();
 
         // Get user permissions for this menu
         $userPermissions = [];
@@ -88,19 +89,46 @@ class DokumenKontrakController extends Controller
         // Generate ID otomatis
         $newId = $this->generateId('B02', 'B02DokKontrak');
 
-        return view('dokumen-kontrak.create', compact('karyawan', 'perusahaan','kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
+        return view('dokumen-kontrak.create', compact('karyawan', 'perusahaan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
+            'FileDok' => 'required|file|mimes:pdf,jpg,jpeg,png',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA04.exists' => 'Karyawan yang dipilih tidak valid',
+            'NamaPrsh.required' => 'Perusahaan harus dipilih',
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglTerbitDok.date' => 'Format Tanggal Terbit tidak valid',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.date' => 'Format Tanggal Berakhir tidak valid',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.required' => 'File Dokumen harus diunggah',
+            'FileDok.file' => 'File Dokumen tidak valid',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
+            'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Generate ID if not present
         if (empty($request->IdKode)) {
@@ -203,7 +231,7 @@ class DokumenKontrakController extends Controller
 
     public function show(DokumenKontrak $dokumenKontrak)
     {
-        $dokumenKontrak->load(['karyawan','KategoriDok']);
+        $dokumenKontrak->load(['karyawan', 'kategoriDok', 'perusahaan']);
         return view('dokumen-kontrak.show', compact('dokumenKontrak'));
     }
 
@@ -228,19 +256,45 @@ class DokumenKontrakController extends Controller
             ];
         }
 
-        return view('dokumen-kontrak.edit', compact('dokumenKontrak','perusahaan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
+        return view('dokumen-kontrak.edit', compact('dokumenKontrak', 'perusahaan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
     }
 
     public function update(Request $request, DokumenKontrak $dokumenKontrak)
     {
-        $request->validate([
-            'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok,' . $dokumenKontrak->Id,
+        $validator = Validator::make($request->all(), [
+            'NoRegDok' => 'required|unique:B02DokKontrak,NoRegDok,' . $dokumenKontrak->Id . ',Id',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
+            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA04.exists' => 'Karyawan yang dipilih tidak valid',
+            'NamaPrsh.required' => 'Perusahaan harus dipilih',
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglTerbitDok.date' => 'Format Tanggal Terbit tidak valid',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.date' => 'Format Tanggal Berakhir tidak valid',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.file' => 'File Dokumen tidak valid',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
+            'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Calculate validity period automatically
         $masaBerlaku = 'Tetap';
@@ -319,7 +373,7 @@ class DokumenKontrakController extends Controller
 
             // Get karyawan name
             $karyawan = Karyawan::where('IdKode', $request->IdKodeA04)->first();
-            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKaryawan) : 'unknown';
+            $namaKaryawan = $karyawan ? $sanitizeFileName($karyawan->NamaKry) : 'unknown';
 
             // Format tanggal berakhir
             $tglBerakhir = $request->ValidasiDok == 'Tetap' ? 'Permanent' : Carbon::parse($request->TglBerakhirDok)->format('Ymd');
