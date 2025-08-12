@@ -83,7 +83,7 @@ Route::middleware(['auth'])->group(function () {
     //Dokumen Karyawan Route
     Route::resource('dokumen-karyawan', DokumenKaryawanController::class);
     Route::get('/dokumen-karyawan/get-jenis-by-kategori/{kategoriId}', [DokumenKaryawanController::class, 'getJenisByKategori'])->name('dokumen-karyawan.get-jenis-by-kategori');
-    Route::get('dokumen-karyawan/{dokumenKaryawan}/view-document', [DokumenKaryawanController::class, 'viewDocument'])->name('dokumen-karyawan.viewDocument');
+    Route::get('dokumen-karyawan/{dokumenKaryawan}/viewdocumentkaryawan', [DokumenKaryawanController::class, 'viewDocument'])->name('viewdocumentkaryawan');
     Route::post('/dokumen-karyawan/export-excel', [DokumenKaryawanController::class, 'exportExcel'])->name('dokumen-karyawan.export-excel');
 
     //Dokumen Kontrak Route

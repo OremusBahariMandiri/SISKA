@@ -394,7 +394,7 @@
                                                             <div class="flex-grow-1">
                                                                 <h6 class="mb-1 text-truncate">{{ $dokumenKaryawan->FileDok }}</h6>
                                                                 <div class="d-flex mt-2">
-                                                                    <a href="{{ route('dokumen-karyawan.viewDocument', $dokumenKaryawan->id) }}"
+                                                                    <a href="{{ route('viewdocumentkaryawan', $dokumenKaryawan->id) }}"
                                                                         class="btn btn-sm btn-outline-primary me-2" target="_blank">
                                                                         <i class="fas fa-eye me-1"></i> Lihat
                                                                     </a>
