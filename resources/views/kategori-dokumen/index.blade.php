@@ -241,22 +241,15 @@
                     responsive: true,
                     language: {
                         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-                    },
-                    drawCallback: function() {
-                        // Reinitialize tooltips after table redraw (pagination, etc)
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
-                            '[data-bs-toggle="tooltip"]'))
-                        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl)
-                        });
                     }
                 });
             }
 
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            // MODIFIED: Initialize tooltips with event delegation instead of reinitializing each time
+            $(document).on('mouseenter', '[data-bs-toggle="tooltip"]', function() {
+                if (!$(this).attr('data-bs-original-title')) {
+                    new bootstrap.Tooltip(this);
+                }
             });
 
             // Handle delete confirmation with event delegation
@@ -267,6 +260,8 @@
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
+                console.log("Delete clicked for:", name, "ID:", id);
+
                 // Set kategori name in modal
                 $('#kategoriNameToDelete').text(name);
 
@@ -274,11 +269,10 @@
                 $('#deleteForm').attr('action', "{{ url('kategori-dokumen') }}/" + id);
 
                 // Show modal
-                var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
-                deleteModal.show();
+                $('#deleteConfirmationModal').modal('show');
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail - using event delegation
+            // Row click for details view using event delegation
             $(document).on('click', '#kategoriDokTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
@@ -296,7 +290,7 @@
                 @endif
             });
 
-            // Add flash effect when hovering over rows - using event delegation
+            // Hover effects for rows using event delegation
             $(document).on('mouseenter', '#kategoriDokTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
             }).on('mouseleave', '#kategoriDokTable tbody tr', function() {
