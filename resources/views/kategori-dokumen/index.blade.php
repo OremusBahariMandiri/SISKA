@@ -9,10 +9,10 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-folder me-2"></i>Manajemen Kategori Dokumen</span>
-                        @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
-                        <a href="{{ route('kategori-dokumen.create') }}" class="btn btn-light">
-                            <i class="fas fa-plus-circle me-1"></i> Tambah
-                        </a>
+                        @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                            <a href="{{ route('kategori-dokumen.create') }}" class="btn btn-light">
+                                <i class="fas fa-plus-circle me-1"></i> Tambah
+                            </a>
                         @endif
                     </div>
 
@@ -51,28 +51,29 @@
                                             <td>{{ $kategori->KategoriDok }}</td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                                                    <a href="{{ route('kategori-dokumen.show', $kategori->id) }}"
-                                                        class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('kategori-dokumen.show', $kategori->id) }}"
+                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip"
+                                                            title="Detail">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
-                                                    <a href="{{ route('kategori-dokumen.edit', $kategori->id) }}"
-                                                        class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
-                                                        title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('kategori-dokumen.edit', $kategori->id) }}"
+                                                            class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                            title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
-                                                    <button type="button" class="btn btn-sm btn-danger delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        data-id="{{ $kategori->id }}"
-                                                        data-name="{{ $kategori->KategoriDok }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm btn-danger delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            data-id="{{ $kategori->id }}"
+                                                            data-name="{{ $kategori->KategoriDok }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </td>
@@ -240,6 +241,14 @@
                     responsive: true,
                     language: {
                         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+                    },
+                    drawCallback: function() {
+                        // Reinitialize tooltips after table redraw (pagination, etc)
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll(
+                            '[data-bs-toggle="tooltip"]'))
+                        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+                            return new bootstrap.Tooltip(tooltipTriggerEl)
+                        });
                     }
                 });
             }
@@ -250,8 +259,11 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl)
             });
 
-            // Handle delete confirmation
-            $('.delete-confirm').on('click', function() {
+            // Handle delete confirmation with event delegation
+            $(document).off('click', '.delete-confirm').on('click', '.delete-confirm', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
@@ -262,11 +274,12 @@
                 $('#deleteForm').attr('action', "{{ url('kategori-dokumen') }}/" + id);
 
                 // Show modal
-                $('#deleteConfirmationModal').modal('show');
+                var deleteModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+                deleteModal.show();
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
-            $('#kategoriDokTable tbody').on('click', 'tr', function(e) {
+            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail - using event delegation
+            $(document).on('click', '#kategoriDokTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
                     $(e.target).closest('button').length || $(e.target).closest('a').length) {
@@ -274,19 +287,19 @@
                 }
 
                 // Check if user has detail access before redirecting
-                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Get detail link URL
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
                 @endif
             });
 
-            // Add flash effect when hovering over rows
-            $('#kategoriDokTable tbody').on('mouseenter', 'tr', function() {
+            // Add flash effect when hovering over rows - using event delegation
+            $(document).on('mouseenter', '#kategoriDokTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
-            }).on('mouseleave', 'tr', function() {
+            }).on('mouseleave', '#kategoriDokTable tbody tr', function() {
                 $(this).removeClass('row-hover-active');
             });
 

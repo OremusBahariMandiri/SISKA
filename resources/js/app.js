@@ -70,7 +70,16 @@ if (window.appInitialized) {
                                 orderable: false,
                                 targets: [-1] // Last column (actions) not sortable
                             }
-                        ]
+                        ],
+                        // Run this callback after table is drawn or redrawn (like pagination)
+                        drawCallback: function() {
+                            // Reinitialize tooltips for newly created elements
+                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+                                new bootstrap.Tooltip(tooltipTriggerEl);
+                            });
+                            console.log("Table redrawn, events should be delegated");
+                        }
                     });
                 } else {
                     console.log("Table already initialized:", this.id);
@@ -96,10 +105,14 @@ if (window.appInitialized) {
         });
     }
 
-    // Function to initialize delete confirmation
+    // Function to initialize delete confirmation - FIXED WITH EVENT DELEGATION
     function initDeleteConfirmation() {
-        console.log("Initializing delete confirmation");
+        console.log("Initializing delete confirmation with event delegation");
 
+        // Remove any existing handlers to prevent duplicates
+        $(document).off('click', '.delete-confirm');
+
+        // Use document as the parent for event delegation
         $(document).on('click', '.delete-confirm', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -108,10 +121,14 @@ if (window.appInitialized) {
             const name = $(this).data('name');
             const url = $(this).data('url') || $(this).data('route');
 
-            console.log("Delete confirmation clicked for:", name);
+            console.log("Delete confirmation clicked for:", name, "with ID:", id, "URL:", url);
 
             // Set item name in modal
             $('#itemNameToDelete').text(name);
+            // For specific modals like kategori
+            if ($('#kategoriNameToDelete').length) {
+                $('#kategoriNameToDelete').text(name);
+            }
 
             // Set form action URL
             $('#deleteForm').attr('action', url);
