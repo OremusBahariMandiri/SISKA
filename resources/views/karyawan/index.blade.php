@@ -16,10 +16,10 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
-                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
-                            <a href="{{ route('karyawan.create') }}" class="btn btn-light">
-                                <i class="fas fa-plus-circle me-1"></i> Tambah
-                            </a>
+                            @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                                <a href="{{ route('karyawan.create') }}" class="btn btn-light">
+                                    <i class="fas fa-plus-circle me-1"></i> Tambah
+                                </a>
                             @endif
                         </div>
                     </div>
@@ -160,28 +160,29 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                                                    <a href="{{ route('karyawan.show', $karyawan->id) }}"
-                                                        class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('karyawan.show', $karyawan->id) }}"
+                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip"
+                                                            title="Detail">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
-                                                    <a href="{{ route('karyawan.edit', $karyawan->id) }}"
-                                                        class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
-                                                        title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('karyawan.edit', $karyawan->id) }}"
+                                                            class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                            title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
-                                                    <button type="button" class="btn btn-sm btn-danger delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        data-id="{{ $karyawan->id }}"
-                                                        data-name="{{ $karyawan->NamaKry }}">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm btn-danger delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            data-id="{{ $karyawan->id }}"
+                                                            data-name="{{ $karyawan->NamaKry }}">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </td>
@@ -553,23 +554,23 @@
 
             // Initialize DataTables - FIXED: removed parentheses after selector
             var karyawanTable = $('#karyawanTable').DataTable(
-            //     {
-            //     responsive: true,
-            //     language: {
-            //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-            //     },
-            //     searching: true,
-            //     ordering: true,
-            //     lengthMenu: [
-            //         [10, 25, 50, -1],
-            //         [10, 25, 50, "Semua"]
-            //     ],
-            //     dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
-            //         "<'row'<'col-sm-12'tr>>" +
-            //         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-            //     autoWidth: false
-            // }
-        );
+                //     {
+                //     responsive: true,
+                //     language: {
+                //         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+                //     },
+                //     searching: true,
+                //     ordering: true,
+                //     lengthMenu: [
+                //         [10, 25, 50, -1],
+                //         [10, 25, 50, "Semua"]
+                //     ],
+                //     dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>>" +
+                //         "<'row'<'col-sm-12'tr>>" +
+                //         "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+                //     autoWidth: false
+                // }
+            );
 
             // Apply filter function - Improved implementation for more reliable filtering
             $('#applyFilter').click(function() {
@@ -727,33 +728,22 @@
                 }
             }
 
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-                new bootstrap.Tooltip(tooltipTriggerEl);
+            // Initialize tooltips with event delegation
+            $(document).on('mouseenter', '[data-bs-toggle="tooltip"]', function() {
+                if (!$(this).attr('data-bs-original-title')) {
+                    new bootstrap.Tooltip(this);
+                }
             });
 
-            // Handle row click for details view
-            $('#karyawanTable tbody').on('click', 'tr', function(e) {
-                // Don't follow link if clicking on buttons or links
-                if ($(e.target).is('button, a, i') || $(e.target).closest('button, a').length) {
-                    return;
-                }
+            // MODIFIED: Use event delegation for delete confirmation
+            $(document).on('click', '.delete-confirm', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
 
-                // Check if user has detail access before redirecting
-                @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
-                @endif
-            });
-
-            // Handle delete confirmation
-            $('.delete-confirm').on('click', function() {
                 var id = $(this).data('id');
                 var name = $(this).data('name');
+
+                console.log("Delete clicked for:", name, "ID:", id);
 
                 // Set employee name in modal
                 $('#karyawanNameToDelete').text(name);
@@ -762,13 +752,31 @@
                 $('#deleteForm').attr('action', "{{ url('karyawan') }}/" + id);
 
                 // Show modal
-                deleteConfirmationModal.show();
+                $('#deleteConfirmationModal').modal('show');
             });
 
-            // Add hover effects for rows
-            $('#karyawanTable tbody').on('mouseenter', 'tr', function() {
+            // MODIFIED: Use event delegation for row click
+            $(document).on('click', '#karyawanTable tbody tr', function(e) {
+                // Don't follow link if clicking on buttons or links
+                if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
+                    $(e.target).closest('button').length || $(e.target).closest('a').length) {
+                    return;
+                }
+
+                // Check if user has detail access before redirecting
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Get detail link URL
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
+                @endif
+            });
+
+            // MODIFIED: Use event delegation for hover effects
+            $(document).on('mouseenter', '#karyawanTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
-            }).on('mouseleave', 'tr', function() {
+            }).on('mouseleave', '#karyawanTable tbody tr', function() {
                 $(this).removeClass('row-hover-active');
             });
 
