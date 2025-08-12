@@ -13,6 +13,7 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class DokumenKarirController extends Controller
 {
@@ -30,7 +31,7 @@ class DokumenKarirController extends Controller
 
     public function index()
     {
-        $dokumenKarir = DokumenKarir::with(['karyawan', 'jabatan', 'departemen', 'wilker','kategori'])->get();
+        $dokumenKarir = DokumenKarir::with(['karyawan', 'jabatan', 'departemen', 'wilker', 'kategori'])->get();
 
         // Get user permissions for this menu
         $userPermissions = [];
@@ -96,7 +97,7 @@ class DokumenKarirController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:B03DokKarir,NoRegDok',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'IdKodeA08' => 'required|exists:A08DmJabatan,IdKode',
@@ -104,8 +105,30 @@ class DokumenKarirController extends Controller
             'IdKodeA10' => 'required|exists:A10DmWilayahKrj,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
+            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA08.required' => 'Jabatan harus dipilih',
+            'IdKodeA09.required' => 'Departemen harus dipilih',
+            'IdKodeA10.required' => 'Wilayah Kerja harus dipilih',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Generate ID if not present
         if (empty($request->IdKode)) {
@@ -210,7 +233,7 @@ class DokumenKarirController extends Controller
 
     public function show(DokumenKarir $dokumenKarir)
     {
-        $dokumenKarir->load(['karyawan', 'jabatan', 'departemen', 'wilker','kategori']);
+        $dokumenKarir->load(['karyawan', 'jabatan', 'departemen', 'wilker', 'kategori']);
         return view('dokumen-karir.show', compact('dokumenKarir'));
     }
 
@@ -242,7 +265,7 @@ class DokumenKarirController extends Controller
 
     public function update(Request $request, DokumenKarir $dokumenKarir)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:B03DokKarir,NoRegDok,' . $dokumenKarir->Id . ',Id',
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'IdKodeA08' => 'required|exists:A08DmJabatan,IdKode',
@@ -250,8 +273,30 @@ class DokumenKarirController extends Controller
             'IdKodeA10' => 'required|exists:A10DmWilayahKrj,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'TglTerbitDok' => 'required|date',
+            'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
+            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+        ], [
+            'NoRegDok.required' => 'Nomor Registrasi harus diisi',
+            'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'IdKodeA04.required' => 'Karyawan harus dipilih',
+            'IdKodeA08.required' => 'Jabatan harus dipilih',
+            'IdKodeA09.required' => 'Departemen harus dipilih',
+            'IdKodeA10.required' => 'Wilayah Kerja harus dipilih',
+            'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
+            'JenisDok.required' => 'Jenis Dokumen harus dipilih',
+            'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
+            'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
+            'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
+            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan validasi. Silakan periksa kembali data yang dimasukkan.');
+        }
 
         // Calculate validity period automatically
         $masaBerlaku = 'Tetap';
@@ -425,7 +470,7 @@ class DokumenKarirController extends Controller
         }
 
         // If file cannot be previewed, redirect to download
-        return redirect()->route('dokumen-karir.download', $dokumenKarir);
+        return response()->download($filePath, $dokumenKarir->FileDok);
     }
 
     public function getJenisByKategori($kategoriId)

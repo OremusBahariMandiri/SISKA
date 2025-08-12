@@ -61,13 +61,13 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
-                                        <th>Kategori</th>
                                         <th>Jenis</th>
                                         <th>Perusahaan</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
                                         <th>Peringatan</th>
+                                        <th>File</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
                                     </tr>
@@ -79,7 +79,7 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->kategoriDok->KategoriDok ?? '-' }}</td>
+
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-' }}</td>
                                             <td>
@@ -112,6 +112,19 @@
                                             <td class="sisa-peringatan-col">
                                                 @if ($dokumen->MasaPengingat)
                                                     {{ $dokumen->MasaPengingat }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                @if ($dokumen->FileDok)
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('dokumen-kontrak.viewDocument', $dokumen->Id) }}"
+                                                            target="_blank" class="btn btn-sm btn-info"
+                                                            data-bs-toggle="tooltip" title="Lihat Dokumen">
+                                                            <i class="fas fa-eye"></i> Lihat
+                                                        </a>
+                                                    </div>
                                                 @else
                                                     <span class="text-muted">-</span>
                                                 @endif

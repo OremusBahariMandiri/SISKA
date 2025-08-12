@@ -94,7 +94,7 @@ Route::middleware(['auth'])->group(function () {
     //Dokumen Karir Route
     Route::resource('dokumen-karir', DokumenKarirController::class);
     Route::post('/dokumen-karir/export-excel', [DokumenKarirController::class, 'exportExcel'])->name('dokumen-karir.export-excel');
-    Route::get('dokumen-karir/{dokummenKarir}/view-document', [DokumenKarirController::class, 'viewDocument'])->name('dokumen-karir.viewDocument');
+    Route::get('dokumen-karir/{dokumenKarir}/view-document', [DokumenKarirController::class, 'viewDocument'])->name('dokumen-karir.viewDocument');
 
 
     //Dokumen Legalitas Route
