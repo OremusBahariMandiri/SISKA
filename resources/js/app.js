@@ -30,7 +30,7 @@ if (window.appInitialized) {
     window.appInitialized = true;
 
     // Initialize components when document is ready
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         console.log("Initializing app.js components");
 
         // Initialize DataTables
@@ -53,7 +53,7 @@ if (window.appInitialized) {
     function initDataTables() {
         console.log("Initializing DataTables");
         if ($.fn.DataTable) {
-            $('.data-table').each(function() {
+            $('.data-table').each(function () {
                 // Check if table is already initialized
                 if (!$.fn.DataTable.isDataTable(this)) {
                     // Initialize DataTable only if not already initialized
@@ -70,16 +70,7 @@ if (window.appInitialized) {
                                 orderable: false,
                                 targets: [-1] // Last column (actions) not sortable
                             }
-                        ],
-                        // Run this callback after table is drawn or redrawn (like pagination)
-                        drawCallback: function() {
-                            // Reinitialize tooltips for newly created elements
-                            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                            tooltipTriggerList.forEach(function(tooltipTriggerEl) {
-                                new bootstrap.Tooltip(tooltipTriggerEl);
-                            });
-                            console.log("Table redrawn, events should be delegated");
-                        }
+                        ]
                     });
                 } else {
                     console.log("Table already initialized:", this.id);
@@ -94,26 +85,24 @@ if (window.appInitialized) {
 
         // Initialize tooltips
         const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        tooltipTriggerList.forEach(function(tooltipTriggerEl) {
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
             new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
         // Initialize popovers
         const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'));
-        popoverTriggerList.forEach(function(popoverTriggerEl) {
+        popoverTriggerList.forEach(function (popoverTriggerEl) {
             new bootstrap.Popover(popoverTriggerEl);
         });
     }
 
-    // Function to initialize delete confirmation - FIXED WITH EVENT DELEGATION
+    // Function to initialize delete confirmation
+    // Di file app.js - Function untuk initialize delete confirmation
     function initDeleteConfirmation() {
-        console.log("Initializing delete confirmation with event delegation");
+        console.log("Initializing delete confirmation");
 
-        // Remove any existing handlers to prevent duplicates
-        $(document).off('click', '.delete-confirm');
-
-        // Use document as the parent for event delegation
-        $(document).on('click', '.delete-confirm', function(e) {
+        // GUNAKAN EVENT DELEGATION - ini akan bekerja untuk semua halaman DataTables
+        $(document).on('click', '.delete-confirm', function (e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -121,14 +110,12 @@ if (window.appInitialized) {
             const name = $(this).data('name');
             const url = $(this).data('url') || $(this).data('route');
 
-            console.log("Delete confirmation clicked for:", name, "with ID:", id, "URL:", url);
+            console.log("Delete confirmation clicked for:", name);
 
             // Set item name in modal
             $('#itemNameToDelete').text(name);
-            // For specific modals like kategori
-            if ($('#kategoriNameToDelete').length) {
-                $('#kategoriNameToDelete').text(name);
-            }
+            // Untuk halaman jenis dokumen, gunakan ID yang sesuai
+            $('#jenisNameToDelete').text(name);
 
             // Set form action URL
             $('#deleteForm').attr('action', url);
@@ -153,7 +140,7 @@ if (window.appInitialized) {
 
         // Toggle sidebar on hamburger click
         if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function(e) {
+            sidebarToggle.addEventListener('click', function (e) {
                 console.log("Sidebar toggle clicked");
                 e.preventDefault();
 
@@ -173,7 +160,7 @@ if (window.appInitialized) {
 
         // Close sidebar on mobile
         if (sidebarClose) {
-            sidebarClose.addEventListener('click', function(e) {
+            sidebarClose.addEventListener('click', function (e) {
                 console.log("Sidebar close clicked");
                 e.preventDefault();
                 layoutContainer.classList.remove('sidebar-active');
@@ -182,7 +169,7 @@ if (window.appInitialized) {
 
         // Close sidebar when overlay is clicked
         if (sidebarOverlay) {
-            sidebarOverlay.addEventListener('click', function(e) {
+            sidebarOverlay.addEventListener('click', function (e) {
                 console.log("Sidebar overlay clicked");
                 e.preventDefault();
                 layoutContainer.classList.remove('sidebar-active');
@@ -193,8 +180,8 @@ if (window.appInitialized) {
         if (menuItems && menuItems.length > 0) {
             console.log(`Found ${menuItems.length} menu items`);
 
-            menuItems.forEach(function(item) {
-                item.addEventListener('click', function(e) {
+            menuItems.forEach(function (item) {
+                item.addEventListener('click', function (e) {
                     e.preventDefault();
                     console.log("Menu item clicked:", this.getAttribute('data-menu'));
 
@@ -209,8 +196,8 @@ if (window.appInitialized) {
 
                     // Periksa jika sidebar dalam mode collapsed (desktop)
                     const isCollapsedDesktop = !mediaQuery.matches &&
-                                             layoutContainer &&
-                                             layoutContainer.classList.contains('sidebar-collapsed');
+                        layoutContainer &&
+                        layoutContainer.classList.contains('sidebar-collapsed');
 
                     if (isCollapsedDesktop) {
                         // Di mode collapsed, tidak toggle submenu
@@ -219,7 +206,7 @@ if (window.appInitialized) {
 
                     // Close other open submenus (accordion behavior)
                     const otherActiveItems = document.querySelectorAll('.sidebar-menu-item.active:not([data-menu="' + menuId + '"])');
-                    otherActiveItems.forEach(function(otherItem) {
+                    otherActiveItems.forEach(function (otherItem) {
                         const otherMenuId = otherItem.getAttribute('data-menu');
                         const otherSubmenu = document.getElementById(otherMenuId);
                         const otherIndicator = otherItem.querySelector('.submenu-indicator');
@@ -291,7 +278,7 @@ if (window.appInitialized) {
         }
 
         // Initialize active submenus based on current page
-        document.querySelectorAll('.sidebar-submenu.show').forEach(function(submenu) {
+        document.querySelectorAll('.sidebar-submenu.show').forEach(function (submenu) {
             const menuId = submenu.id;
             const menuItem = document.querySelector(`[data-menu="${menuId}"]`);
             const indicator = menuItem ? menuItem.querySelector('.submenu-indicator') : null;
@@ -310,7 +297,7 @@ if (window.appInitialized) {
     // Function to auto-hide alerts
     function initAutoHideAlerts() {
         // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
+        setTimeout(function () {
             $(".alert").fadeOut("slow");
         }, 5000);
     }
