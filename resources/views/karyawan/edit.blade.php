@@ -753,6 +753,18 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-3">
+                                                    <label for="Catatan" class="form-label fw-bold">Catatan</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fas fa-sticky-note"></i></span>
+                                                        <textarea class="form-control" id="Catatan" name="Catatan" rows="3">{{ old('Catatan', $karyawan->Catatan) }}</textarea>
+                                                    </div>
+                                                    <div class="form-text text-muted">
+                                                        <i class="fas fa-info-circle me-1"></i>Catatan tambahan untuk karyawan
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -784,7 +796,7 @@
     <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header text-white" style="background-color:#02786e">
                     <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Update Data</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>

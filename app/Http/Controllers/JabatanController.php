@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Jabatan;
-use App\Models\KategoriDokumen;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
@@ -19,13 +18,45 @@ class JabatanController extends Controller
         $this->middleware('check.access:jabatan,ubah')->only('edit', 'update');
         $this->middleware('check.access:jabatan,hapus')->only('destroy');
     }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $jabatan = Jabatan::all();
-        return view('jabatan.index', compact('jabatan'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'jabatan')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('jabatan.index', compact('jabatan', 'userPermissions'));
     }
 
     /**
@@ -68,7 +99,6 @@ class JabatanController extends Controller
             ->with('success', 'Jabatan berhasil dibuat.');
     }
 
-
     /**
      * Display the specified resource.
      */
@@ -77,7 +107,6 @@ class JabatanController extends Controller
         $jabatan = Jabatan::findOrFail($id);
         return view('jabatan.show', compact('jabatan'));
     }
-
 
     /**
      * Show the form for editing the specified resource.
@@ -108,7 +137,7 @@ class JabatanController extends Controller
         ]);
 
         return redirect()->route('jabatan.index')
-            ->with('success', 'jabatan berhasil diperbarui.');
+            ->with('success', 'Jabatan berhasil diperbarui.');
     }
 
     /**
@@ -118,10 +147,10 @@ class JabatanController extends Controller
     {
         $jabatan = Jabatan::findOrFail($id);
 
-
+        // Delete jabatan
         $jabatan->delete();
 
         return redirect()->route('jabatan.index')
-            ->with('success', 'jabatan berhasil dihapus.');
+            ->with('success', 'Data jabatan berhasil dihapus.');
     }
 }

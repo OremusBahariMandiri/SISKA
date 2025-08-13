@@ -9,9 +9,11 @@
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-folder me-2"></i>Manajemen Jabatan</span>
-                        <a href="{{ route('jabatan.create') }}" class="btn btn-light">
-                            <i class="fas fa-plus-circle me-1"></i> Tambah
-                        </a>
+                        @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                            <a href="{{ route('jabatan.create') }}" class="btn btn-light">
+                                <i class="fas fa-plus-circle me-1"></i> Tambah
+                            </a>
+                        @endif
                     </div>
 
                     <div class="card-body">
@@ -51,22 +53,30 @@
                                             <td>{{ $jbt->SingkatanJbtn }}</td>
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    <a href="{{ route('jabatan.show', $jbt->id) }}"
-                                                        class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a href="{{ route('jabatan.edit', $jbt->id) }}"
-                                                        class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
-                                                        title="Edit">
-                                                        <i class="fas fa-edit"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-sm btn-danger delete-confirm"
-                                                        data-bs-toggle="tooltip" title="Hapus"
-                                                        data-id="{{ $jbt->id }}"
-                                                        data-name="{{ $jbt->GolonganJbt }}"
-                                                        data-bs-toggle="tooltip" title="Hapus">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                        <a href="{{ route('jabatan.show', $jbt->id) }}"
+                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                        <a href="{{ route('jabatan.edit', $jbt->id) }}"
+                                                            class="btn btn-sm btn-warning" data-bs-toggle="tooltip"
+                                                            title="Edit">
+                                                            <i class="fas fa-edit"></i>
+                                                        </a>
+                                                    @endif
+
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                        <button type="button" class="btn btn-sm btn-danger delete-confirm"
+                                                            data-bs-toggle="tooltip" title="Hapus"
+                                                            data-id="{{ $jbt->id }}"
+                                                            data-name="{{ $jbt->GolonganJbt }}"
+                                                            data-bs-toggle="tooltip" title="Hapus">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                             </td>
                                         </tr>
@@ -237,18 +247,24 @@
                 });
             }
 
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
+            // Initialize tooltips dengan event delegation
+            $(document).on('mouseenter', '[data-bs-toggle="tooltip"]', function() {
+                if (!$(this).attr('data-bs-original-title')) {
+                    new bootstrap.Tooltip(this);
+                }
             });
 
-            // Handle delete confirmation
-            $('.delete-confirm').on('click', function() {
+            // MODIFIED: Use event delegation for delete confirmation
+            $(document).on('click', '.delete-confirm', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
                 var id = $(this).data('id');
                 var name = $(this).data('name');
 
-                // Set kategori name in modal
+                console.log("Delete clicked for:", name, "ID:", id);
+
+                // Set jabatan name in modal
                 $('#jabatanNameToDelete').text(name);
 
                 // Set form action URL with explicit URL construction
@@ -258,25 +274,28 @@
                 $('#deleteConfirmationModal').modal('show');
             });
 
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
-            $('#jabatanTable tbody').on('click', 'tr', function(e) {
+            // MODIFIED: Use event delegation for row click
+            $(document).on('click', '#jabatanTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
                     $(e.target).closest('button').length || $(e.target).closest('a').length) {
                     return;
                 }
 
-                // Get detail link URL
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
+                // Check if user has detail access before redirecting
+                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                    // Get detail link URL
+                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                    if (detailLink) {
+                        window.location.href = detailLink;
+                    }
+                @endif
             });
 
-            // Add flash effect when hovering over rows
-            $('#jabatanTable tbody').on('mouseenter', 'tr', function() {
+            // MODIFIED: Use event delegation for hover effects
+            $(document).on('mouseenter', '#jabatanTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
-            }).on('mouseleave', 'tr', function() {
+            }).on('mouseleave', '#jabatanTable tbody tr', function() {
                 $(this).removeClass('row-hover-active');
             });
 

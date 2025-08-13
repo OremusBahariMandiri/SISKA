@@ -53,6 +53,7 @@
                                         <th>Umur</th>
                                         <th>Tanggal Masuk</th>
                                         <th>Masa Kerja</th>
+                                        <th>Catatan</th>
                                         <th width="5%">Foto</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th class="text-center" width="15%">Aksi</th>
@@ -113,6 +114,7 @@
                                             <td>{{ $karyawan->TglMsk ? date('d-m-Y', strtotime($karyawan->TglMsk)) : '-' }}
                                             </td>
                                             <td>{{ $workDuration }}</td>
+                                            <td>{{ $karyawan->Catatan }}</td>
                                             <td class="text-center">
                                                 @if ($karyawan->FileDokKry)
                                                     @php

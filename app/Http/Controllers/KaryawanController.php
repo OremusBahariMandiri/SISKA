@@ -139,6 +139,7 @@ class KaryawanController extends Controller
             'StsKaryawan' => $request->StsKaryawan,
             'TglOffKry' => $request->StsKaryawan != 'Aktif' ? $request->TglOffKry : null,
             'KetOffKry' => $request->StsKaryawan != 'Aktif' ? $request->KetOffKry : null,
+            'Catatan' => $request->Catatan,
             'created_by' => auth()->user()->IdKode ?? null,
         ]);
 
@@ -230,6 +231,7 @@ class KaryawanController extends Controller
             'StsKaryawan' => $request->StsKaryawan,
             'TglOffKry' => $request->StsKaryawan != 'Aktif' ? $request->TglOffKry : null,
             'KetOffKry' => $request->StsKaryawan != 'Aktif' ? $request->KetOffKry : null,
+            'Catatan' => $request->Catatan,
             'updated_by' => auth()->user()->IdKode ?? null,
         ]);
 
