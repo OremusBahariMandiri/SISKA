@@ -24,7 +24,7 @@
                             <!-- Basic Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
                                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                     </div>
                                     <div class="card-body">
@@ -114,7 +114,7 @@
                             <!-- Validity and Date Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
                                         <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
                                     </div>
                                     <div class="card-body">
@@ -205,7 +205,7 @@
 
                         <!-- File Information -->
                         <div class="card border-secondary">
-                            <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                            <div class="card-header bg-secondary bg-opacity-25 text-white">
                                 <h5 class="mb-0"><i class="fas fa-file me-2"></i>Dokumen & Status</h5>
                             </div>
                             <div class="card-body">

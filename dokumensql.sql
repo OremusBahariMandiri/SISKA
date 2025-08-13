@@ -173,3 +173,8 @@ CREATE TABLE A11DmFormulirDok (
     FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
     FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
 );
+
+ALTER TABLE A11DmFormulirDok
+ADD NamaPrsh VARCHAR (20),
+ADD CONSTRAINT fk_formulirdok_perusahaan
+FOREIGN KEY (NamaPrsh) REFERENCES A03DmPerusahaan(IdKode);

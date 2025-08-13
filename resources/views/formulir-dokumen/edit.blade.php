@@ -47,7 +47,7 @@
                                 <!-- Basic Information -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
                                             <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                         </div>
                                         <div class="card-body">
@@ -66,6 +66,48 @@
                                                         placeholder="Masukkan nomor registrasi dokumen" required>
                                                     @error('NoRegDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label for="NamaPrsh" class="form-label fw-bold">Perusahaan <span class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+
+                                                    <!-- Custom searchable dropdown for Perusahaan -->
+                                                    <div class="custom-select-container @error('NamaPrsh') is-invalid @enderror"
+                                                        style="flex: 1 1 auto; width: 1%;" id="perusahaanContainer">
+                                                        <input type="text" id="perusahaanSearch"
+                                                            class="form-control custom-select-search"
+                                                            placeholder="Cari perusahaan..." autocomplete="off">
+
+                                                        <div class="custom-select-dropdown" id="perusahaanDropdown">
+                                                            <div class="custom-select-search-wrapper">
+                                                                <input type="text" id="perusahaanFilterInput"
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
+                                                            </div>
+                                                            <div class="custom-select-options">
+                                                                <div class="custom-select-option empty-option"
+                                                                    data-value="" data-display="-- Pilih Perusahaan --">--
+                                                                    Pilih Perusahaan --</div>
+                                                                @foreach ($perusahaan as $prsh)
+                                                                    <div class="custom-select-option"
+                                                                        data-value="{{ $prsh->IdKode }}"
+                                                                        data-display="{{ $prsh->SingkatanPrsh }} - {{ $prsh->NamaPrsh ?? '' }}">
+                                                                        {{ $prsh->SingkatanPrsh }} -
+                                                                        {{ $prsh->NamaPrsh ?? '' }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="hidden" name="NamaPrsh" id="NamaPrsh"
+                                                            value="{{ old('NamaPrsh', $formulirDokumen->NamaPrsh) }}" required>
+                                                    </div>
+                                                    @error('NamaPrsh')
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -174,7 +216,7 @@
                                 <!-- Additional Information -->
                                 <div class="col-md-6">
                                     <div class="card h-100 border-secondary">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                        <div class="card-header bg-secondary bg-opacity-25 text-white">
                                             <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Tanggal & Status</h5>
                                         </div>
                                         <div class="card-body">
@@ -497,6 +539,7 @@
             const fileTypeIcon = document.getElementById('fileTypeIcon');
             const removeFileBtn = document.getElementById('removeFile');
             const fileValidationMessage = document.getElementById('fileValidationMessage');
+            initCustomSelect('perusahaan', 'NamaPrsh');
 
             fileInput.addEventListener('change', function() {
                 // Clear previous validation messages

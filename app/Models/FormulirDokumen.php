@@ -13,6 +13,7 @@ class FormulirDokumen extends Model
 
     protected $fillable = [
         'IdKode',
+        'NamaPrsh',
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
@@ -34,6 +35,11 @@ class FormulirDokumen extends Model
     {
         // Changed from hasMany to belongsTo with correct foreign/local key mapping
         return $this->belongsTo(KategoriDokumen::class, 'KategoriDok', 'IdKode');
+    }
+
+    public function perusahaan()
+    {
+        return $this->belongsTo(Perusahaan::class, 'NamaPrsh', 'IdKode');
     }
 
     public function createdBy()
