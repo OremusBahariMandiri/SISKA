@@ -11,7 +11,8 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Detail Formulir Dokumen</span>
                         <div>
-                            <a href="{{ route('formulir-dokumen.edit', $formulirDokumen->id) }}" class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('formulir-dokumen.edit', $formulirDokumen->id) }}"
+                                class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
                             <a href="{{ route('formulir-dokumen.index') }}" class="btn btn-light btn-sm">
@@ -25,7 +26,7 @@
                             <!-- Basic Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
                                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                     </div>
                                     <div class="card-body">
@@ -38,13 +39,25 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Perusahaan</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-building"></i></span>
+                                                    <div class="form-control">
+                                                        {{ $formulirDokumen->perusahaan->SingkatanPrsh ?? '' }} -
+                                                        {{ $formulirDokumen->perusahaan->NamaPrsh ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Kategori Dokumen</label>
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $formulirDokumen->kategori->KategoriDok ?? '-' }}</div>
+                                                    <div class="form-control">
+                                                        {{ $formulirDokumen->kategori->KategoriDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -64,7 +77,8 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                                    <div class="form-control min-height-100">{{ $formulirDokumen->KetDok ?? '-' }}</div>
+                                                    <div class="form-control min-height-100">
+                                                        {{ $formulirDokumen->KetDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -75,7 +89,7 @@
                             <!-- Additional Information -->
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
-                                    <div class="card-header bg-secondary bg-opacity-25 text-dark">
+                                    <div class="card-header bg-secondary bg-opacity-25 text-white">
                                         <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Tanggal & Status</h5>
                                     </div>
                                     <div class="card-body">
@@ -83,7 +97,8 @@
                                             <label class="info-label fw-bold">Tanggal Terbit</label>
                                             <div class="info-value">
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-calendar-plus"></i></span>
                                                     <div class="form-control">
                                                         {{ $formulirDokumen->TglTerbitDok ? $formulirDokumen->TglTerbitDok->format('d/m/Y') : '-' }}
                                                     </div>
@@ -96,14 +111,14 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text">
-                                                        @if($formulirDokumen->StatusDok === 'Berlaku')
+                                                        @if ($formulirDokumen->StatusDok === 'Berlaku')
                                                             <i class="fas fa-check-circle text-success"></i>
                                                         @else
                                                             <i class="fas fa-times-circle text-danger"></i>
                                                         @endif
                                                     </span>
                                                     <div class="form-control">
-                                                        @if($formulirDokumen->StatusDok === 'Berlaku')
+                                                        @if ($formulirDokumen->StatusDok === 'Berlaku')
                                                             <span class="badge bg-success">Berlaku</span>
                                                         @else
                                                             <span class="badge bg-danger">Tidak Berlaku</span>
@@ -116,7 +131,7 @@
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">File Dokumen</label>
                                             <div class="info-value">
-                                                @if($formulirDokumen->FileDok)
+                                                @if ($formulirDokumen->FileDok)
                                                     <div class="d-flex gap-2">
                                                         <a href="{{ route('formulir-dokumen.viewDocument', $formulirDokumen->id) }}"
                                                             class="btn btn-info" target="_blank">
@@ -132,7 +147,8 @@
                                                     </div>
                                                 @else
                                                     <div class="alert alert-warning mb-0">
-                                                        <i class="fas fa-exclamation-triangle me-1"></i> Tidak ada file dokumen yang tersedia.
+                                                        <i class="fas fa-exclamation-triangle me-1"></i> Tidak ada file
+                                                        dokumen yang tersedia.
                                                     </div>
                                                 @endif
                                             </div>
@@ -144,11 +160,15 @@
                                                 <div class="row g-2">
                                                     <div class="col-md-6">
                                                         <div class="small text-muted">Dibuat pada:</div>
-                                                        <div>{{ $formulirDokumen->created_at ? $formulirDokumen->created_at->format('d/m/Y H:i') : '-' }}</div>
+                                                        <div>
+                                                            {{ $formulirDokumen->created_at ? $formulirDokumen->created_at->format('d/m/Y H:i') : '-' }}
+                                                        </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="small text-muted">Terakhir diubah:</div>
-                                                        <div>{{ $formulirDokumen->updated_at ? $formulirDokumen->updated_at->format('d/m/Y H:i') : '-' }}</div>
+                                                        <div>
+                                                            {{ $formulirDokumen->updated_at ? $formulirDokumen->updated_at->format('d/m/Y H:i') : '-' }}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

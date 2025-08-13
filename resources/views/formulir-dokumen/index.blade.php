@@ -50,6 +50,7 @@
                                     <tr>
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
+                                        <th>Perusahaan</th>
                                         <th>Kategori</th>
                                         <th>Jenis Dokumen</th>
                                         <th>Tgl Terbit</th>
@@ -64,6 +65,7 @@
                                         <tr>
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
+                                            <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-'}}</td>
                                             <td>{{ $dokumen->kategori->KategoriDok ?? '-' }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>

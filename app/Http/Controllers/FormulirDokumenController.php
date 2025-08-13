@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\FormulirDokumen;
 use App\Models\KategoriDokumen;
 use App\Models\JenisDokumen;
+use App\Models\Perusahaan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -66,6 +67,7 @@ class FormulirDokumenController extends Controller
     {
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+        $perusahaan = Perusahaan::all(); // Add this line
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
@@ -84,13 +86,15 @@ class FormulirDokumenController extends Controller
         // Generate ID otomatis
         $newId = $this->generateId('A11', 'A11DmFormulirDok');
 
-        return view('formulir-dokumen.create', compact('kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId'));
+        return view('formulir-dokumen.create', compact('kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId', 'perusahaan'));
     }
+
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:A11DmFormulirDok,NoRegDok',
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode', // Add this validation
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
@@ -99,6 +103,8 @@ class FormulirDokumenController extends Controller
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'NamaPrsh.required' => 'Perusahaan harus dipilih', // Add this message
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid', // Add this message
             'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
             'JenisDok.required' => 'Jenis Dokumen harus dipilih',
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
@@ -124,6 +130,7 @@ class FormulirDokumenController extends Controller
         $data = [
             'IdKode' => $IdKode,
             'NoRegDok' => $request->NoRegDok,
+            'NamaPrsh' => $request->NamaPrsh,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
             'KetDok' => $request->KetDok,
@@ -178,6 +185,7 @@ class FormulirDokumenController extends Controller
     {
         $formulirDokumen = FormulirDokumen::findOrFail($id);
         $kategoriDokumen = KategoriDokumen::all();
+        $perusahaan = Perusahaan::all(); // Add this line
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
@@ -194,7 +202,7 @@ class FormulirDokumenController extends Controller
             ];
         }
 
-        return view('formulir-dokumen.edit', compact('formulirDokumen', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
+        return view('formulir-dokumen.edit', compact('formulirDokumen', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'perusahaan'));
     }
 
     public function update(Request $request, $id)
@@ -203,6 +211,7 @@ class FormulirDokumenController extends Controller
 
         $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:A11DmFormulirDok,NoRegDok,' . $formulirDokumen->id . ',id',
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode', // Add this validation
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
@@ -211,6 +220,8 @@ class FormulirDokumenController extends Controller
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
+            'NamaPrsh.required' => 'Perusahaan harus dipilih', // Add this message
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid', // Add this message
             'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
             'JenisDok.required' => 'Jenis Dokumen harus dipilih',
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
@@ -227,6 +238,7 @@ class FormulirDokumenController extends Controller
 
         $data = [
             'NoRegDok' => $request->NoRegDok,
+            'NamaPrsh' => $request->NamaPrsh,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
             'KetDok' => $request->KetDok,
