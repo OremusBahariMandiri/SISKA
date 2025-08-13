@@ -38,6 +38,11 @@ class DokumenKaryawan extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function jenisDokumen()
+    {
+        return $this->belongsTo(JenisDokumen::class, 'JenisDok', 'JenisDok');
+    }
+
     // Relationships
     public function karyawan()
     {
