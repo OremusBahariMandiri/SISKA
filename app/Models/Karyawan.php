@@ -47,6 +47,7 @@ class Karyawan extends Model
         'StsKaryawan',
         'TglOffKry',
         'KetOffKry',
+        'Catatan',
         'created_by',
         'updated_by'
     ];

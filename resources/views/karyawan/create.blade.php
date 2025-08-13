@@ -359,7 +359,8 @@
                                                                 name="EmailKry" value="{{ old('EmailKry') }}">
                                                         </div>
                                                         <div class="form-text text-muted">
-                                                            <i class="fas fa-info-circle me-1"></i>Format Email: testing@gmail.com
+                                                            <i class="fas fa-info-circle me-1"></i>Format Email:
+                                                            testing@gmail.com
                                                         </div>
                                                     </div>
                                                 </div>
@@ -507,8 +508,8 @@
                                                                 <option value="" selected disabled>Pilih Pendidikan
                                                                 </option>
                                                                 <option value="-"
-                                                                {{ old('PendidikanTrhKry') == '-' ? 'selected' : '' }}>
-                                                                -</option>
+                                                                    {{ old('PendidikanTrhKry') == '-' ? 'selected' : '' }}>
+                                                                    -</option>
                                                                 <option value="SD"
                                                                     {{ old('PendidikanTrhKry') == 'SD' ? 'selected' : '' }}>
                                                                     SD</option>
@@ -691,6 +692,20 @@
                                                         PNG</div>
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="form-group mb-3">
+                                                    <label for="Catatan" class="form-label fw-bold">Catatan</label>
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i
+                                                                class="fas fa-sticky-note"></i></span>
+                                                        <textarea class="form-control" id="Catatan" name="Catatan" rows="3">{{ old('Catatan') }}</textarea>
+                                                    </div>
+                                                    <div class="form-text text-muted">
+                                                        <i class="fas fa-info-circle me-1"></i>Catatan tambahan untuk
+                                                        karyawan
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -719,12 +734,14 @@
     </div>
 
     <!-- Confirmation Modal -->
-    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirmationModal" tabindex="-1" role="dialog"
+        aria-labelledby="confirmationModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header text-white" style="background-color:#02786e">
                     <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Simpan Data</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <p>Apakah Anda yakin ingin menyimpan data karyawan baru ini?</p>
@@ -827,7 +844,8 @@
         }
 
         /* Age info and work duration styles */
-        #usiaInfo, #masaKerjaInfo {
+        #usiaInfo,
+        #masaKerjaInfo {
             font-size: 0.85rem;
             margin-top: 5px;
         }
@@ -975,7 +993,8 @@
                         invalidFieldsList.push(fieldName);
 
                         // Create error message if it doesn't exist
-                        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains('invalid-feedback')) {
+                        if (!input.nextElementSibling || !input.nextElementSibling.classList
+                            .contains('invalid-feedback')) {
                             const feedback = document.createElement('div');
                             feedback.className = 'invalid-feedback';
                             feedback.textContent = 'Field ini wajib diisi';
@@ -1018,7 +1037,9 @@
                     }
 
                     // Scroll to the validation alert
-                    validationAlert.scrollIntoView({behavior: 'smooth'});
+                    validationAlert.scrollIntoView({
+                        behavior: 'smooth'
+                    });
                 } else {
                     // Hide validation alert if shown previously
                     validationAlert.style.display = 'none';
@@ -1096,7 +1117,8 @@
             function updateAge() {
                 if (tanggalLahirInput.value) {
                     const age = calculateAge(tanggalLahirInput.value);
-                    usiaInfo.innerHTML = `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
+                    usiaInfo.innerHTML =
+                        `<i class="fas fa-info-circle me-1"></i>Usia: <strong>${age} tahun</strong>`;
 
                     // Add color coding for age
                     if (age < 17) {
@@ -1142,7 +1164,10 @@
                     months += 12;
                 }
 
-                return { years, months };
+                return {
+                    years,
+                    months
+                };
             }
 
             function updateWorkDuration() {
@@ -1166,12 +1191,14 @@
                         durationText = 'Kurang dari 1 bulan';
                     }
 
-                    masaKerjaInfo.innerHTML = `<i class="fas fa-business-time me-1"></i>Masa Kerja: <strong>${durationText}</strong>`;
+                    masaKerjaInfo.innerHTML =
+                        `<i class="fas fa-business-time me-1"></i>Masa Kerja: <strong>${durationText}</strong>`;
 
                     // Add color coding for work duration
                     if (duration.years < 1) {
                         masaKerjaInfo.classList.add('text-info');
-                        masaKerjaInfo.classList.remove('text-muted', 'text-success', 'text-warning', 'text-primary');
+                        masaKerjaInfo.classList.remove('text-muted', 'text-success', 'text-warning',
+                        'text-primary');
                     } else if (duration.years >= 1 && duration.years < 3) {
                         masaKerjaInfo.classList.add('text-primary');
                         masaKerjaInfo.classList.remove('text-muted', 'text-info', 'text-success', 'text-warning');
@@ -1236,7 +1263,8 @@
 
                                 // Insert after the file input container
                                 const fileInputContainer = fileInput.closest('.form-group');
-                                fileInputContainer.parentNode.insertBefore(previewContainer, fileInputContainer.nextSibling);
+                                fileInputContainer.parentNode.insertBefore(previewContainer,
+                                    fileInputContainer.nextSibling);
                             }
 
                             // Update the image

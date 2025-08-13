@@ -636,6 +636,19 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-12">
+                                            <div class="info-group mb-3">
+                                                <label class="info-label fw-bold">Catatan</label>
+                                                <div class="info-value">
+                                                    <div class="input-group">
+                                                        <span class="input-group-text"><i class="fas fa-sticky-note"></i></span>
+                                                        <div class="form-control">
+                                                            <textarea class="form-control" rows="3" readonly>{{ $karyawan->Catatan ?? '-' }}</textarea>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
