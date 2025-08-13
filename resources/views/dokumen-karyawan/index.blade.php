@@ -61,7 +61,6 @@
                                         <th width="5%">No</th>
                                         <th>No Registrasi</th>
                                         <th>Nama Karyawan</th>
-                                        <th>Kategori</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
@@ -76,11 +75,12 @@
                                 <tbody>
                                     @foreach ($dokumenKaryawan as $index => $dokumen)
                                         <tr data-tgl-pengingat="{{ $dokumen->TglPengingat ? $dokumen->TglPengingat->format('Y-m-d') : '' }}"
-                                            data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? $dokumen->TglBerakhirDok->format('Y-m-d') : '' }}">
+                                            data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? $dokumen->TglBerakhirDok->format('Y-m-d') : '' }}"
+                                            data-goldok="{{ $dokumen->GolDok ?? 999 }}"
+                                            data-employee-id="{{ $dokumen->IdKodeA04 }}">
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
-                                            <td>{{ $dokumen->kategori->KategoriDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -586,6 +586,18 @@
                 $('#dokumenKaryawanTable').DataTable().destroy();
             }
 
+            // Tambahkan pengurutan kustom untuk employee-goldok
+            $.fn.dataTable.ext.order['employee-goldok'] = function(settings, col) {
+                return this.api().column(col, {order:'index'}).nodes().map(function(td, i) {
+                    const $row = $(td).closest('tr');
+                    const employeeId = $row.data('employee-id') || '';
+                    const goldok = parseInt($row.data('goldok') || 999);
+
+                    // Format untuk pengurutan: employee ID + goldok dengan padding
+                    return employeeId + '-' + String(goldok).padStart(5, '0');
+                });
+            };
+
             // Fungsi untuk mendapatkan statistik dokumen - perbaikan untuk menghitung dengan benar
             function updateDocumentStats() {
                 // Hapus kelas highlight terlebih dahulu untuk memastikan penghitungan yang bersih
@@ -603,7 +615,7 @@
                     let isWarning = false;
 
                     // Cek status dokumen terlebih dahulu
-                    const statusText = row.find('td:eq(9)').text().trim();
+                    const statusText = row.find('td:eq(11)').text().trim();
 
                     // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
                     if (statusText.includes("Tidak Berlaku")) {
@@ -730,7 +742,7 @@
                     const row = $(this);
 
                     // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-                    const statusText = row.find('td:eq(9)').text().trim();
+                    const statusText = row.find('td:eq(11)').text().trim();
 
                     if (statusText.includes("Tidak Berlaku")) {
                         row.addClass('highlight-gray');
@@ -826,7 +838,7 @@
                             if (status === '') {
                                 return true;
                             } else if (status === 'Valid') {
-                                return data[9].includes("Berlaku") &&
+                                return data[11].includes("Berlaku") &&
                                     (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
                             } else if (status === 'Warning') {
                                 return berakhirDate &&
@@ -847,10 +859,11 @@
             var table = $('#dokumenKaryawanTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
+                ordering: false, // Disable default ordering to preserve our server-side sort
                 columnDefs: [{
                         // Prioritas tertinggi untuk kolom yang paling penting
                         responsivePriority: 1,
-                        targets: [0, 1, 2, 9] // No, No.Reg, Nama Karyawan, Status
+                        targets: [0, 1, 2, 11] // No, No.Reg, Nama Karyawan, Status
                     },
                     {
                         // Prioritas kedua untuk kolom penting lainnya
@@ -870,30 +883,8 @@
                     {
                         // Kolom yang tidak bisa di-sort
                         orderable: false,
-                        targets: [0, 10] // No dan Aksi
-                    },
-                    {
-                        // Custom sorting untuk kolom Status (kolom 9)
-                        // Memastikan dokumen "Tidak Berlaku" selalu di bawah
-                        targets: 9,
-                        type: 'string',
-                        render: function(data, type, row, meta) {
-                            // Untuk tipe display, tampilkan data asli
-                            if (type === 'display') {
-                                return data;
-                            }
-                            // Untuk sorting, taruh "Tidak Berlaku" di paling akhir
-                            // dengan menambahkan prefix 'z' (akan selalu di akhir alfabet)
-                            if (type === 'sort') {
-                                return data.includes('Tidak Berlaku') ? 'z' + data : 'a' + data;
-                            }
-                            return data;
-                        }
+                        targets: '_all' // Semua kolom tidak bisa di-sort
                     }
-                ],
-                order: [
-                    [9, 'asc'], // Mengurutkan berdasarkan status terlebih dahulu
-                    [1, 'asc'] // Kemudian berdasarkan No. Reg
                 ],
                 buttons: [{
                         extend: 'excel',

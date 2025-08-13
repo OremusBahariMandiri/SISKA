@@ -32,39 +32,183 @@ class DokumenKaryawanController extends Controller
     // Update the index method in DokumenKaryawanController
     public function index()
     {
-        $dokumenKaryawan = DokumenKaryawan::with(['karyawan'])->get();
+       // Get user permissions for this menu
+       $userPermissions = [];
+       if (auth()->check()) {
+           $user = auth()->user();
+           if ($user->is_admin) {
+               // Admin has all permissions
+               $userPermissions = [
+                   'tambah' => true,
+                   'ubah' => true,
+                   'hapus' => true,
+                   'download' => true,
+                   'detail' => true,
+                   'monitoring' => true,
+               ];
+           } else {
+               // Get specific permissions from user access
+               $access = $user->userAccess()->where('MenuAcs', 'dokumen-karyawan')->first();
+               if ($access) {
+                   $userPermissions = [
+                       'tambah' => (bool)$access->TambahAcs,
+                       'ubah' => (bool)$access->UbahAcs,
+                       'hapus' => (bool)$access->HapusAcs,
+                       'download' => (bool)$access->DownloadAcs,
+                       'detail' => (bool)$access->DetailAcs,
+                       'monitoring' => (bool)$access->MonitoringAcs,
+                   ];
+               }
+           }
+       }
 
-        // Get user permissions for this menu
-        $userPermissions = [];
-        if (auth()->check()) {
-            $user = auth()->user();
-            if ($user->is_admin) {
-                // Admin has all permissions
-                $userPermissions = [
-                    'tambah' => true,
-                    'ubah' => true,
-                    'hapus' => true,
-                    'download' => true,
-                    'detail' => true,
-                    'monitoring' => true,
+       // Ambil dokumen karyawan dengan join ke Jenis Dokumen untuk mendapatkan GolDok
+       $dokumenKaryawan = DB::table('B01DmDokKaryawan')
+           ->select(
+               'B01DmDokKaryawan.*',
+               'A04DmKaryawan.NamaKry',
+               'A07DmJenisDok.GolDok as GolDokValue' // Ganti nama untuk menghindari konflik
+           )
+           ->leftJoin('A04DmKaryawan', 'B01DmDokKaryawan.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
+           ->leftJoin('A07DmJenisDok', function($join) {
+               $join->on('B01DmDokKaryawan.JenisDok', '=', 'A07DmJenisDok.JenisDok');
+           })
+           ->get();
+
+       // Konversi stdClass objects ke collections agar lebih mudah dimanipulasi
+       $dokumenKaryawan = collect($dokumenKaryawan)->map(function($item) {
+           // Konversi tanggal menjadi objek Carbon
+           if (!empty($item->TglTerbitDok)) {
+               $item->TglTerbitDok = \Carbon\Carbon::parse($item->TglTerbitDok);
+           }
+           if (!empty($item->TglBerakhirDok)) {
+               $item->TglBerakhirDok = \Carbon\Carbon::parse($item->TglBerakhirDok);
+           }
+           if (!empty($item->TglPengingat)) {
+               $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
+           }
+
+           // Pastikan nilai GolDok adalah integer untuk pengurutan numerik yang benar
+           $item->GolDok = is_null($item->GolDokValue) ? 999 : (int)$item->GolDokValue;
+
+           return $item;
+       });
+
+       // Kelompokkan dokumen berdasarkan karyawan
+       $dokumenByKaryawan = $dokumenKaryawan->groupBy('IdKodeA04');
+
+       // Urutkan karyawan berdasarkan nama
+       $karyawanNames = [];
+       foreach ($dokumenByKaryawan as $karyawanId => $documents) {
+           if (!empty($documents->first()->NamaKry)) {
+               $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
+           } else {
+               $karyawanNames[$karyawanId] = 'Unknown';
+           }
+       }
+       asort($karyawanNames);
+
+       // Gabungkan dokumen dengan urutan: karyawan, lalu GolDok
+       $sortedDokumen = collect();
+       foreach ($karyawanNames as $karyawanId => $name) {
+           // Urutkan dokumen dengan numeric sorting berdasarkan GolDok
+           $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function($doc) {
+               return (int)$doc->GolDok; // Cast ke integer untuk pengurutan numerik
+           });
+           $sortedDokumen = $sortedDokumen->concat($docs);
+       }
+
+       // Debug: pastikan pengurutan sudah benar
+       Log::info('Dokumen setelah diurutkan:', [
+           'dokumen' => $sortedDokumen->map(function($item) {
+               return [
+                   'id' => $item->id,
+                   'karyawan' => $item->NamaKry,
+                   'jenis_dokumen' => $item->JenisDok,
+                   'goldok' => $item->GolDok,
+               ];
+           })
+       ]);
+
+       // Ubah kembali ke model object agar relationships dapat diakses
+       $dokumenKaryawan = $sortedDokumen->map(function($item) {
+           // Tambahkan properti-properti yang diperlukan untuk view
+           $dokumen = new DokumenKaryawan();
+           foreach ((array)$item as $key => $value) {
+               $dokumen->$key = $value;
+           }
+
+           // Add karyawan and kategori objects
+           $karyawan = new Karyawan();
+           $karyawan->NamaKry = $item->NamaKry;
+           $karyawan->IdKode = $item->IdKodeA04;
+           $dokumen->karyawan = $karyawan;
+
+           $kategori = new KategoriDokumen();
+           $kategori->KategoriDok = $item->KategoriDok;
+           $dokumen->kategori = $kategori;
+
+           // Add is_expired attribute
+           $dokumen->is_expired = false;
+           if ($dokumen->TglBerakhirDok && $dokumen->StatusDok === 'Berlaku') {
+               $dokumen->is_expired = \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->isPast();
+           }
+
+           return $dokumen;
+       });
+
+       return view('dokumen-karyawan.index', compact('dokumenKaryawan', 'userPermissions'));
+    }
+
+    /**
+     * Process and sort documents by employee and GolDok
+     */
+    private function processAndSortDocuments($documents)
+    {
+        // Group documents by employee ID
+        $groupedByEmployee = [];
+
+        foreach ($documents as $document) {
+            $employeeId = $document->IdKodeA04;
+            if (!isset($groupedByEmployee[$employeeId])) {
+                $groupedByEmployee[$employeeId] = [
+                    'employee' => $document->karyawan,
+                    'documents' => []
                 ];
-            } else {
-                // Get specific permissions from user access
-                $access = $user->userAccess()->where('MenuAcs', 'dokumen-karyawan')->first();
-                if ($access) {
-                    $userPermissions = [
-                        'tambah' => (bool)$access->TambahAcs,
-                        'ubah' => (bool)$access->UbahAcs,
-                        'hapus' => (bool)$access->HapusAcs,
-                        'download' => (bool)$access->DownloadAcs,
-                        'detail' => (bool)$access->DetailAcs,
-                        'monitoring' => (bool)$access->MonitoringAcs,
-                    ];
-                }
+            }
+
+            // Get the GolDok for the document
+            $jenisDokumen = JenisDokumen::where('JenisDok', $document->JenisDok)->first();
+            $golDok = $jenisDokumen ? $jenisDokumen->GolDok : 999; // Default high value if not found
+
+            // Add GolDok to the document for sorting
+            $document->GolDok = $golDok;
+            $groupedByEmployee[$employeeId]['documents'][] = $document;
+        }
+
+        // Sort each employee's documents by GolDok
+        foreach ($groupedByEmployee as &$employeeData) {
+            usort($employeeData['documents'], function($a, $b) {
+                return $a->GolDok - $b->GolDok;
+            });
+        }
+
+        // Sort employees by name for consistent display
+        uksort($groupedByEmployee, function($a, $b) use ($groupedByEmployee) {
+            $nameA = $groupedByEmployee[$a]['employee'] ? $groupedByEmployee[$a]['employee']->NamaKry : '';
+            $nameB = $groupedByEmployee[$b]['employee'] ? $groupedByEmployee[$b]['employee']->NamaKry : '';
+            return strcmp($nameA, $nameB);
+        });
+
+        // Flatten the array for view display
+        $result = [];
+        foreach ($groupedByEmployee as $employeeData) {
+            foreach ($employeeData['documents'] as $document) {
+                $result[] = $document;
             }
         }
 
-        return view('dokumen-karyawan.index', compact('dokumenKaryawan', 'userPermissions'));
+        return $result;
     }
 
     public function create()
