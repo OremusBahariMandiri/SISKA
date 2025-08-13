@@ -65,6 +65,8 @@
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
                                         <th>Tgl Peringatan</th>
+                                        <th>Peringatan</th>
+                                        <th>Catatan</th>
                                         <th>File</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
@@ -105,6 +107,14 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td class="sisa-peringatan-col">
+                                                @if ($dokumen->MasaPengingat)
+                                                    {{ $dokumen->MasaPengingat }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $dokumen->KetDok }}</td>
                                             <td class="text-center">
                                                 @if ($dokumen->FileDok)
                                                     <div class="btn-group">
@@ -667,6 +677,45 @@
                 $('#dokumenKarirTable').DataTable().destroy();
             }
 
+            // Fungsi untuk memperbarui teks masa peringatan
+            function updateMasaPengingatText() {
+                const today = moment();
+
+                $('#dokumenKarirTable tbody tr').each(function() {
+                    const tglPengingatStr = $(this).data('tgl-pengingat');
+                    const $masaPengingatCol = $(this).find('.sisa-peringatan-col');
+
+                    // Jika tidak ada tanggal pengingat, lewati baris ini
+                    if (!tglPengingatStr) {
+                        $masaPengingatCol.text('-');
+                        return;
+                    }
+
+                    // Parse tanggal pengingat
+                    const tglPengingat = moment(tglPengingatStr);
+
+                    // Hitung selisih dalam hari
+                    const diffDays = tglPengingat.diff(today, 'days');
+
+                    // Menentukan teks yang akan ditampilkan di kolom masa peringatan
+                    let masaPengingatText = '';
+
+                    if (diffDays < 0) {
+                        // Tanggal pengingat sudah lewat
+                        masaPengingatText = 'Terlambat ' + Math.abs(diffDays) + ' hari';
+                    } else if (diffDays === 0) {
+                        // Tanggal pengingat hari ini
+                        masaPengingatText = 'Hari ini';
+                    } else {
+                        // Tanggal pengingat di masa depan
+                        masaPengingatText = diffDays + ' hari lagi';
+                    }
+
+                    // Update teks masa peringatan
+                    $masaPengingatCol.text(masaPengingatText);
+                });
+            }
+
             // Fungsi untuk mendapatkan statistik dokumen
             function updateDocumentStats() {
                 // Hapus kelas highlight terlebih dahulu untuk memastikan penghitungan yang bersih
@@ -684,7 +733,7 @@
                     let isWarning = false;
 
                     // Cek status dokumen terlebih dahulu
-                    const statusText = row.find('td:eq(8)').text().trim();
+                    const statusText = row.find('td:eq(10)').text().trim();
 
                     // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
                     if (statusText.includes("Tidak Berlaku")) {
@@ -772,7 +821,7 @@
                     const row = $(this);
 
                     // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-                    const statusText = row.find('td:eq(8)').text().trim();
+                    const statusText = row.find('td:eq(10)').text().trim();
 
                     if (statusText.includes("Tidak Berlaku")) {
                         row.addClass('highlight-gray');
@@ -868,7 +917,7 @@
                             if (status === '') {
                                 return true;
                             } else if (status === 'Valid') {
-                                return data[8].includes("Berlaku") &&
+                                return data[10].includes("Berlaku") &&
                                     (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
                             } else if (status === 'Warning') {
                                 return berakhirDate &&
@@ -892,7 +941,7 @@
                 columnDefs: [{
                         // Prioritas tertinggi untuk kolom yang paling penting
                         responsivePriority: 1,
-                        targets: [0, 1, 2, 8] // No, No.Reg, Nama Karyawan, Status
+                        targets: [0, 1, 2, 10] // No, No.Reg, Nama Karyawan, Status
                     },
                     {
                         // Prioritas kedua untuk kolom penting lainnya
@@ -902,22 +951,22 @@
                     {
                         // Prioritas ketiga untuk kolom tanggal
                         responsivePriority: 3,
-                        targets: [4, 5, 6] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat
+                        targets: [4, 5, 6, 7] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat, Peringatan
                     },
                     {
                         // Prioritas keempat untuk kolom yang tidak terlalu penting
                         responsivePriority: 4,
-                        targets: [7, 9] // File, Aksi
+                        targets: [8, 9, 11] // Catatan, File, Aksi
                     },
                     {
                         // Kolom yang tidak bisa di-sort
                         orderable: false,
-                        targets: [0, 9] // No dan Aksi
+                        targets: [0, 11] // No dan Aksi
                     },
                     {
-                        // Custom sorting untuk kolom Status (kolom 8)
+                        // Custom sorting untuk kolom Status (kolom 10)
                         // Memastikan dokumen "Tidak Berlaku" selalu di bawah
-                        targets: 8,
+                        targets: 10,
                         type: 'string',
                         render: function(data, type, row, meta) {
                             // Untuk tipe display, tampilkan data asli
@@ -934,7 +983,7 @@
                     }
                 ],
                 order: [
-                    [8, 'asc'], // Mengurutkan berdasarkan status terlebih dahulu
+                    [10, 'asc'], // Mengurutkan berdasarkan status terlebih dahulu
                     [1, 'asc'] // Kemudian berdasarkan No. Reg
                 ],
                 buttons: [{
@@ -973,6 +1022,9 @@
 
                     // Apply highlighting untuk baris yang terlihat
                     applyVisibleRowHighlighting();
+
+                    // Update text untuk masa peringatan
+                    updateMasaPengingatText();
                 },
                 initComplete: function() {
                     // Force style search input box
@@ -980,6 +1032,9 @@
 
                     // Apply initial highlighting
                     applyVisibleRowHighlighting();
+
+                    // Update text untuk masa peringatan
+                    updateMasaPengingatText();
 
                     // Tunggu sampai tabel selesai diinisialisasi dan semua data dimuat
                     setTimeout(function() {
@@ -1030,6 +1085,9 @@
             table.on('draw.dt', function() {
                 // Update highlight untuk baris yang terlihat
                 applyVisibleRowHighlighting();
+
+                // Update text untuk baris yang terlihat
+                updateMasaPengingatText();
             });
 
             // Highlight filter button jika ada filter aktif
@@ -1198,6 +1256,7 @@
             }, 5000);
 
             // Inisialisasi awal
+            updateMasaPengingatText();
             updateDocumentStats();
         });
     </script>
