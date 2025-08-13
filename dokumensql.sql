@@ -155,3 +155,21 @@ FOREIGN KEY (IdKodeA10) REFERENCES A10DmWilayahKrj(IdKode);
 
 ALTER TABLE A04DmKaryawan
 ADD Catatan VARCHAR (200)
+
+CREATE TABLE A11DmFormulirDok (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdKode VARCHAR(20),
+    NoRegDok VARCHAR(50) NOT NULL,
+    KategoriDok VARCHAR(50) NOT NULL,
+    JenisDok VARCHAR(50) NOT NULL,
+    KetDok VARCHAR(255),
+    TglTerbitDok DATE NOT NULL,
+    FileDok VARCHAR(255) NOT NULL,
+    StatusDok VARCHAR(20) NOT NULL,
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    created_at VARCHAR(50),
+    updated_at VARCHAR(50),
+    FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
+    FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
+);
