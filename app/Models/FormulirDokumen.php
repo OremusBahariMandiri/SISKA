@@ -5,19 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class DokumenKaryawan extends Model
+class FormulirDokumen extends Model
 {
     use HasFactory;
 
-    protected $table = 'B01DmDokKaryawan';
+    protected $table = 'A11DmFormulirDok';
 
     protected $fillable = [
         'IdKode',
-        'IdKodeA04',
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
-        'KetDok',
+        'k',
         'ValidasiDok',
         'TglTerbitDok',
         'TglBerakhirDok',
