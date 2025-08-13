@@ -43,6 +43,7 @@ class UserAccessController extends Controller
             'jabatan' => 'Jabatan',
             'departemen' => 'Departemen',
             'wilayah-kerja' => 'Wilayah Kerja',
+            'formulir-dokumen' => 'Formulir Dokumen',
             'dokumen-karyawan' => 'Dokumen Karyawan',
             'dokumen-kontrak' => 'Dokumen Kontrak',
             'dokumen-karir' => 'Dokumen Karir',

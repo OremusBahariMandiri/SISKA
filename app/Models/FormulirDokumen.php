@@ -16,13 +16,8 @@ class FormulirDokumen extends Model
         'NoRegDok',
         'KategoriDok',
         'JenisDok',
-        'k',
-        'ValidasiDok',
+        'KetDok',
         'TglTerbitDok',
-        'TglBerakhirDok',
-        'MasaBerlaku',
-        'TglPengingat',
-        'MasaPengingat',
         'FileDok',
         'StatusDok',
         'created_by',
@@ -31,17 +26,9 @@ class FormulirDokumen extends Model
 
     protected $casts = [
         'TglTerbitDok' => 'date',
-        'TglBerakhirDok' => 'date',
-        'TglPengingat' => 'date',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
-
-    // Relationships
-    public function karyawan()
-    {
-        return $this->belongsTo(Karyawan::class, 'IdKodeA04', 'IdKode');
-    }
 
     public function kategori()
     {
@@ -74,30 +61,6 @@ class FormulirDokumen extends Model
     {
         return $query->where('TglBerakhirDok', '<=', now()->addDays($days))
             ->where('StatusDok', 'Berlaku');
-    }
-
-    public function scopeExpired($query)
-    {
-        return $query->where('TglBerakhirDok', '<', now())
-            ->where('StatusDok', 'Berlaku');
-    }
-
-    // Accessors
-    public function getIsExpiredAttribute()
-    {
-        if ($this->TglBerakhirDok && $this->StatusDok === 'Berlaku') {
-            return \Carbon\Carbon::parse($this->TglBerakhirDok)->isPast();
-        }
-        return false;
-    }
-
-    public function getHariTersisaAttribute()
-    {
-        if ($this->TglBerakhirDok && $this->StatusDok === 'Berlaku') {
-            $days = \Carbon\Carbon::now()->diffInDays($this->TglBerakhirDok, false);
-            return $days >= 0 ? $days : 0;
-        }
-        return null;
     }
 
     public function getUrlDokumenAttribute()
