@@ -6,6 +6,7 @@ use App\Http\Controllers\DokumenKarirController;
 use App\Http\Controllers\DokumenKaryawanController;
 use App\Http\Controllers\DokumenKontrakController;
 use App\Http\Controllers\DokumenLegalitasController;
+use App\Http\Controllers\FormulirDokumenController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\JenisDokumenController;
 use App\Http\Controllers\KaryawanController;
@@ -79,6 +80,13 @@ Route::middleware(['auth'])->group(function () {
 
     //Wilayah Kerja Route
     Route::resource('wilayah-kerja', WilayahKerjaController::class);
+
+    // routes/web.php
+
+    Route::resource('formulir-dokumen', FormulirDokumenController::class);
+    Route::get('formulir-dokumen/{formulirDokumen}/download', [FormulirDokumenController::class, 'download'])->name('formulir-dokumen.download');
+    Route::get('formulir-dokumen/{formulirDokumen}/view-document', [FormulirDokumenController::class, 'viewDocument'])->name('formulir-dokumen.viewDocument');
+    Route::get('api/jenis-dokumen/{kategoriId}', [FormulirDokumenController::class, 'getJenisByKategori']);
 
     //Dokumen Karyawan Route
     Route::resource('dokumen-karyawan', DokumenKaryawanController::class);
