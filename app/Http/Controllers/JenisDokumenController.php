@@ -14,7 +14,8 @@ class JenisDokumenController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:jenis-dokumen')->only('index', 'show');
+        $this->middleware('check.access:jenis-dokumen')->only('index');
+        $this->middleware('check.access:jenis-dokumen,detail')->only('show');
         $this->middleware('check.access:jenis-dokumen,tambah')->only('create', 'store');
         $this->middleware('check.access:jenis-dokumen,ubah')->only('edit', 'update');
         $this->middleware('check.access:jenis-dokumen,hapus')->only('destroy');
@@ -22,9 +23,12 @@ class JenisDokumenController extends Controller
 
     public function index()
     {
-        $jenisDokumens = JenisDokumen::with('kategoriDokumen')->get();
+        // Mengubah query untuk mengurutkan berdasarkan GolDok dari terkecil ke terbesar
+        $jenisDokumens = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
-        // Get user permissions for this menu
+        // Sisa kode tetap sama
         $userPermissions = [];
         if (auth()->check()) {
             $user = auth()->user();
@@ -120,7 +124,7 @@ class JenisDokumenController extends Controller
 
         $request->validate([
             'IdKodeA06' => 'required|exists:A06DmKategoriDok,IdKode',
-            'JenisDok' => 'required|unique:A07DmJenisDok,JenisDok,'.$id,
+            'JenisDok' => 'required|unique:A07DmJenisDok,JenisDok,' . $id,
             'GolDok' => 'required',
         ], [
             'GolDok.required' => 'Golongan dokumen harus dipilih',

@@ -14,7 +14,8 @@ class WilayahKerjaController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:wilayah-kerja')->only('index', 'show');
+        $this->middleware('check.access:wilayah-kerja')->only('index');
+        $this->middleware('check.access:wilayah-kerja,detail')->only( 'show');
         $this->middleware('check.access:wilayah-kerja,tambah')->only('create', 'store');
         $this->middleware('check.access:wilayah-kerja,ubah')->only('edit', 'update');
         $this->middleware('check.access:wilayah-kerja,hapus')->only('destroy');

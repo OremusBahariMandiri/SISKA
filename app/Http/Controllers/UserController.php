@@ -15,7 +15,8 @@ class UserController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:pengguna')->only('index', 'show');
+        $this->middleware('check.access:pengguna')->only('index');
+        $this->middleware('check.access:pengguna,detail')->only('show');
         $this->middleware('check.access:pengguna,tambah')->only('create', 'store');
         $this->middleware('check.access:pengguna,ubah')->only('edit', 'update');
         $this->middleware('check.access:pengguna,hapus')->only('destroy');

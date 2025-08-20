@@ -14,7 +14,8 @@ class KeluargaKaryawanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:keluarga-karyawan')->only('index', 'show');
+        $this->middleware('check.access:keluarga-karyawan')->only('index');
+        $this->middleware('check.access:keluarga-karyawan,detail')->only('show');
         $this->middleware('check.access:keluarga-karyawan,tambah')->only('create', 'store');
         $this->middleware('check.access:keluarga-karyawan,ubah')->only('edit', 'update');
         $this->middleware('check.access:keluarga-karyawan,hapus')->only('destroy');

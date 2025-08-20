@@ -3,108 +3,72 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginController extends Controller
 {
-    use AuthenticatesUsers;
-
     /**
-     * Where to redirect users after login.
-     *
-     * @var string
+     * Display the login view.
      */
-    protected $redirectTo = '/home';
-
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function showLoginForm()
     {
-        $this->middleware('guest')->except('logout');
-        $this->middleware('auth')->only('logout');
+        return view('auth.login');
     }
 
     /**
-     * Get the login username to be used by the controller.
-     *
-     * @return string
+     * Handle an incoming authentication request.
      */
-    public function username()
+    public function login(Request $request)
     {
-        return 'NikKry';
-    }
+        // Validasi input
+        $request->validate([
+            'NikKry' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ], [
+            'NikKry.required' => 'NRK Karyawan wajib diisi.',
+            'password.required' => 'Password wajib diisi.',
+        ]);
 
-    /**
-     * Attempt to log the user into the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return bool
-     */
-    protected function attemptLogin(Request $request)
-    {
         // Cari user berdasarkan NikKry
-        $user = \App\Models\User::where('NikKry', $request->input('NikKry'))->first();
+        $user = User::where('NikKry', $request->NikKry)->first();
 
-        if ($user && Hash::check($request->input('password'), $user->PasswordKry)) {
-            // Login user secara manual
-            $this->guard()->login($user, $request->filled('remember'));
-            return true;
+        // Debug: Uncomment untuk debugging
+        // dd([
+        //     'input_password' => $request->password,
+        //     'stored_password' => $user ? $user->PasswordKry : 'User not found',
+        //     'hash_check' => $user ? Hash::check($request->password, $user->PasswordKry) : false
+        // ]);
+
+        // Cek apakah user ditemukan dan password cocok
+        if ($user && Hash::check($request->password, $user->PasswordKry)) {
+            // Login berhasil
+            Auth::login($user, $request->boolean('remember'));
+
+            $request->session()->regenerate();
+
+            // Redirect ke home atau intended URL
+            return redirect()->intended('/home');
         }
 
-        return false;
+        // Login gagal - kembalikan dengan error
+        return back()->withErrors([
+            'NikKry' => 'NRK atau password yang Anda masukkan tidak valid.',
+        ])->onlyInput('NikKry');
     }
 
     /**
-     * Get the needed authorization credentials from the request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
+     * Destroy an authenticated session.
      */
-    protected function credentials(Request $request)
+    public function logout(Request $request)
     {
-        return [
-            'NikKry' => $request->input('NikKry'),
-            'password' => $request->input('password'),
-        ];
-    }
+        Auth::logout();
 
-    /**
-     * Validate the user login request.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function validateLogin(Request $request)
-    {
-        $request->validate([
-            'NikKry' => 'required|string',
-            'password' => 'required|string',
-        ], [
-            'NikKry.required' => 'NIK Karyawan harus diisi.',
-            'password.required' => 'Password harus diisi.',
-        ]);
-    }
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    /**
-     * Handle a failed login attempt.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
-    protected function sendFailedLoginResponse(Request $request)
-    {
-        throw ValidationException::withMessages([
-            'NikKry' => ['NIK atau password yang Anda masukkan salah.'],
-        ]);
+        return redirect('/login');
     }
 }
