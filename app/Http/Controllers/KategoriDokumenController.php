@@ -22,9 +22,10 @@ class KategoriDokumenController extends Controller
 
     public function index()
     {
-        $kategoriDokumens = KategoriDokumen::all();
+        // Mengubah query untuk mengurutkan berdasarkan GolDok dari terkecil ke terbesar
+        $kategoriDokumens = KategoriDokumen::orderBy('GolDok', 'asc')->get();
 
-        // Get user permissions for this menu
+        // Sisa kode tetap sama
         $userPermissions = [];
         if (auth()->check()) {
             $user = auth()->user();
