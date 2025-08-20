@@ -14,7 +14,8 @@ class DepartemenController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:departemen')->only('index', 'show');
+        $this->middleware('check.access:departemen')->only('index');
+        $this->middleware('check.access:departemen,detail')->only('show');
         $this->middleware('check.access:departemen,tambah')->only('create', 'store');
         $this->middleware('check.access:departemen,ubah')->only('edit', 'update');
         $this->middleware('check.access:departemen,hapus')->only('destroy');
@@ -26,7 +27,38 @@ class DepartemenController extends Controller
     public function index()
     {
         $departemens = Departemen::all();
-        return view('departemen.index', compact('departemens'));
+
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'departemen')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
+
+        return view('departemen.index', compact('departemens', 'userPermissions'));
     }
 
     /**
@@ -118,23 +150,9 @@ class DepartemenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    // public function destroy(Departemen $departemen)
-    // {
-    //     try {
-    //         $departemen->delete();
-    //         return redirect()->route('departemen.index')
-    //             ->with('success', 'Departemen berhasil dihapus.');
-    //     } catch (\Exception $e) {
-    //         return redirect()->route('departemen.index')
-    //             ->with('error', 'Departemen tidak dapat dihapus karena masih digunakan.');
-    //     }
-    // }
-
     public function destroy($id)
     {
         $departemen = Departemen::findOrFail($id);
-
-
         $departemen->delete();
 
         return redirect()->route('departemen.index')

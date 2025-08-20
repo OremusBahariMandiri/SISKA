@@ -245,6 +245,13 @@
                     </ul>
                 </li>
                 @endif
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings.index') ? 'active' : '' }}"
+                        href="{{ route('settings.index') }}">
+                        <i class="fas fa-gear"></i>
+                        <span class="nav-text">Pengaturan</span>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>

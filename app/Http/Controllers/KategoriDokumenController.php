@@ -13,7 +13,8 @@ class KategoriDokumenController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:kategori-dokumen')->only('index', 'show');
+        $this->middleware('check.access:kategori-dokumen')->only('index');
+        $this->middleware('check.access:kategori-dokumen,detail')->only( 'show');
         $this->middleware('check.access:kategori-dokumen,tambah')->only('create', 'store');
         $this->middleware('check.access:kategori-dokumen,ubah')->only('edit', 'update');
         $this->middleware('check.access:kategori-dokumen,hapus')->only('destroy');

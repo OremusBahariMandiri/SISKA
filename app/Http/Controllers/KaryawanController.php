@@ -16,7 +16,8 @@ class KaryawanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:karyawan')->only(['index', 'show', 'viewDocument']);
+        $this->middleware('check.access:karyawan')->only(['index']);
+        $this->middleware('check.access:karyawan,detail')->only('show', 'viewDocument');
         $this->middleware('check.access:karyawan,tambah')->only('create', 'store');
         $this->middleware('check.access:karyawan,ubah')->only('edit', 'update');
         $this->middleware('check.access:karyawan,hapus')->only('destroy');

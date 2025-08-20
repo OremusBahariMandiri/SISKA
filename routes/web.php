@@ -13,6 +13,7 @@ use App\Http\Controllers\KaryawanController;
 use App\Http\Controllers\KategoriDokumenController;
 use App\Http\Controllers\KeluargaKaryawanController;
 use App\Http\Controllers\PerusahaanController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAccessController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WilayahKerjaController;
@@ -109,4 +110,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('dokumen-legalitas', DokumenLegalitasController::class);
     Route::get('dokumen-legalitas/{dokumenLegalitas}/view-document', [DokumenLegalitasController::class, 'viewDocument'])->name('dokumen-legalitas.viewDocument');
     Route::post('/dokumen-legalitas/export-excel', [DokumenLegalitasController::class, 'exportExcel'])->name('dokumen-legalitas.export-excel');
+
+    //SETTINGS Route
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/settings', [App\Http\Controllers\SettingsController::class, 'index'])->name('settings.index');
+    Route::post('/settings/update-password', [App\Http\Controllers\SettingsController::class, 'updatePassword'])->name('settings.update-password');
 });

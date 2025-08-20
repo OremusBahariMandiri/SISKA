@@ -13,7 +13,8 @@ class PerusahaanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('check.access:perusahaan')->only('index', 'show');
+        $this->middleware('check.access:perusahaan')->only('index');
+        $this->middleware('check.access:perusahaan,detail')->only('show');
         $this->middleware('check.access:perusahaan,tambah')->only('create', 'store');
         $this->middleware('check.access:perusahaan,ubah')->only('edit', 'update');
         $this->middleware('check.access:perusahaan,hapus')->only('destroy');

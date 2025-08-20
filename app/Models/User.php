@@ -66,11 +66,18 @@ class User extends Authenticatable
     }
 
     /**
+     * PENTING: Hapus mutator ini atau modifikasi agar tidak double hash
      * Mutator untuk hash password secara otomatis
      */
     public function setPasswordKryAttribute($password)
     {
-        $this->attributes['PasswordKry'] = Hash::make($password);
+        // Cek apakah password sudah di-hash (bcrypt hash selalu dimulai dengan $2y$)
+        if (Hash::needsRehash($password)) {
+            $this->attributes['PasswordKry'] = Hash::make($password);
+        } else {
+            // Jika sudah di-hash, simpan langsung
+            $this->attributes['PasswordKry'] = $password;
+        }
     }
 
     /**
