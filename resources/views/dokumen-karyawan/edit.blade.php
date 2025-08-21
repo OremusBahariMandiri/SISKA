@@ -52,7 +52,7 @@
                                         </div>
                                         <div class="card-body">
                                             <input type="text" class="form-control" id="IdKode" name="IdKode"
-                                                value="{{ $dokumenKaryawan->IdKode }}" hidden readonly>
+                                                value="{{ old('IdKode', $dokumenKaryawan->IdKode) }}" hidden readonly>
 
                                             <div class="form-group mb-3">
                                                 <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
@@ -81,7 +81,8 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="karyawanContainer">
                                                         <input type="text" id="karyawanSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari karyawan..." autocomplete="off">
+                                                            placeholder="Cari karyawan..." autocomplete="off"
+                                                            value="{{ old('karyawanDisplay', $dokumenKaryawan->karyawan ? $dokumenKaryawan->karyawan->NamaKry . ' - ' . ($dokumenKaryawan->karyawan->NrkKry ?? '') : '') }}">
 
                                                         <div class="custom-select-dropdown" id="karyawanDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -95,7 +96,8 @@
                                                                 @foreach ($karyawan as $employee)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $employee->IdKode }}"
-                                                                        data-display="{{ $employee->NamaKry }} - {{ $employee->NrkKry ?? '' }}">
+                                                                        data-display="{{ $employee->NamaKry }} - {{ $employee->NrkKry ?? '' }}"
+                                                                        {{ old('IdKodeA04', $dokumenKaryawan->IdKodeA04) == $employee->IdKode ? 'selected' : '' }}>
                                                                         {{ $employee->NamaKry }} -
                                                                         {{ $employee->NrkKry ?? '' }}
                                                                     </div>
@@ -124,13 +126,13 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="kategoriContainer">
                                                         <input type="text" id="kategoriSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari kategori..." autocomplete="off">
+                                                            placeholder="Cari kategori..." autocomplete="off"
+                                                            value="{{ old('kategoriDisplay', $dokumenKaryawan->KategoriDok) }}">
 
                                                         <div class="custom-select-dropdown" id="kategoriDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="kategoriFilterInput"
-                                                                    class="form-control"
-                                                                    placeholder="Ketik untuk mencari">
+                                                                    class="form-control" placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
@@ -139,7 +141,8 @@
                                                                 @foreach ($kategoriDokumen as $kategori)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $kategori->IdKode }}"
-                                                                        data-display="{{ $kategori->KategoriDok }}">
+                                                                        data-display="{{ $kategori->KategoriDok }}"
+                                                                        {{ old('KategoriDok', $dokumenKaryawan->KategoriDok) == $kategori->KategoriDok ? 'selected' : '' }}>
                                                                         {{ $kategori->KategoriDok }}
                                                                     </div>
                                                                 @endforeach
@@ -167,18 +170,17 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="jenisContainer">
                                                         <input type="text" id="jenisSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari jenis dokumen..." autocomplete="off">
+                                                            placeholder="Cari jenis dokumen..." autocomplete="off"
+                                                            value="{{ old('jenisDisplay', $dokumenKaryawan->JenisDok) }}">
 
                                                         <div class="custom-select-dropdown" id="jenisDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="jenisFilterInput"
-                                                                    class="form-control"
-                                                                    placeholder="Ketik untuk mencari">
+                                                                    class="form-control" placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options" id="jenisOptions">
                                                                 <div class="custom-select-option empty-option"
-                                                                    data-value=""
-                                                                    data-display="-- Pilih Jenis Dokumen --">--
+                                                                    data-value="" data-display="-- Pilih Jenis Dokumen --">--
                                                                     Pilih Jenis Dokumen --</div>
                                                                 <!-- Options will be populated dynamically based on selected category -->
                                                             </div>
@@ -194,8 +196,6 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Replace the existing KetDok form group with this improved version -->
-
                                             <div class="form-group mb-3">
                                                 <label for="KetDok" class="form-label fw-bold">Keterangan
                                                     Dokumen</label>
@@ -208,9 +208,7 @@
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
-                                                <!-- Hidden field to ensure KetDok value is always submitted -->
-                                                <input type="hidden" id="KetDokHidden" name="KetDokHidden"
-                                                    value="{{ old('KetDok', $dokumenKaryawan->KetDok) }}">
+                                                <input type="hidden" name="KetDokBackup" value="{{ old('KetDok', $dokumenKaryawan->KetDok) }}">
                                             </div>
                                         </div>
                                     </div>
@@ -275,16 +273,22 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
-                                                    <div class="form-group mb-3 tgl-berakhir-group">
+                                                    <div class="form-group mb-3 tgl-berakhir-group"
+                                                        style="{{ old('ValidasiDok', $dokumenKaryawan->ValidasiDok) == 'Tetap' ? 'display: none;' : '' }}">
                                                         <label for="TglBerakhirDok" class="form-label fw-bold">Tanggal
-                                                            Berakhir</label>
+                                                            Berakhir
+                                                            @if (old('ValidasiDok', $dokumenKaryawan->ValidasiDok) == 'Perpanjangan')
+                                                                <span class="text-danger">*</span>
+                                                            @endif
+                                                        </label>
                                                         <div class="input-group">
                                                             <span class="input-group-text"><i
                                                                     class="fas fa-calendar-times"></i></span>
                                                             <input type="date"
                                                                 class="form-control tanggal-input @error('TglBerakhirDok') is-invalid @enderror"
                                                                 id="TglBerakhirDok" name="TglBerakhirDok"
-                                                                value="{{ old('TglBerakhirDok', $dokumenKaryawan->TglBerakhirDok ? $dokumenKaryawan->TglBerakhirDok->format('Y-m-d') : '') }}">
+                                                                value="{{ old('TglBerakhirDok', $dokumenKaryawan->TglBerakhirDok ? $dokumenKaryawan->TglBerakhirDok->format('Y-m-d') : '') }}"
+                                                                {{ old('ValidasiDok', $dokumenKaryawan->ValidasiDok) == 'Perpanjangan' ? 'required' : '' }}>
                                                             @error('TglBerakhirDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -305,7 +309,8 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mb-3 tgl-pengingat-group">
+                                            <div class="form-group mb-3 tgl-pengingat-group"
+                                                style="{{ old('ValidasiDok', $dokumenKaryawan->ValidasiDok) == 'Tetap' ? 'display: none;' : '' }}">
                                                 <label for="TglPengingat" class="form-label fw-bold">Tanggal
                                                     Pengingat</label>
                                                 <div class="input-group">
@@ -359,84 +364,76 @@
                                                 </div>
                                                 <div id="fileHelp" class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Format: PDF, JPG, JPEG, PNG.
+                                                    @if ($dokumenKaryawan->FileDok)
+                                                        <br>
+                                                        <span class="text-info">File saat ini:
+                                                            {{ $dokumenKaryawan->FileDok }}</span>
+                                                    @endif
                                                 </div>
                                                 <div id="fileValidationMessage" class="invalid-feedback d-none">
                                                     Silakan pilih file dengan format yang sesuai (PDF, JPG, JPEG, PNG)
                                                 </div>
+                                            </div>
 
-                                                <!-- File preview container -->
-                                                <div id="filePreviewContainer" class="mb-3 d-none">
-                                                    <div class="card border-secondary">
+                                            <!-- File preview container -->
+                                            <div id="filePreviewContainer" class="mb-3 d-none">
+                                                <div class="card border-secondary">
+                                                    <div class="card-body p-2">
+                                                        <div class="d-flex align-items-center">
+                                                            <div id="fileTypeIcon" class="me-2">
+                                                                <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                                            </div>
+                                                            <div class="flex-grow-1">
+                                                                <h6 id="fileName" class="mb-0 text-truncate">document.pdf
+                                                                </h6>
+                                                                <small id="fileSize" class="text-muted">0 KB</small>
+                                                            </div>
+                                                            <button type="button" id="removeFile"
+                                                                class="btn btn-sm btn-light border">
+                                                                <i class="fas fa-times"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            @if ($dokumenKaryawan->FileDok)
+                                                <div class="mb-3">
+                                                    <div class="card border-primary">
                                                         <div class="card-body p-2">
                                                             <div class="d-flex align-items-center">
-                                                                <div id="fileTypeIcon" class="me-2">
-                                                                    <i class="fas fa-file-pdf fa-2x text-danger"></i>
+                                                                <div class="me-2">
+                                                                    @php
+                                                                        $extension = pathinfo($dokumenKaryawan->FileDok, PATHINFO_EXTENSION);
+                                                                        $iconClass = 'fas fa-file fa-2x text-secondary';
+
+                                                                        if (strtolower($extension) === 'pdf') {
+                                                                            $iconClass = 'fas fa-file-pdf fa-2x text-danger';
+                                                                        } elseif (in_array(strtolower($extension), ['jpg', 'jpeg', 'png'])) {
+                                                                            $iconClass = 'fas fa-file-image fa-2x text-primary';
+                                                                        }
+                                                                    @endphp
+                                                                    <i class="{{ $iconClass }}"></i>
                                                                 </div>
                                                                 <div class="flex-grow-1">
-                                                                    <h6 id="fileName" class="mb-0 text-truncate">
-                                                                        document.pdf
-                                                                    </h6>
-                                                                    <small id="fileSize" class="text-muted">0 KB</small>
+                                                                    <h6 class="mb-0 text-truncate">
+                                                                        {{ $dokumenKaryawan->FileDok }}</h6>
+                                                                    <small class="text-muted">File sudah ada</small>
                                                                 </div>
-                                                                <button type="button" id="removeFile"
-                                                                    class="btn btn-sm btn-light border">
-                                                                    <i class="fas fa-times"></i>
-                                                                </button>
+                                                                <a href="{{ route('viewdocumentkaryawan', $dokumenKaryawan->id) }}"
+                                                                    class="btn btn-sm btn-info text-white me-1"
+                                                                    target="_blank">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </a>
+                                                                <a href="{{ route('dokumen-karyawan.download', $dokumenKaryawan->id) }}"
+                                                                    class="btn btn-sm btn-primary">
+                                                                    <i class="fas fa-download"></i>
+                                                                </a>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                @if ($dokumenKaryawan->FileDok)
-                                                    <div class="mt-3">
-                                                        <div class="card border-info">
-                                                            <div class="card-header bg-info bg-opacity-10 text-dark py-2">
-                                                                <h6 class="mb-0"><i class="fas fa-file me-2"></i>File
-                                                                    Dokumen Saat Ini</h6>
-                                                            </div>
-                                                            <div class="card-body p-3">
-                                                                <div class="d-flex align-items-center">
-                                                                    @php
-                                                                        $fileExt = pathinfo(
-                                                                            $dokumenKaryawan->FileDok,
-                                                                            PATHINFO_EXTENSION,
-                                                                        );
-                                                                        $iconClass = 'fas fa-file fa-2x text-secondary';
-
-                                                                        if ($fileExt === 'pdf') {
-                                                                            $iconClass =
-                                                                                'fas fa-file-pdf fa-2x text-danger';
-                                                                        } elseif (
-                                                                            in_array($fileExt, ['jpg', 'jpeg', 'png'])
-                                                                        ) {
-                                                                            $iconClass =
-                                                                                'fas fa-file-image fa-2x text-primary';
-                                                                        }
-                                                                    @endphp
-                                                                    <div class="me-3">
-                                                                        <i class="{{ $iconClass }}"></i>
-                                                                    </div>
-                                                                    <div class="flex-grow-1">
-                                                                        <h6 class="mb-1 text-truncate">
-                                                                            {{ $dokumenKaryawan->FileDok }}</h6>
-                                                                        <div class="d-flex mt-2">
-                                                                            <a href="{{ route('viewdocumentkaryawan', $dokumenKaryawan->id) }}"
-                                                                                class="btn btn-sm btn-outline-primary me-2"
-                                                                                target="_blank">
-                                                                                <i class="fas fa-eye me-1"></i> Lihat
-                                                                            </a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="form-text text-muted mt-2">
-                                                                    <i class="fas fa-info-circle me-1"></i>Mengunggah file
-                                                                    baru akan menggantikan file yang ada.
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            </div>
+                                            @endif
                                         </div>
                                         <div class="col-md-6">
                                             <div class="form-group mb-3">
@@ -476,7 +473,7 @@
 
                             <div class="d-grid gap-2 col-md-4 mx-auto mt-4">
                                 <button type="submit" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save me-2"></i>Update
+                                    <i class="fas fa-save me-2"></i>Simpan Perubahan
                                 </button>
                             </div>
                         </form>
@@ -757,8 +754,15 @@
                 // Initialize selected value if exists
                 const initialValue = hiddenInput.value;
                 if (initialValue) {
-                    const selectedOption = Array.from(options).find(option => option.dataset.value ===
-                        initialValue);
+                    const selectedOption = Array.from(options).find(option => {
+                        // For KategoriDok, match by text content; for others, match by value
+                        if (prefix === 'kategori') {
+                            return option.textContent.trim() === initialValue;
+                        } else {
+                            return option.dataset.value === initialValue;
+                        }
+                    });
+
                     if (selectedOption) {
                         searchInput.value = selectedOption.dataset.display;
                         selectedOption.classList.add('selected');
@@ -931,21 +935,33 @@
                 jenisOptions.innerHTML = '';
                 jenisOptions.appendChild(emptyOption);
 
-                // Store current value to restore it after options change
+                // Save current selected value
                 const currentValue = jenisHiddenInput.value;
 
-                if (!kategoriId) return;
+                // Reset jenis value if category changed
+                if (!kategoriId) {
+                    jenisHiddenInput.value = '';
+                    jenisSearch.value = '';
+                    return;
+                }
 
                 // Get dokumen list for selected kategori
                 const dokumenList = jenisDokumenByKategori[kategoriId] || [];
 
-                // Add filtered options
+                // Add options - jenis dokumen already sorted by GolDok from controller
                 dokumenList.forEach(dokumen => {
                     const option = document.createElement('div');
                     option.className = 'custom-select-option';
                     option.dataset.value = dokumen.JenisDok;
                     option.dataset.display = dokumen.JenisDok;
+                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
                     option.textContent = dokumen.JenisDok;
+
+                    // Set selected if matching current value
+                    if (dokumen.JenisDok === currentValue) {
+                        option.classList.add('selected');
+                        jenisSearch.value = dokumen.JenisDok;
+                    }
 
                     option.addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -972,17 +988,11 @@
                     jenisOptions.appendChild(option);
                 });
 
-                // Restore previously selected option if it exists in the new options
-                if (currentValue) {
-                    const option = jenisOptions.querySelector(
-                    `.custom-select-option[data-value="${currentValue}"]`);
-                    if (option) {
-                        option.classList.add('selected');
-                        jenisSearch.value = option.dataset.display;
-                    } else {
-                        jenisHiddenInput.value = '';
-                        jenisSearch.value = '';
-                    }
+                // If current value doesn't exist in the new options, clear it
+                const valueExists = dokumenList.some(dokumen => dokumen.JenisDok === currentValue);
+                if (!valueExists) {
+                    jenisHiddenInput.value = '';
+                    jenisSearch.value = '';
                 }
             }
 
@@ -1107,8 +1117,7 @@
                         // Handle custom select validation
                         if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
                                 'Dok'))) {
-                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') +
-                                'Container';
+                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') + 'Container';
                             const container = document.getElementById(containerId);
 
                             if (container) {
@@ -1157,52 +1166,9 @@
                 });
             });
 
-            // ===== FIXES FOR KETDOK FIELD =====
-            // Get reference to KetDok textarea
-            const ketDokTextarea = document.getElementById('KetDok');
-
-            // Create a hidden backup field if it doesn't exist
-            if (!document.getElementById('KetDokBackup')) {
-                const backupField = document.createElement('input');
-                backupField.type = 'hidden';
-                backupField.id = 'KetDokBackup';
-                backupField.name = 'KetDokBackup';
-                backupField.value = ketDokTextarea.value;
-                ketDokTextarea.parentNode.appendChild(backupField);
-            } else {
-                document.getElementById('KetDokBackup').value = ketDokTextarea.value;
-            }
-
-            // Update backup field when textarea changes
-            ketDokTextarea.addEventListener('input', function() {
-                if (document.getElementById('KetDokBackup')) {
-                    document.getElementById('KetDokBackup').value = this.value;
-                }
-                console.log('KetDok updated to:', this.value);
-            });
-            // ===== END KETDOK FIXES =====
-
             // Form validation and submission
             const form = document.getElementById('dokumenKaryawanForm');
             form.addEventListener('submit', function(event) {
-                // ===== FIX FOR KETDOK SUBMISSION =====
-                // Ensure KetDok value is included in the form data
-                if (ketDokTextarea) {
-                    console.log('KetDok value before submission:', ketDokTextarea.value);
-
-                    // Force refresh the value to ensure it's current
-                    ketDokTextarea.value = ketDokTextarea.value;
-
-                    // If we have a backup field, make sure KetDok gets the value if the textarea somehow lost it
-                    const backupField = document.getElementById('KetDokBackup');
-                    if (backupField && (!ketDokTextarea.value || ketDokTextarea.value.trim() === '') &&
-                        backupField.value) {
-                        ketDokTextarea.value = backupField.value;
-                        console.log('Restored KetDok from backup:', backupField.value);
-                    }
-                }
-                // ===== END KETDOK SUBMISSION FIX =====
-
                 if (!form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
@@ -1219,10 +1185,10 @@
                     const errorAlert = document.createElement('div');
                     errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
                     errorAlert.innerHTML = `
-                    <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
-                    <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                `;
+                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
+                        <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `;
 
                     // Insert alert at top of form
                     const firstElement = form.firstElementChild;
@@ -1255,10 +1221,27 @@
                 updateJenisDokumen(this.value);
             });
 
-            // Initialize jenis dokumen if kategori is selected
-            const oldKategori = document.getElementById('KategoriDok').value;
-            if (oldKategori) {
-                updateJenisDokumen(oldKategori);
+            // Get kategori ID from selected kategori name
+            function getKategoriIdFromName(kategoriName) {
+                const kategoriDropdown = document.getElementById('kategoriPortal');
+                if (!kategoriDropdown) return null;
+
+                const options = kategoriDropdown.querySelectorAll('.custom-select-option');
+                for (const option of options) {
+                    if (option.textContent.trim() === kategoriName) {
+                        return option.dataset.value;
+                    }
+                }
+                return null;
+            }
+
+            // Initialize jenis dokumen based on current kategori
+            const currentKategori = document.getElementById('KategoriDok').value;
+            const kategoriId = getKategoriIdFromName(currentKategori) || currentKategori;
+
+            if (kategoriId) {
+                // Need to find the category ID that matches the kategori name
+                updateJenisDokumen(kategoriId);
             }
 
             // Initialize periods

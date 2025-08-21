@@ -127,7 +127,7 @@
                                                         <input type="text" id="jabatanSearch"
                                                             class="form-control custom-select-search"
                                                             placeholder="Cari jabatan..." autocomplete="off"
-                                                            value="{{ $dokumenKarir->jabatan->GolonganJbt ?? '' }} - {{ $dokumenKarir->jabatan->Jabatan ?? '' }}">
+                                                            value="{{ $dokumenKarir->jabatan->Jabatan ?? '' }}">
 
                                                         <div class="custom-select-dropdown" id="jabatanDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -142,9 +142,8 @@
                                                                 @foreach ($jabatan as $jab)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $jab->IdKode }}"
-                                                                        data-display="{{ $jab->GolonganJbt }} - {{ $jab->Jabatan }}"
-                                                                        {{ old('IdKodeA08', $dokumenKarir->IdKodeA08) == $jab->IdKode ? 'selected' : '' }}>
-                                                                        {{ $jab->GolonganJbt }} - {{ $jab->Jabatan }}
+                                                                        data-display="{{ $jab->Jabatan }}"
+                                                                        {{ old('IdKodeA08', $dokumenKarir->IdKodeA08) == $jab->IdKode ? 'selected' : '' }}>{{ $jab->Jabatan }}
                                                                     </div>
                                                                 @endforeach
                                                             </div>
@@ -172,7 +171,7 @@
                                                         <input type="text" id="departemenSearch"
                                                             class="form-control custom-select-search"
                                                             placeholder="Cari departemen..." autocomplete="off"
-                                                            value="{{ $dokumenKarir->departemen->GolonganDep ?? '' }} - {{ $dokumenKarir->departemen->Departemen ?? '' }}">
+                                                            value="{{ $dokumenKarir->departemen->Departemen ?? '' }}">
 
                                                         <div class="custom-select-dropdown" id="departemenDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -188,9 +187,8 @@
                                                                 @foreach ($departemen as $dept)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $dept->IdKode }}"
-                                                                        data-display="{{ $dept->GolonganDep }} - {{ $dept->Departemen }}"
-                                                                        {{ old('IdKodeA09', $dokumenKarir->IdKodeA09) == $dept->IdKode ? 'selected' : '' }}>
-                                                                        {{ $dept->GolonganDep }} - {{ $dept->Departemen }}
+                                                                        data-display="{{ $dept->Departemen }}"
+                                                                        {{ old('IdKodeA09', $dokumenKarir->IdKodeA09) == $dept->IdKode ? 'selected' : '' }}>{{ $dept->Departemen }}
                                                                     </div>
                                                                 @endforeach
                                                             </div>
@@ -219,7 +217,7 @@
                                                         <input type="text" id="wilkerSearch"
                                                             class="form-control custom-select-search"
                                                             placeholder="Cari wilayah kerja..." autocomplete="off"
-                                                            value="{{ $dokumenKarir->wilker->GolonganWilker ?? '' }} - {{ $dokumenKarir->wilker->WilayahKerja ?? '' }}">
+                                                            value="{{ $dokumenKarir->wilker->WilayahKerja ?? '' }}">
 
                                                         <div class="custom-select-dropdown" id="wilkerDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -235,9 +233,8 @@
                                                                 @foreach ($wilker as $wk)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $wk->IdKode }}"
-                                                                        data-display="{{ $wk->GolonganWilker }} - {{ $wk->WilayahKerja }}"
+                                                                        data-display="{{ $wk->WilayahKerja }}"
                                                                         {{ old('IdKodeA10', $dokumenKarir->IdKodeA10) == $wk->IdKode ? 'selected' : '' }}>
-                                                                        {{ $wk->GolonganWilker }} -
                                                                         {{ $wk->WilayahKerja }}
                                                                     </div>
                                                                 @endforeach
@@ -776,6 +773,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             // Data jenisDokumenByKategori dari controller
             const jenisDokumenByKategori = @json($jenisDokumenByKategori);
+            // Previously selected jenis dokumen
+            const selectedJenisDok = "{{ old('JenisDok', $dokumenKarir->JenisDok) }}";
 
             // File input preview and validation
             const fileInput = document.getElementById('FileDok');
@@ -1149,12 +1148,13 @@
                 // Flag to check if current value exists in new options
                 let currentValueExists = false;
 
-                // Add filtered options
+                // Add filtered options - they're already sorted by GolDok from the controller
                 dokumenList.forEach(dokumen => {
                     const option = document.createElement('div');
                     option.className = 'custom-select-option';
                     option.dataset.value = dokumen.JenisDok;
                     option.dataset.display = dokumen.JenisDok;
+                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
                     option.textContent = dokumen.JenisDok;
 
                     // Check if this is the currently selected value
@@ -1414,10 +1414,10 @@
                     const errorAlert = document.createElement('div');
                     errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
                     errorAlert.innerHTML = `
-                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
-                        <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
+                <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
 
                     // Insert alert at top of form
                     const firstElement = form.firstElementChild;

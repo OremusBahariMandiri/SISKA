@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class DokumenKontrakController extends Controller
 {
@@ -30,8 +31,6 @@ class DokumenKontrakController extends Controller
 
     public function index()
     {
-        $dokumenKontrak = DokumenKontrak::with(['karyawan', 'kategoriDok', 'perusahaan'])->get();
-
         // Get user permissions for this menu
         $userPermissions = [];
         if (auth()->check()) {
@@ -62,6 +61,97 @@ class DokumenKontrakController extends Controller
             }
         }
 
+        // Ambil dokumen kontrak dengan join ke Jenis Dokumen untuk mendapatkan GolDok
+        $dokumenKontrak = DB::table('B02DokKontrak')
+            ->select(
+                'B02DokKontrak.*',
+                'A04DmKaryawan.NamaKry',
+                'A03DmPerusahaan.NamaPrsh',
+                'A07DmJenisDok.GolDok as GolDokValue' // Ganti nama untuk menghindari konflik
+            )
+            ->leftJoin('A04DmKaryawan', 'B02DokKontrak.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
+            ->leftJoin('A03DmPerusahaan', 'B02DokKontrak.NamaPrsh', '=', 'A03DmPerusahaan.IdKode')
+            ->leftJoin('A07DmJenisDok', function($join) {
+                $join->on('B02DokKontrak.JenisDok', '=', 'A07DmJenisDok.JenisDok');
+            })
+            ->get();
+
+        // Konversi stdClass objects ke collections agar lebih mudah dimanipulasi
+        $dokumenKontrak = collect($dokumenKontrak)->map(function($item) {
+            // Konversi tanggal menjadi objek Carbon
+            if (!empty($item->TglTerbitDok)) {
+                $item->TglTerbitDok = \Carbon\Carbon::parse($item->TglTerbitDok);
+            }
+            if (!empty($item->TglBerakhirDok)) {
+                $item->TglBerakhirDok = \Carbon\Carbon::parse($item->TglBerakhirDok);
+            }
+            if (!empty($item->TglPengingat)) {
+                $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
+            }
+
+            // Pastikan nilai GolDok adalah integer untuk pengurutan numerik yang benar
+            $item->GolDok = is_null($item->GolDokValue) ? 999 : (int)$item->GolDokValue;
+
+            return $item;
+        });
+
+        // Kelompokkan dokumen berdasarkan karyawan
+        $dokumenByKaryawan = $dokumenKontrak->groupBy('IdKodeA04');
+
+        // Urutkan karyawan berdasarkan nama
+        $karyawanNames = [];
+        foreach ($dokumenByKaryawan as $karyawanId => $documents) {
+            if (!empty($documents->first()->NamaKry)) {
+                $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
+            } else {
+                $karyawanNames[$karyawanId] = 'Unknown';
+            }
+        }
+        asort($karyawanNames);
+
+        // Gabungkan dokumen dengan urutan: karyawan, lalu GolDok
+        $sortedDokumen = collect();
+        foreach ($karyawanNames as $karyawanId => $name) {
+            // Urutkan dokumen dengan numeric sorting berdasarkan GolDok
+            $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function($doc) {
+                return (int)$doc->GolDok; // Cast ke integer untuk pengurutan numerik
+            });
+            $sortedDokumen = $sortedDokumen->concat($docs);
+        }
+
+        // Ubah kembali ke model object agar relationships dapat diakses
+        $dokumenKontrak = $sortedDokumen->map(function($item) {
+            // Tambahkan properti-properti yang diperlukan untuk view
+            $dokumen = new DokumenKontrak();
+            foreach ((array)$item as $key => $value) {
+                $dokumen->$key = $value;
+            }
+
+            // Add karyawan and kategori objects
+            $karyawan = new Karyawan();
+            $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->IdKode = $item->IdKodeA04;
+            $dokumen->karyawan = $karyawan;
+
+            // Add perusahaan object
+            $perusahaan = new Perusahaan();
+            $perusahaan->NamaPrsh = $item->NamaPrsh;
+            $perusahaan->IdKode = $item->NamaPrsh;
+            $dokumen->perusahaan = $perusahaan;
+
+            $kategori = new KategoriDokumen();
+            $kategori->KategoriDok = $item->KategoriDok;
+            $dokumen->kategoriDok = $kategori;
+
+            // Add is_expired attribute
+            $dokumen->is_expired = false;
+            if ($dokumen->TglBerakhirDok && $dokumen->StatusDok === 'Berlaku') {
+                $dokumen->is_expired = \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->isPast();
+            }
+
+            return $dokumen;
+        });
+
         return view('dokumen-kontrak.index', compact('dokumenKontrak', 'userPermissions'));
     }
 
@@ -69,21 +159,41 @@ class DokumenKontrakController extends Controller
     {
         $karyawan = Karyawan::all();
         $perusahaan = Perusahaan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         // Generate ID otomatis
@@ -239,21 +349,41 @@ class DokumenKontrakController extends Controller
     {
         $karyawan = Karyawan::all();
         $perusahaan = Perusahaan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         return view('dokumen-kontrak.edit', compact('dokumenKontrak', 'perusahaan', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
@@ -270,6 +400,7 @@ class DokumenKontrakController extends Controller
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
             'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'KetDok' => 'nullable|string', // Add explicit validation for KetDok
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -329,13 +460,29 @@ class DokumenKontrakController extends Controller
             }
         }
 
+        // Try to get KetDok from various possible sources
+        $ketDokValue = null;
+
+        // First try the direct input
+        if ($request->has('KetDok')) {
+            $ketDokValue = $request->input('KetDok');
+        }
+        // Then try the backup field if it exists
+        elseif ($request->has('KetDokBackup')) {
+            $ketDokValue = $request->input('KetDokBackup');
+        }
+        // Finally, if no value is found, maintain the current value
+        else {
+            $ketDokValue = $dokumenKontrak->KetDok;
+        }
+
         $data = [
             'IdKodeA04' => $request->IdKodeA04,
             'NoRegDok' => $request->NoRegDok,
             'NamaPrsh' => $request->NamaPrsh,
             'KategoriDok' => $request->KategoriDok,
             'JenisDok' => $request->JenisDok,
-            'KetDok' => $request->KetDok,
+            'KetDok' => $ketDokValue, // Use the determined value
             'ValidasiDok' => $request->ValidasiDok,
             'TglTerbitDok' => $request->TglTerbitDok,
             'TglBerakhirDok' => $request->ValidasiDok == 'Tetap' ? null : $request->TglBerakhirDok,
@@ -558,8 +705,8 @@ class DokumenKontrakController extends Controller
     public function getJenisByKategori($kategoriId)
     {
         $jenisDokumen = JenisDokumen::where('IdKodeA06', $kategoriId)
-            ->select('id', 'IdKode', 'JenisDok')
-            ->orderBy('JenisDok', 'asc')
+            ->select('id', 'IdKode', 'JenisDok', 'GolDok')
+            ->orderBy('GolDok', 'asc')
             ->get();
 
         return response()->json($jenisDokumen);
