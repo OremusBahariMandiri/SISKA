@@ -214,21 +214,41 @@ class DokumenKaryawanController extends Controller
     public function create()
     {
         $karyawan = Karyawan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         // Generate ID otomatis

@@ -873,12 +873,13 @@
                 // Get dokumen list for selected kategori
                 const dokumenList = jenisDokumenByKategori[kategoriId] || [];
 
-                // Add filtered options
+                // Add options - jenis dokumen already sorted by GolDok from controller
                 dokumenList.forEach(dokumen => {
                     const option = document.createElement('div');
                     option.className = 'custom-select-option';
                     option.dataset.value = dokumen.JenisDok;
                     option.dataset.display = dokumen.JenisDok;
+                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
                     option.textContent = dokumen.JenisDok;
 
                     option.addEventListener('click', function(e) {

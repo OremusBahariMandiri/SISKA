@@ -53,7 +53,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-briefcase"></i></span>
-                                                    <div class="form-control">{{ $dokumenKarir->jabatan->GolonganJbt ?? '' }} - {{ $dokumenKarir->jabatan->Jabatan ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKarir->jabatan->Jabatan ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -63,7 +63,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-building"></i></span>
-                                                    <div class="form-control">{{ $dokumenKarir->departemen->GolonganDep ?? '' }} - {{ $dokumenKarir->departemen->Departemen ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKarir->departemen->Departemen ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -73,7 +73,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
-                                                    <div class="form-control">{{ $dokumenKarir->wilker->GolonganWilker ?? '' }} - {{ $dokumenKarir->wilker->WilayahKerja ?? '-' }}</div>
+                                                    <div class="form-control">{{ $dokumenKarir->wilker->WilayahKerja ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>

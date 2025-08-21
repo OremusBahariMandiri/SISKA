@@ -10,6 +10,7 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DokumenLegalitasController extends Controller
 {
@@ -28,28 +29,125 @@ class DokumenLegalitasController extends Controller
 
     public function index()
     {
-        $dokumenLegalitas = DokumenLegalitas::with(['karyawan','kategori'])->get();
+        // Join with JenisDokumen to get the GolDok value
+        $dokumenLegalitas = DB::table('B04DokLegalitas')
+            ->select(
+                'B04DokLegalitas.*',
+                'A04DmKaryawan.NamaKry',
+                'A06DmKategoriDok.KategoriDok as KategoriNama',
+                'A07DmJenisDok.GolDok as GolDokValue' // Get GolDok for sorting
+            )
+            ->leftJoin('A04DmKaryawan', 'B04DokLegalitas.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
+            ->leftJoin('A06DmKategoriDok', 'B04DokLegalitas.KategoriDok', '=', 'A06DmKategoriDok.IdKode')
+            ->leftJoin('A07DmJenisDok', function($join) {
+                $join->on('B04DokLegalitas.JenisDok', '=', 'A07DmJenisDok.JenisDok');
+            })
+            ->get();
+
+        // Convert to collection for easier manipulation
+        $dokumenLegalitas = collect($dokumenLegalitas)->map(function($item) {
+            // Convert dates to Carbon objects
+            if (!empty($item->TglTerbitDok)) {
+                $item->TglTerbitDok = Carbon::parse($item->TglTerbitDok);
+            }
+            if (!empty($item->TglBerakhirDok)) {
+                $item->TglBerakhirDok = Carbon::parse($item->TglBerakhirDok);
+            }
+            if (!empty($item->TglPengingat)) {
+                $item->TglPengingat = Carbon::parse($item->TglPengingat);
+            }
+
+            // Ensure GolDok is numeric for sorting (default to 999 if null)
+            $item->GolDok = is_null($item->GolDokValue) ? 999 : (int)$item->GolDokValue;
+
+            return $item;
+        });
+
+        // Group by karyawan
+        $dokumenByKaryawan = $dokumenLegalitas->groupBy('IdKodeA04');
+
+        // Sort karyawan by name
+        $karyawanNames = [];
+        foreach ($dokumenByKaryawan as $karyawanId => $documents) {
+            if (!empty($documents->first()->NamaKry)) {
+                $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
+            } else {
+                $karyawanNames[$karyawanId] = 'Unknown';
+            }
+        }
+        asort($karyawanNames);
+
+        // Combine documents with the order: karyawan, then GolDok
+        $sortedDokumen = collect();
+        foreach ($karyawanNames as $karyawanId => $name) {
+            // Sort documents numerically by GolDok
+            $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function($doc) {
+                return (int)$doc->GolDok; // Ensure numeric sorting
+            });
+            $sortedDokumen = $sortedDokumen->concat($docs);
+        }
+
+        // Convert back to model objects
+        $dokumenLegalitas = $sortedDokumen->map(function($item) {
+            $dokumen = new DokumenLegalitas();
+            foreach ((array)$item as $key => $value) {
+                $dokumen->$key = $value;
+            }
+
+            // Add related objects
+            $karyawan = new Karyawan();
+            $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->IdKode = $item->IdKodeA04;
+            $dokumen->karyawan = $karyawan;
+
+            $kategori = new KategoriDokumen();
+            $kategori->KategoriDok = $item->KategoriNama;
+            $dokumen->kategori = $kategori;
+
+            return $dokumen;
+        });
+
         return view('dokumen-legalitas.index', compact('dokumenLegalitas'));
     }
 
     public function create()
     {
         $karyawan = Karyawan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         // Generate ID otomatis
@@ -191,21 +289,41 @@ class DokumenLegalitasController extends Controller
     {
         $dokumenLegalitas = $dokumenLegalita;
         $karyawan = Karyawan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         return view('dokumen-legalitas.edit', compact('dokumenLegalitas', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori'));
@@ -477,10 +595,24 @@ class DokumenLegalitasController extends Controller
     public function getJenisByKategori($kategoriId)
     {
         $jenisDokumen = JenisDokumen::where('IdKodeA06', $kategoriId)
-            ->select('id', 'IdKode', 'JenisDok')
-            ->orderBy('JenisDok', 'asc')
+            ->select('id', 'IdKode', 'JenisDok', 'GolDok')
+            ->orderBy('GolDok', 'asc')
             ->get();
 
         return response()->json($jenisDokumen);
+    }
+
+    public function getKaryawanDetails($id)
+    {
+        $karyawan = Karyawan::find($id);
+
+        if ($karyawan) {
+            return response()->json([
+                'success' => true,
+                'data' => $karyawan
+            ]);
+        }
+
+        return response()->json(['success' => false]);
     }
 }

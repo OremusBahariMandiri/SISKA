@@ -37,8 +37,8 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('dokumen-kontrak.update', $dokumenKontrak->Id) }}" method="POST" id="dokumenKontrakForm"
-                            enctype="multipart/form-data">
+                        <form action="{{ route('dokumen-kontrak.update', $dokumenKontrak->Id) }}" method="POST"
+                            id="dokumenKontrakForm" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -59,8 +59,10 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <input type="text" class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok', $dokumenKontrak->NoRegDok) }}"
+                                                    <input type="text"
+                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
+                                                        id="NoRegDok" name="NoRegDok"
+                                                        value="{{ old('NoRegDok', $dokumenKontrak->NoRegDok) }}"
                                                         placeholder="Masukkan nomor registrasi dokumen" required>
                                                     @error('NoRegDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -102,7 +104,8 @@
                                                         </div>
 
                                                         <input type="hidden" name="IdKodeA04" id="IdKodeA04"
-                                                            value="{{ old('IdKodeA04', $dokumenKontrak->IdKodeA04) }}" required>
+                                                            value="{{ old('IdKodeA04', $dokumenKontrak->IdKodeA04) }}"
+                                                            required>
                                                     </div>
                                                     @error('IdKodeA04')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -126,11 +129,13 @@
                                                         <div class="custom-select-dropdown" id="perusahaanDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="perusahaanFilterInput"
-                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
-                                                                    data-value="" data-display="-- Pilih Perusahaan --">--
+                                                                    data-value="" data-display="-- Pilih Perusahaan --">
+                                                                    --
                                                                     Pilih Perusahaan --</div>
                                                                 @foreach ($perusahaan as $prsh)
                                                                     <div class="custom-select-option"
@@ -144,7 +149,8 @@
                                                         </div>
 
                                                         <input type="hidden" name="NamaPrsh" id="NamaPrsh"
-                                                            value="{{ old('NamaPrsh', $dokumenKontrak->NamaPrsh) }}" required>
+                                                            value="{{ old('NamaPrsh', $dokumenKontrak->NamaPrsh) }}"
+                                                            required>
                                                     </div>
                                                     @error('NamaPrsh')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -168,7 +174,8 @@
                                                         <div class="custom-select-dropdown" id="kategoriDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="kategoriFilterInput"
-                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
@@ -185,7 +192,8 @@
                                                         </div>
 
                                                         <input type="hidden" name="KategoriDok" id="KategoriDok"
-                                                            value="{{ old('KategoriDok', $dokumenKontrak->KategoriDok) }}" required>
+                                                            value="{{ old('KategoriDok', $dokumenKontrak->KategoriDok) }}"
+                                                            required>
                                                     </div>
                                                     @error('KategoriDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -209,18 +217,21 @@
                                                         <div class="custom-select-dropdown" id="jenisDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="jenisFilterInput"
-                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options" id="jenisOptions">
                                                                 <div class="custom-select-option empty-option"
-                                                                    data-value="" data-display="-- Pilih Jenis Dokumen --">--
+                                                                    data-value=""
+                                                                    data-display="-- Pilih Jenis Dokumen --">--
                                                                     Pilih Jenis Dokumen --</div>
                                                                 <!-- Options will be populated dynamically based on selected category -->
                                                             </div>
                                                         </div>
 
                                                         <input type="hidden" name="JenisDok" id="JenisDok"
-                                                            value="{{ old('JenisDok', $dokumenKontrak->JenisDok) }}" required>
+                                                            value="{{ old('JenisDok', $dokumenKontrak->JenisDok) }}"
+                                                            required>
                                                     </div>
                                                     @error('JenisDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -229,11 +240,13 @@
                                             </div>
 
                                             <div class="form-group mb-3">
-                                                <label for="KetDok" class="form-label fw-bold">Keterangan Dokumen</label>
+                                                <label for="KetDok" class="form-label fw-bold">Keterangan
+                                                    Dokumen</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                                    <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok"
-                                                        rows="3" placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenKontrak->KetDok) }}</textarea>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-align-left"></i></span>
+                                                    <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok" rows="3"
+                                                        placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenKontrak->KetDok) }}</textarea>
                                                     @error('KetDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -293,7 +306,8 @@
                                                             <input type="date"
                                                                 class="form-control tanggal-input @error('TglTerbitDok') is-invalid @enderror"
                                                                 id="TglTerbitDok" name="TglTerbitDok"
-                                                                value="{{ old('TglTerbitDok', $dokumenKontrak->TglTerbitDok ? $dokumenKontrak->TglTerbitDok->format('Y-m-d') : '') }}" required>
+                                                                value="{{ old('TglTerbitDok', $dokumenKontrak->TglTerbitDok ? $dokumenKontrak->TglTerbitDok->format('Y-m-d') : '') }}"
+                                                                required>
                                                             @error('TglTerbitDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -322,7 +336,8 @@
                                             <div class="form-group mb-3">
                                                 <label for="MasaBerlaku" class="form-label fw-bold">Masa Berlaku</label>
                                                 <input type="text" class="form-control bg-light" id="MasaBerlaku"
-                                                    name="MasaBerlaku" value="{{ old('MasaBerlaku', $dokumenKontrak->MasaBerlaku) }}"
+                                                    name="MasaBerlaku"
+                                                    value="{{ old('MasaBerlaku', $dokumenKontrak->MasaBerlaku) }}"
                                                     readonly>
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Masa berlaku akan dihitung
@@ -349,7 +364,8 @@
                                                 <label for="MasaPengingat" class="form-label fw-bold">Masa
                                                     Pengingat</label>
                                                 <input type="text" class="form-control bg-light" id="MasaPengingat"
-                                                    name="MasaPengingat" value="{{ old('MasaPengingat', $dokumenKontrak->MasaPengingat) }}"
+                                                    name="MasaPengingat"
+                                                    value="{{ old('MasaPengingat', $dokumenKontrak->MasaPengingat) }}"
                                                     readonly>
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Masa pengingat akan dihitung
@@ -389,30 +405,39 @@
                                                     Silakan pilih file dengan format yang sesuai (PDF, JPG, JPEG, PNG)
                                                 </div>
 
-                                                @if($dokumenKontrak->FileDok)
+                                                @if ($dokumenKontrak->FileDok)
                                                     <div class="mt-2 card border-info">
                                                         <div class="card-body p-2">
                                                             <div class="d-flex align-items-center">
                                                                 <div class="me-2">
                                                                     @php
-                                                                        $extension = pathinfo($dokumenKontrak->FileDok, PATHINFO_EXTENSION);
+                                                                        $extension = pathinfo(
+                                                                            $dokumenKontrak->FileDok,
+                                                                            PATHINFO_EXTENSION,
+                                                                        );
                                                                         $iconClass = 'fas fa-file fa-2x text-secondary';
 
                                                                         if ($extension === 'pdf') {
-                                                                            $iconClass = 'fas fa-file-pdf fa-2x text-danger';
-                                                                        } elseif (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                                                                            $iconClass = 'fas fa-file-image fa-2x text-primary';
+                                                                            $iconClass =
+                                                                                'fas fa-file-pdf fa-2x text-danger';
+                                                                        } elseif (
+                                                                            in_array($extension, ['jpg', 'jpeg', 'png'])
+                                                                        ) {
+                                                                            $iconClass =
+                                                                                'fas fa-file-image fa-2x text-primary';
                                                                         }
                                                                     @endphp
                                                                     <i class="{{ $iconClass }}"></i>
                                                                 </div>
                                                                 <div class="flex-grow-1">
-                                                                    <h6 class="mb-0 text-truncate">{{ $dokumenKontrak->FileDok }}</h6>
+                                                                    <h6 class="mb-0 text-truncate">
+                                                                        {{ $dokumenKontrak->FileDok }}</h6>
                                                                     <small class="text-muted">File saat ini</small>
                                                                 </div>
                                                                 <div>
                                                                     <a href="{{ route('dokumen-kontrak.viewDocument', $dokumenKontrak->Id) }}"
-                                                                        class="btn btn-sm btn-success ms-1" target="_blank" title="Lihat Dokumen">
+                                                                        class="btn btn-sm btn-success ms-1"
+                                                                        target="_blank" title="Lihat Dokumen">
                                                                         <i class="fas fa-eye"></i>
                                                                     </a>
 
@@ -961,18 +986,20 @@
                 // Get dokumen list for selected kategori
                 const dokumenList = jenisDokumenByKategori[kategoriId] || [];
 
-                // Add filtered options
+                // Add options - jenis dokumen already sorted by GolDok from controller
                 dokumenList.forEach(dokumen => {
                     const option = document.createElement('div');
                     option.className = 'custom-select-option';
                     option.dataset.value = dokumen.JenisDok;
                     option.dataset.display = dokumen.JenisDok;
+                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
                     option.textContent = dokumen.JenisDok;
 
                     // Select option if it matches the previously selected jenis dokumen
                     if (dokumen.JenisDok === selectedJenisDok) {
                         option.classList.add('selected');
                         jenisSearch.value = dokumen.JenisDok;
+                        jenisHiddenInput.value = dokumen.JenisDok;
                     }
 
                     option.addEventListener('click', function(e) {
@@ -999,16 +1026,6 @@
 
                     jenisOptions.appendChild(option);
                 });
-
-                // Check if there's an old value to restore
-                if (selectedJenisDok) {
-                    dokumenList.forEach(dokumen => {
-                        if (dokumen.JenisDok === selectedJenisDok) {
-                            jenisHiddenInput.value = selectedJenisDok;
-                            jenisSearch.value = selectedJenisDok;
-                        }
-                    });
-                }
             }
 
             // Function to calculate and display validity period
@@ -1133,7 +1150,8 @@
                     // Validate file type
                     if (!validTypes.includes(fileExt)) {
                         fileInput.classList.add('is-invalid');
-                        fileValidationMessage.textContent = 'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
+                        fileValidationMessage.textContent =
+                            'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
                         fileValidationMessage.classList.remove('d-none');
                         return false;
                     }
@@ -1164,7 +1182,8 @@
                         // Handle custom select validation
                         if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
                                 'Dok') || input.id === 'NamaPrsh')) {
-                            const containerId = input.id.replace('IdKode', '').replace('Dok', '').replace('Nama', '') +
+                            const containerId = input.id.replace('IdKode', '').replace('Dok', '').replace(
+                                    'Nama', '') +
                                 'Container';
                             const container = document.getElementById(containerId);
 
@@ -1236,10 +1255,10 @@
                     const errorAlert = document.createElement('div');
                     errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
                     errorAlert.innerHTML = `
-                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
-                        <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
+                <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
 
                     // Insert alert at top of form
                     const firstElement = form.firstElementChild;

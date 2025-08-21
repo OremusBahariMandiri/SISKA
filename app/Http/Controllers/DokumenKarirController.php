@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 
 class DokumenKarirController extends Controller
 {
@@ -31,7 +32,105 @@ class DokumenKarirController extends Controller
 
     public function index()
     {
-        $dokumenKarir = DokumenKarir::with(['karyawan', 'jabatan', 'departemen', 'wilker', 'kategori'])->get();
+        // Join with JenisDokumen to get the GolDok value
+        $dokumenKarir = DB::table('B03DokKarir')
+            ->select(
+                'B03DokKarir.*',
+                'A04DmKaryawan.NamaKry',
+                'A08DmJabatan.Jabatan',
+                'A09DmDepartemen.Departemen',
+                'A10DmWilayahKrj.WilayahKerja',
+                'A07DmJenisDok.GolDok as GolDokValue' // Get GolDok for sorting
+            )
+            ->leftJoin('A04DmKaryawan', 'B03DokKarir.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
+            ->leftJoin('A08DmJabatan', 'B03DokKarir.IdKodeA08', '=', 'A08DmJabatan.IdKode')
+            ->leftJoin('A09DmDepartemen', 'B03DokKarir.IdKodeA09', '=', 'A09DmDepartemen.IdKode')
+            ->leftJoin('A10DmWilayahKrj', 'B03DokKarir.IdKodeA10', '=', 'A10DmWilayahKrj.IdKode')
+            ->leftJoin('A07DmJenisDok', function($join) {
+                $join->on('B03DokKarir.JenisDok', '=', 'A07DmJenisDok.JenisDok');
+            })
+            ->get();
+
+        // Convert to collection for easier manipulation
+        $dokumenKarir = collect($dokumenKarir)->map(function($item) {
+            // Convert dates to Carbon objects
+            if (!empty($item->TglTerbitDok)) {
+                $item->TglTerbitDok = \Carbon\Carbon::parse($item->TglTerbitDok);
+            }
+            if (!empty($item->TglBerakhirDok)) {
+                $item->TglBerakhirDok = \Carbon\Carbon::parse($item->TglBerakhirDok);
+            }
+            if (!empty($item->TglPengingat)) {
+                $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
+            }
+
+            // Ensure GolDok is numeric for sorting (default to 999 if null)
+            $item->GolDok = is_null($item->GolDokValue) ? 999 : (int)$item->GolDokValue;
+
+            return $item;
+        });
+
+        // Group by karyawan
+        $dokumenByKaryawan = $dokumenKarir->groupBy('IdKodeA04');
+
+        // Sort karyawan by name
+        $karyawanNames = [];
+        foreach ($dokumenByKaryawan as $karyawanId => $documents) {
+            if (!empty($documents->first()->NamaKry)) {
+                $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
+            } else {
+                $karyawanNames[$karyawanId] = 'Unknown';
+            }
+        }
+        asort($karyawanNames);
+
+        // Combine documents with the order: karyawan, then GolDok
+        $sortedDokumen = collect();
+        foreach ($karyawanNames as $karyawanId => $name) {
+            // Sort documents numerically by GolDok
+            $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function($doc) {
+                return (int)$doc->GolDok; // Ensure numeric sorting
+            });
+            $sortedDokumen = $sortedDokumen->concat($docs);
+        }
+
+        // Convert back to model objects
+        $dokumenKarir = $sortedDokumen->map(function($item) {
+            $dokumen = new DokumenKarir();
+            foreach ((array)$item as $key => $value) {
+                $dokumen->$key = $value;
+            }
+
+            // Add related objects
+            $karyawan = new Karyawan();
+            $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->IdKode = $item->IdKodeA04;
+            $dokumen->karyawan = $karyawan;
+
+            $jabatan = new Jabatan();
+            $jabatan->NamaJabatan = $item->Jabatan;
+            $dokumen->jabatan = $jabatan;
+
+            $departemen = new Departemen();
+            $departemen->NamaDept = $item->Departemen;
+            $dokumen->departemen = $departemen;
+
+            $wilker = new WilayahKerja();
+            $wilker->NamaWilker = $item->WilayahKerja;
+            $dokumen->wilker = $wilker;
+
+            $kategori = new KategoriDokumen();
+            $kategori->KategoriDok = $item->KategoriDok;
+            $dokumen->kategori = $kategori;
+
+            // Add is_expired attribute
+            $dokumen->is_expired = false;
+            if ($dokumen->TglBerakhirDok && $dokumen->StatusDok === 'Berlaku') {
+                $dokumen->is_expired = \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->isPast();
+            }
+
+            return $dokumen;
+        });
 
         // Get user permissions for this menu
         $userPermissions = [];
@@ -69,24 +168,50 @@ class DokumenKarirController extends Controller
     public function create()
     {
         $karyawan = Karyawan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
-        $jabatan = Jabatan::all();
-        $departemen = Departemen::all();
-        $wilker = WilayahKerja::all();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
+
+        // Ambil jabatan dan urutkan berdasarkan GolDok terendah
+        $jabatan = Jabatan::orderBy('GolonganJbt', 'asc')->get();
+
+        // Ambil departemen dan urutkan berdasarkan GolDok terendah
+        $departemen = Departemen::orderBy('GolonganDep', 'asc')->get();
+
+        // Ambil wilayah kerja dan urutkan berdasarkan GolDok terendah
+        $wilker = WilayahKerja::orderBy('GolonganWilker', 'asc')->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         // Generate ID otomatis
@@ -240,24 +365,50 @@ class DokumenKarirController extends Controller
     public function edit(DokumenKarir $dokumenKarir)
     {
         $karyawan = Karyawan::all();
-        $kategoriDokumen = KategoriDokumen::all();
-        $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
-        $jabatan = Jabatan::all();
-        $departemen = Departemen::all();
-        $wilker = WilayahKerja::all();
+
+        // Ambil kategori dokumen dan urutkan berdasarkan GolDok terendah
+        $kategoriDokumen = KategoriDokumen::select('A06DmKategoriDok.*')
+            ->leftJoin('A07DmJenisDok', 'A06DmKategoriDok.IdKode', '=', 'A07DmJenisDok.IdKodeA06')
+            ->orderBy('A07DmJenisDok.GolDok', 'asc')
+            ->distinct()
+            ->get();
+
+        // Ambil jenis dokumen dan urutkan berdasarkan GolDok
+        $jenisDokumen = JenisDokumen::with('kategoriDokumen')
+            ->orderBy('GolDok', 'asc')
+            ->get();
+
+        // Ambil jabatan dan urutkan berdasarkan GolDok terendah
+        $jabatan = Jabatan::orderBy('GolonganJbt', 'asc')->get();
+
+        // Ambil departemen dan urutkan berdasarkan GolDok terendah
+        $departemen = Departemen::orderBy('GolonganDep', 'asc')->get();
+
+        // Ambil wilayah kerja dan urutkan berdasarkan GolDok terendah
+        $wilker = WilayahKerja::orderBy('GolonganWilker', 'asc')->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
-        foreach ($jenisDokumen as $jenis) {
-            $kategoriId = $jenis->IdKodeA06;
+        foreach ($kategoriDokumen as $kategori) {
+            $kategoriId = $kategori->IdKode;
+
+            // Ambil jenis dokumen untuk kategori ini dan urutkan berdasarkan GolDok
+            $jenisForKategori = JenisDokumen::where('IdKodeA06', $kategoriId)
+                ->orderBy('GolDok', 'asc')
+                ->get();
+
             if (!isset($jenisDokumenByKategori[$kategoriId])) {
                 $jenisDokumenByKategori[$kategoriId] = [];
             }
-            $jenisDokumenByKategori[$kategoriId][] = [
-                'id' => $jenis->id,
-                'IdKode' => $jenis->IdKode,
-                'JenisDok' => $jenis->JenisDok
-            ];
+
+            foreach ($jenisForKategori as $jenis) {
+                $jenisDokumenByKategori[$kategoriId][] = [
+                    'id' => $jenis->id,
+                    'IdKode' => $jenis->IdKode,
+                    'JenisDok' => $jenis->JenisDok,
+                    'GolDok' => $jenis->GolDok
+                ];
+            }
         }
 
         return view('dokumen-karir.edit', compact('dokumenKarir', 'karyawan', 'kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'jabatan', 'departemen', 'wilker'));
@@ -476,8 +627,8 @@ class DokumenKarirController extends Controller
     public function getJenisByKategori($kategoriId)
     {
         $jenisDokumen = JenisDokumen::where('IdKodeA06', $kategoriId)
-            ->select('id', 'IdKode', 'JenisDok')
-            ->orderBy('JenisDok', 'asc')
+            ->select('id', 'IdKode', 'JenisDok', 'GolDok')
+            ->orderBy('GolDok', 'asc') // Sort by GolDok
             ->get();
 
         return response()->json($jenisDokumen);

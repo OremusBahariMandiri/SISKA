@@ -63,18 +63,41 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <select class="form-select @error('IdKodeA04') is-invalid @enderror"
-                                                        id="IdKodeA04" name="IdKodeA04" required>
-                                                        <option value="">-- Pilih Karyawan --</option>
-                                                        @foreach ($karyawan as $employee)
-                                                            <option value="{{ $employee->IdKode }}"
-                                                                {{ old('IdKodeA04', $dokumenLegalitas->IdKodeA04) == $employee->IdKode ? 'selected' : '' }}>
-                                                                {{ $employee->NamaKry }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+
+                                                    <!-- Custom searchable dropdown for Karyawan -->
+                                                    <div class="custom-select-container @error('IdKodeA04') is-invalid @enderror"
+                                                        style="flex: 1 1 auto; width: 1%;" id="karyawanContainer">
+                                                        <input type="text" id="karyawanSearch"
+                                                            class="form-control custom-select-search"
+                                                            placeholder="Cari karyawan..." autocomplete="off"
+                                                            value="{{ $dokumenLegalitas->karyawan->NamaKry ?? '' }}">
+
+                                                        <div class="custom-select-dropdown" id="karyawanDropdown">
+                                                            <div class="custom-select-search-wrapper">
+                                                                <input type="text" id="karyawanFilterInput"
+                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                            </div>
+                                                            <div class="custom-select-options">
+                                                                <div class="custom-select-option empty-option"
+                                                                    data-value="" data-display="-- Pilih Karyawan --">--
+                                                                    Pilih Karyawan --</div>
+                                                                @foreach ($karyawan as $employee)
+                                                                    <div class="custom-select-option {{ old('IdKodeA04', $dokumenLegalitas->IdKodeA04) == $employee->IdKode ? 'selected' : '' }}"
+                                                                        data-value="{{ $employee->IdKode }}"
+                                                                        data-display="{{ $employee->NamaKry }}">
+                                                                        {{ $employee->NamaKry }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="hidden" name="IdKodeA04" id="IdKodeA04"
+                                                            value="{{ old('IdKodeA04', $dokumenLegalitas->IdKodeA04) }}"
+                                                            required>
+                                                    </div>
+
                                                     @error('IdKodeA04')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -84,18 +107,41 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <select class="form-select @error('KategoriDok') is-invalid @enderror"
-                                                        id="KategoriDok" name="KategoriDok" required>
-                                                        <option value="">-- Pilih Kategori --</option>
-                                                        @foreach ($kategoriDokumen as $kategori)
-                                                            <option value="{{ $kategori->IdKode }}"
-                                                                {{ old('KategoriDok', $dokumenLegalitas->KategoriDok) == $kategori->IdKode ? 'selected' : '' }}>
-                                                                {{ $kategori->KategoriDok }}
-                                                            </option>
-                                                        @endforeach
-                                                    </select>
+
+                                                    <!-- Custom searchable dropdown for Kategori -->
+                                                    <div class="custom-select-container @error('KategoriDok') is-invalid @enderror"
+                                                        style="flex: 1 1 auto; width: 1%;" id="kategoriContainer">
+                                                        <input type="text" id="kategoriSearch"
+                                                            class="form-control custom-select-search"
+                                                            placeholder="Cari kategori..." autocomplete="off"
+                                                            value="{{ $dokumenLegalitas->kategori->KategoriDok ?? '' }}">
+
+                                                        <div class="custom-select-dropdown" id="kategoriDropdown">
+                                                            <div class="custom-select-search-wrapper">
+                                                                <input type="text" id="kategoriFilterInput"
+                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                            </div>
+                                                            <div class="custom-select-options">
+                                                                <div class="custom-select-option empty-option"
+                                                                    data-value="" data-display="-- Pilih Kategori --">--
+                                                                    Pilih Kategori --</div>
+                                                                @foreach ($kategoriDokumen as $kategori)
+                                                                    <div class="custom-select-option {{ old('KategoriDok', $dokumenLegalitas->KategoriDok) == $kategori->IdKode ? 'selected' : '' }}"
+                                                                        data-value="{{ $kategori->IdKode }}"
+                                                                        data-display="{{ $kategori->KategoriDok }}">
+                                                                        {{ $kategori->KategoriDok }}
+                                                                    </div>
+                                                                @endforeach
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="hidden" name="KategoriDok" id="KategoriDok"
+                                                            value="{{ old('KategoriDok', $dokumenLegalitas->KategoriDok) }}"
+                                                            required>
+                                                    </div>
+
                                                     @error('KategoriDok')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
@@ -105,20 +151,47 @@
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
-                                                    <select class="form-select @error('JenisDok') is-invalid @enderror"
-                                                        id="JenisDok" name="JenisDok" required>
-                                                        <option value="">-- Pilih Jenis Dokumen --</option>
-                                                    </select>
+
+                                                    <!-- Custom searchable dropdown for Jenis Dokumen -->
+                                                    <div class="custom-select-container @error('JenisDok') is-invalid @enderror"
+                                                        style="flex: 1 1 auto; width: 1%;" id="jenisContainer">
+                                                        <input type="text" id="jenisSearch"
+                                                            class="form-control custom-select-search"
+                                                            placeholder="Cari jenis dokumen..." autocomplete="off"
+                                                            value="{{ old('JenisDok', $dokumenLegalitas->JenisDok) }}">
+
+                                                        <div class="custom-select-dropdown" id="jenisDropdown">
+                                                            <div class="custom-select-search-wrapper">
+                                                                <input type="text" id="jenisFilterInput"
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
+                                                            </div>
+                                                            <div class="custom-select-options" id="jenisOptions">
+                                                                <div class="custom-select-option empty-option"
+                                                                    data-value=""
+                                                                    data-display="-- Pilih Jenis Dokumen --">--
+                                                                    Pilih Jenis Dokumen --</div>
+                                                                <!-- Options will be populated dynamically based on selected category -->
+                                                            </div>
+                                                        </div>
+
+                                                        <input type="hidden" name="JenisDok" id="JenisDok"
+                                                            value="{{ old('JenisDok', $dokumenLegalitas->JenisDok) }}"
+                                                            required>
+                                                    </div>
+
                                                     @error('JenisDok')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                        <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>
 
                                             <div class="form-group mb-3">
-                                                <label for="KetDok" class="form-label fw-bold">Keterangan Dokumen</label>
+                                                <label for="KetDok" class="form-label fw-bold">Keterangan
+                                                    Dokumen</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-align-left"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-align-left"></i></span>
                                                     <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok" rows="3"
                                                         placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenLegalitas->KetDok) }}</textarea>
                                                     @error('KetDok')
@@ -342,6 +415,7 @@
 @endsection
 
 @push('styles')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <style>
         .card-header {
             font-weight: 600;
@@ -371,101 +445,418 @@
         .invalid-feedback {
             display: block;
         }
+
+        /* Base Custom Select Styles */
+        .custom-select-container {
+            position: relative !important;
+        }
+
+        .custom-select-search {
+            cursor: pointer;
+            background-color: #fff;
+        }
+
+        /* Dropdown Portal - akan ditambahkan ke body */
+        .dropdown-portal {
+            position: fixed;
+            z-index: 9999999;
+            /* Sangat tinggi */
+            display: none;
+        }
+
+        .dropdown-portal.active {
+            display: block;
+        }
+
+        /* Dropdown Content */
+        .custom-select-dropdown {
+            width: 100%;
+            max-height: 300px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 0.25rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .custom-select-search-wrapper {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 8px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .custom-select-options {
+            max-height: 250px;
+            overflow-y: auto;
+        }
+
+        .custom-select-option {
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .custom-select-option:hover {
+            background-color: #f8f9fa;
+        }
+
+        .custom-select-option.selected {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+
+        .custom-select-option.empty-option {
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .custom-select-option.hidden {
+            display: none;
+        }
+
+        /* Improved input styling when focused */
+        .custom-select-container.open .custom-select-search {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+        }
+
+        /* Enhanced validation styles */
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        /* Additional alert styles */
+        .alert-danger {
+            border-left: 4px solid #842029;
+        }
+
+        .alert-danger .alert-heading {
+            color: #842029;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Animation for dropdown */
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translate3d(0, -10px, 0);
+            }
+
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+
+        .dropdown-portal.active {
+            animation: fadeInDown 0.2s ease-out forwards;
+        }
     </style>
 @endpush
 
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Form validation with visual feedback
-            const form = document.getElementById('dokumenLegalitasForm');
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    // Highlight missing required fields
-                    document.querySelectorAll('[required]').forEach(function(input) {
-                        if (!input.value) {
-                            input.classList.add('is-invalid');
-                            // Create error message if it doesn't exist
-                            if (!input.nextElementSibling || !input.nextElementSibling.classList
-                                .contains('invalid-feedback')) {
-                                const feedback = document.createElement('div');
-                                feedback.className = 'invalid-feedback';
-                                feedback.textContent = 'Field ini wajib diisi';
-                                input.parentNode.insertBefore(feedback, input.nextElementSibling);
-                            }
-                        } else {
-                            input.classList.remove('is-invalid');
-                        }
-                    });
-
-                    // Scroll to first error
-                    const firstError = document.querySelector('.is-invalid');
-                    if (firstError) {
-                        firstError.scrollIntoView({
-                            behavior: 'smooth',
-                            block: 'center'
-                        });
-                        firstError.focus();
-                    }
-                }
-            });
-
-            // Elemen select kategori dan jenis dokumen
-            const kategoriDokSelect = document.getElementById('KategoriDok');
-            const jenisDokSelect = document.getElementById('JenisDok');
-
-            // Simpan jenis dokumen yang sudah terpilih (untuk halaman edit)
-            const selectedJenisDok = "{{ old('JenisDok', $dokumenLegalitas->JenisDok) }}";
-
             // Data jenisDokumenByKategori dari controller
             const jenisDokumenByKategori = @json($jenisDokumenByKategori);
 
-            // Fungsi untuk memfilter jenis dokumen berdasarkan kategori
-            function filterJenisDokumen(kategoriId) {
-                // Reset jenis dokumen select
-                jenisDokSelect.innerHTML = '<option value="">-- Pilih Jenis Dokumen --</option>';
+            // Create portal elements for each dropdown
+            function createPortals() {
+                const selectContainers = document.querySelectorAll('.custom-select-container');
+
+                selectContainers.forEach(container => {
+                    const prefix = container.id.replace('Container', '');
+                    const dropdown = document.getElementById(`${prefix}Dropdown`);
+
+                    // Create portal if not exists
+                    if (!document.getElementById(`${prefix}Portal`)) {
+                        const portal = document.createElement('div');
+                        portal.id = `${prefix}Portal`;
+                        portal.className = 'dropdown-portal';
+
+                        // Move dropdown to portal
+                        if (dropdown) {
+                            // Clone the dropdown to preserve event listeners
+                            const clonedDropdown = dropdown.cloneNode(true);
+                            portal.appendChild(clonedDropdown);
+                            document.body.appendChild(portal);
+
+                            // Remove original dropdown
+                            dropdown.parentNode.removeChild(dropdown);
+                        }
+                    }
+                });
+            }
+
+            // Initialize custom select with portal approach
+            function initCustomSelect(prefix, hiddenInputId) {
+                const searchInput = document.getElementById(`${prefix}Search`);
+                const container = document.getElementById(`${prefix}Container`);
+                const portal = document.getElementById(`${prefix}Portal`) || createPortalForSelect(prefix);
+                const dropdown = portal.querySelector(`.custom-select-dropdown`);
+                const filterInput = portal.querySelector(`#${prefix}FilterInput`);
+                const options = portal.querySelectorAll('.custom-select-option');
+                const hiddenInput = document.getElementById(hiddenInputId);
+
+                // Position portal function
+                function positionPortal() {
+                    const rect = searchInput.getBoundingClientRect();
+                    portal.style.top = `${rect.bottom}px`;
+                    portal.style.left = `${rect.left}px`;
+                    portal.style.width = `${rect.width}px`;
+                }
+
+                // Initialize selected value if exists
+                const initialValue = hiddenInput.value;
+                if (initialValue) {
+                    const selectedOption = Array.from(options).find(option => option.dataset.value ===
+                        initialValue);
+                    if (selectedOption) {
+                        searchInput.value = selectedOption.dataset.display;
+                        selectedOption.classList.add('selected');
+                    }
+                }
+
+                // Show dropdown when clicking on search input
+                searchInput.addEventListener('click', function(e) {
+                    e.stopPropagation();
+
+                    // Close all other portals
+                    document.querySelectorAll('.dropdown-portal.active').forEach(p => {
+                        if (p.id !== `${prefix}Portal`) {
+                            p.classList.remove('active');
+                        }
+                    });
+
+                    // Toggle this portal
+                    const isOpen = portal.classList.contains('active');
+
+                    if (!isOpen) {
+                        positionPortal();
+                        portal.classList.add('active');
+                        container.classList.add('open');
+
+                        // Reset filter and focus
+                        if (filterInput) {
+                            filterInput.value = '';
+                            setTimeout(() => filterInput.focus(), 50);
+                        }
+
+                        // Reset options visibility
+                        options.forEach(option => option.classList.remove('hidden'));
+                    } else {
+                        portal.classList.remove('active');
+                        container.classList.remove('open');
+                    }
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest(`#${prefix}Container`) &&
+                        !e.target.closest(`#${prefix}Portal`)) {
+                        portal.classList.remove('active');
+                        container.classList.remove('open');
+                    }
+                });
+
+                // Filter options as user types
+                if (filterInput) {
+                    filterInput.addEventListener('input', function() {
+                        const filter = this.value.toLowerCase();
+                        options.forEach(option => {
+                            const text = option.textContent.toLowerCase();
+                            if (text.includes(filter) || option.classList.contains(
+                                    'empty-option')) {
+                                option.classList.remove('hidden');
+                            } else {
+                                option.classList.add('hidden');
+                            }
+                        });
+                    });
+                }
+
+                // Handle option selection
+                options.forEach(option => {
+                    option.addEventListener('click', function(e) {
+                        e.stopPropagation();
+
+                        const value = this.dataset.value;
+                        const display = this.dataset.display;
+
+                        // Update hidden input and display
+                        hiddenInput.value = value;
+                        searchInput.value = display;
+
+                        // Mark as selected
+                        options.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        // Close dropdown
+                        portal.classList.remove('active');
+                        container.classList.remove('open');
+
+                        // Remove invalid state if set
+                        searchInput.classList.remove('is-invalid');
+                        container.classList.remove('is-invalid');
+
+                        // Trigger change event
+                        const event = new Event('change', {
+                            bubbles: true
+                        });
+                        hiddenInput.dispatchEvent(event);
+
+                        // Specific actions for certain fields
+                        if (prefix === 'kategori') {
+                            updateJenisDokumen(value);
+                        }
+                    });
+                });
+
+                // Create portal if doesn't exist
+                function createPortalForSelect(prefix) {
+                    const origDropdown = document.getElementById(`${prefix}Dropdown`);
+
+                    if (!origDropdown) return null;
+
+                    const portal = document.createElement('div');
+                    portal.id = `${prefix}Portal`;
+                    portal.className = 'dropdown-portal';
+
+                    // Clone dropdown to preserve structure
+                    const clonedDropdown = origDropdown.cloneNode(true);
+                    portal.appendChild(clonedDropdown);
+                    document.body.appendChild(portal);
+
+                    // Remove original
+                    origDropdown.parentNode.removeChild(origDropdown);
+
+                    return portal;
+                }
+
+                // Update position on scroll and resize
+                window.addEventListener('resize', function() {
+                    if (portal.classList.contains('active')) {
+                        positionPortal();
+                    }
+                });
+
+                window.addEventListener('scroll', function() {
+                    if (portal.classList.contains('active')) {
+                        positionPortal();
+                    }
+                });
+
+                // Keyboard navigation
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        this.click();
+                    } else if (e.key === 'Escape' && portal.classList.contains('active')) {
+                        e.preventDefault();
+                        portal.classList.remove('active');
+                        container.classList.remove('open');
+                    }
+                });
+
+                if (filterInput) {
+                    filterInput.addEventListener('keydown', function(e) {
+                        if (e.key === 'Escape') {
+                            e.preventDefault();
+                            portal.classList.remove('active');
+                            container.classList.remove('open');
+                        }
+                    });
+                }
+            }
+
+            // Function to update jenis dokumen options based on selected kategori
+            function updateJenisDokumen(kategoriId) {
+                const jenisPortal = document.getElementById('jenisPortal');
+                if (!jenisPortal) return;
+
+                const jenisOptions = jenisPortal.querySelector('#jenisOptions');
+                const jenisSearch = document.getElementById('jenisSearch');
+                const jenisHiddenInput = document.getElementById('JenisDok');
+
+                // Keep the empty option
+                const emptyOption = jenisOptions.querySelector('.empty-option');
+                jenisOptions.innerHTML = '';
+                jenisOptions.appendChild(emptyOption);
+
+                // Save the current value for restoration later
+                const currentValue = jenisHiddenInput.value;
+                const currentDisplay = jenisSearch.value;
+
+                // Reset jenis value if not keeping it
+                if (!currentValue) {
+                    jenisHiddenInput.value = '';
+                    jenisSearch.value = '';
+                }
 
                 if (!kategoriId) return;
 
-                // Dapatkan jenis dokumen untuk kategori yang dipilih
+                // Get dokumen list for selected kategori
                 const dokumenList = jenisDokumenByKategori[kategoriId] || [];
 
-                // Tambahkan opsi yang difilter ke elemen select
+                // Add options - jenis dokumen already sorted by GolDok from controller
                 dokumenList.forEach(dokumen => {
-                    const option = document.createElement('option');
-                    option.value = dokumen.JenisDok;
+                    const option = document.createElement('div');
+                    option.className = 'custom-select-option';
+                    option.dataset.value = dokumen.JenisDok;
+                    option.dataset.display = dokumen.JenisDok;
+                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
                     option.textContent = dokumen.JenisDok;
 
-                    // Jika ini sebelumnya terpilih, pilih lagi
-                    if (dokumen.JenisDok === selectedJenisDok) {
-                        option.selected = true;
+                    // Check if this option matches the current value
+                    if (dokumen.JenisDok === currentValue) {
+                        option.classList.add('selected');
+                        jenisHiddenInput.value = currentValue;
+                        jenisSearch.value = currentDisplay;
                     }
 
-                    jenisDokSelect.appendChild(option);
+                    option.addEventListener('click', function(e) {
+                        e.stopPropagation();
+
+                        jenisHiddenInput.value = this.dataset.value;
+                        jenisSearch.value = this.dataset.display;
+
+                        const allOptions = jenisOptions.querySelectorAll('.custom-select-option');
+                        allOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+
+                        jenisPortal.classList.remove('active');
+                        document.getElementById('jenisContainer').classList.remove('open');
+
+                        jenisSearch.classList.remove('is-invalid');
+                        document.getElementById('jenisContainer').classList.remove('is-invalid');
+
+                        const event = new Event('change', {
+                            bubbles: true
+                        });
+                        jenisHiddenInput.dispatchEvent(event);
+                    });
+
+                    jenisOptions.appendChild(option);
                 });
+
+                // Check if the current JenisDok exists in the new options
+                let found = false;
+                if (currentValue) {
+                    dokumenList.forEach(dokumen => {
+                        if (dokumen.JenisDok === currentValue) {
+                            found = true;
+                        }
+                    });
+                }
+
+                // If not found in the new options, clear the inputs
+                if (!found && currentValue) {
+                    jenisHiddenInput.value = '';
+                    jenisSearch.value = '';
+                }
             }
-
-            // Event listener untuk perubahan kategori
-            kategoriDokSelect.addEventListener('change', function() {
-                filterJenisDokumen(this.value);
-            });
-
-            // Inisialisasi pada saat memuat halaman jika kategori sudah terpilih
-            if (kategoriDokSelect.value) {
-                filterJenisDokumen(kategoriDokSelect.value);
-            }
-
-            // Remove invalid class when input changes
-            document.querySelectorAll('[required]').forEach(function(input) {
-                input.addEventListener('input', function() {
-                    if (this.value) {
-                        this.classList.remove('is-invalid');
-                    }
-                });
-            });
 
             // Function to calculate and display validity period
             function hitungMasaBerlaku() {
@@ -579,6 +970,48 @@
                 }
             }
 
+            // Function to highlight missing fields
+            function highlightMissingFields() {
+                document.querySelectorAll('[required]').forEach(function(input) {
+                    if (!input.value) {
+                        input.classList.add('is-invalid');
+
+                        // Handle custom select validation
+                        if (input.type === 'hidden' && input.id.includes('IdKode') || input.id.includes(
+                                'Dok')) {
+                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') +
+                                'Container';
+                            const container = document.getElementById(containerId);
+
+                            if (container) {
+                                container.classList.add('is-invalid');
+                                const searchInput = container.querySelector('.custom-select-search');
+                                if (searchInput) {
+                                    searchInput.classList.add('is-invalid');
+                                }
+                            }
+                        }
+
+                        // Create error message if it doesn't exist
+                        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains(
+                                'invalid-feedback')) {
+                            const feedback = document.createElement('div');
+                            feedback.className = 'invalid-feedback';
+                            feedback.textContent = 'Field ini wajib diisi';
+                            input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                        }
+                    }
+                });
+
+                // Animate invalid fields
+                document.querySelectorAll('.is-invalid').forEach(element => {
+                    element.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        element.classList.remove('animate__shakeX');
+                    }, 1000);
+                });
+            }
+
             // Add event listeners for validity type
             document.querySelectorAll('.validasi-dokumen').forEach(function(radio) {
                 radio.addEventListener('change', toggleFieldsVisibility);
@@ -596,13 +1029,68 @@
                 });
             });
 
+            // Form validation and submission
+            const form = document.getElementById('dokumenLegalitasForm');
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    // Close any open dropdowns
+                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
+                        portal.classList.remove('active');
+                    });
+                    document.querySelectorAll('.custom-select-container').forEach(container => {
+                        container.classList.remove('open');
+                    });
+
+                    // Highlight missing fields
+                    highlightMissingFields();
+                }
+            });
+
+            // Initialize
+            createPortals();
+
+            // Initialize each select
+            initCustomSelect('karyawan', 'IdKodeA04');
+            initCustomSelect('kategori', 'KategoriDok');
+            initCustomSelect('jenis', 'JenisDok');
+
             // Initialize form state
             toggleFieldsVisibility();
 
-            // Calculate initial reminder period if fields already have values
+            // Kategori change handler untuk update jenis dokumen
+            document.getElementById('KategoriDok').addEventListener('change', function() {
+                updateJenisDokumen(this.value);
+            });
+
+            // Initialize jenis dokumen if kategori is selected
+            const oldKategori = document.getElementById('KategoriDok').value;
+            if (oldKategori) {
+                updateJenisDokumen(oldKategori);
+            }
+
+            // Initialize periods
+            if (document.getElementById('TglTerbitDok').value && document.getElementById('TglBerakhirDok').value) {
+                hitungMasaBerlaku();
+            }
+
             if (document.getElementById('TglPengingat').value && document.getElementById('TglBerakhirDok').value) {
                 hitungMasaPengingat();
             }
+
+            // Add global escape key handler
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
+                        portal.classList.remove('active');
+                    });
+                    document.querySelectorAll('.custom-select-container').forEach(container => {
+                        container.classList.remove('open');
+                    });
+                }
+            });
         });
     </script>
 @endpush
