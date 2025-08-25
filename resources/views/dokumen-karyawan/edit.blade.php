@@ -425,10 +425,10 @@
                                                                     target="_blank">
                                                                     <i class="fas fa-eye"></i>
                                                                 </a>
-                                                                <a href="{{ route('dokumen-karyawan.download', $dokumenKaryawan->id) }}"
+                                                                {{-- <a href="{{ route('dokumen-karyawan.download', $dokumenKaryawan->id) }}"
                                                                     class="btn btn-sm btn-primary">
                                                                     <i class="fas fa-download"></i>
-                                                                </a>
+                                                                </a> --}}
                                                             </div>
                                                         </div>
                                                     </div>
