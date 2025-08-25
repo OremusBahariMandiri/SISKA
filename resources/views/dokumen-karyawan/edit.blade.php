@@ -130,10 +130,10 @@
                                                             value="{{ old('kategoriDisplay', $dokumenKaryawan->KategoriDok) }}">
 
                                                         <div class="custom-select-dropdown" id="kategoriDropdown">
-                                                            <div class="custom-select-search-wrapper">
+
                                                                 <input type="text" id="kategoriFilterInput"
                                                                     class="form-control" placeholder="Ketik untuk mencari">
-                                                            </div>
+                                                    
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
                                                                     data-value="" data-display="-- Pilih Kategori --">--
@@ -633,637 +633,723 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Data jenisDokumenByKategori dari controller
-            const jenisDokumenByKategori = @json($jenisDokumenByKategori);
+document.addEventListener('DOMContentLoaded', function() {
+    // Data jenisDokumenByKategori dari controller
+    const jenisDokumenByKategori = @json($jenisDokumenByKategori);
+    // Previously selected jenis dokumen
+    const selectedJenisDok = "{{ old('JenisDok', $dokumenKaryawan->JenisDok) }}";
 
-            // File input preview and validation
-            const fileInput = document.getElementById('FileDok');
-            const filePreviewContainer = document.getElementById('filePreviewContainer');
-            const fileName = document.getElementById('fileName');
-            const fileSize = document.getElementById('fileSize');
-            const fileTypeIcon = document.getElementById('fileTypeIcon');
-            const removeFileBtn = document.getElementById('removeFile');
-            const fileValidationMessage = document.getElementById('fileValidationMessage');
+    console.log("Selected Jenis Dok:", selectedJenisDok);
+    console.log("JenisDokumenByKategori:", jenisDokumenByKategori);
 
-            fileInput.addEventListener('change', function() {
-                // Clear previous validation messages
-                fileInput.classList.remove('is-invalid');
-                fileValidationMessage.classList.add('d-none');
+    // File input preview and validation
+    const fileInput = document.getElementById('FileDok');
+    const filePreviewContainer = document.getElementById('filePreviewContainer');
+    const fileName = document.getElementById('fileName');
+    const fileSize = document.getElementById('fileSize');
+    const fileTypeIcon = document.getElementById('fileTypeIcon');
+    const removeFileBtn = document.getElementById('removeFile');
+    const fileValidationMessage = document.getElementById('fileValidationMessage');
 
-                if (this.files && this.files.length > 0) {
-                    const file = this.files[0];
-                    const fileExt = file.name.split('.').pop().toLowerCase();
+    fileInput.addEventListener('change', function() {
+        // Clear previous validation messages
+        fileInput.classList.remove('is-invalid');
+        fileValidationMessage.classList.add('d-none');
 
-                    // Validate file type
-                    const validTypes = ['pdf', 'jpg', 'jpeg', 'png'];
-                    if (!validTypes.includes(fileExt)) {
-                        fileInput.classList.add('is-invalid');
-                        fileValidationMessage.textContent =
-                            'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
-                        fileValidationMessage.classList.remove('d-none');
-                        fileInput.value = '';
-                        return;
-                    }
+        if (this.files && this.files.length > 0) {
+            const file = this.files[0];
+            const fileExt = file.name.split('.').pop().toLowerCase();
 
-                    // Update preview
-                    fileName.textContent = file.name;
-
-                    // Format file size
-                    let formattedSize;
-                    if (file.size < 1024) {
-                        formattedSize = file.size + ' bytes';
-                    } else if (file.size < 1024 * 1024) {
-                        formattedSize = (file.size / 1024).toFixed(1) + ' KB';
-                    } else {
-                        formattedSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
-                    }
-                    fileSize.textContent = formattedSize;
-
-                    // Update icon based on file type
-                    let iconClass = 'fas fa-file fa-2x text-secondary';
-                    if (fileExt === 'pdf') {
-                        iconClass = 'fas fa-file-pdf fa-2x text-danger';
-                    } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
-                        iconClass = 'fas fa-file-image fa-2x text-primary';
-                    }
-                    fileTypeIcon.innerHTML = `<i class="${iconClass}"></i>`;
-
-                    // Show preview container
-                    filePreviewContainer.classList.remove('d-none');
-                } else {
-                    // Hide preview container
-                    filePreviewContainer.classList.add('d-none');
-                }
-            });
-
-            // Remove file button
-            if (removeFileBtn) {
-                removeFileBtn.addEventListener('click', function() {
-                    fileInput.value = '';
-                    filePreviewContainer.classList.add('d-none');
-                });
+            // Validate file type
+            const validTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+            if (!validTypes.includes(fileExt)) {
+                fileInput.classList.add('is-invalid');
+                fileValidationMessage.textContent =
+                    'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
+                fileValidationMessage.classList.remove('d-none');
+                fileInput.value = '';
+                return;
             }
 
-            // Create portal elements for each dropdown
-            function createPortals() {
-                const selectContainers = document.querySelectorAll('.custom-select-container');
-
-                selectContainers.forEach(container => {
-                    const prefix = container.id.replace('Container', '');
-                    const dropdown = document.getElementById(`${prefix}Dropdown`);
-
-                    // Create portal if not exists
-                    if (!document.getElementById(`${prefix}Portal`)) {
-                        const portal = document.createElement('div');
-                        portal.id = `${prefix}Portal`;
-                        portal.className = 'dropdown-portal';
-
-                        // Move dropdown to portal
-                        if (dropdown) {
-                            // Clone the dropdown to preserve event listeners
-                            const clonedDropdown = dropdown.cloneNode(true);
-                            portal.appendChild(clonedDropdown);
-                            document.body.appendChild(portal);
-
-                            // Remove original dropdown
-                            dropdown.parentNode.removeChild(dropdown);
-                        }
-                    }
-                });
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                fileInput.classList.add('is-invalid');
+                fileValidationMessage.textContent = 'Ukuran file maksimal 5MB.';
+                fileValidationMessage.classList.remove('d-none');
+                fileInput.value = '';
+                return;
             }
 
-            // Initialize custom select with portal approach
-            function initCustomSelect(prefix, hiddenInputId) {
-                const searchInput = document.getElementById(`${prefix}Search`);
-                const container = document.getElementById(`${prefix}Container`);
-                const portal = document.getElementById(`${prefix}Portal`) || createPortalForSelect(prefix);
-                const dropdown = portal.querySelector(`.custom-select-dropdown`);
-                const filterInput = portal.querySelector(`#${prefix}FilterInput`);
-                const options = portal.querySelectorAll('.custom-select-option');
-                const hiddenInput = document.getElementById(hiddenInputId);
+            // Update preview
+            fileName.textContent = file.name;
 
-                // Position portal function
-                function positionPortal() {
-                    const rect = searchInput.getBoundingClientRect();
-                    portal.style.top = `${rect.bottom}px`;
-                    portal.style.left = `${rect.left}px`;
-                    portal.style.width = `${rect.width}px`;
-                }
+            // Format file size
+            let formattedSize;
+            if (file.size < 1024) {
+                formattedSize = file.size + ' bytes';
+            } else if (file.size < 1024 * 1024) {
+                formattedSize = (file.size / 1024).toFixed(1) + ' KB';
+            } else {
+                formattedSize = (file.size / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+            fileSize.textContent = formattedSize;
 
-                // Initialize selected value if exists
-                const initialValue = hiddenInput.value;
-                if (initialValue) {
-                    const selectedOption = Array.from(options).find(option => {
-                        // For KategoriDok, match by text content; for others, match by value
-                        if (prefix === 'kategori') {
-                            return option.textContent.trim() === initialValue;
-                        } else {
-                            return option.dataset.value === initialValue;
-                        }
-                    });
+            // Update icon based on file type
+            let iconClass = 'fas fa-file fa-2x text-secondary';
+            if (fileExt === 'pdf') {
+                iconClass = 'fas fa-file-pdf fa-2x text-danger';
+            } else if (['jpg', 'jpeg', 'png'].includes(fileExt)) {
+                iconClass = 'fas fa-file-image fa-2x text-primary';
+            }
+            fileTypeIcon.innerHTML = `<i class="${iconClass}"></i>`;
 
-                    if (selectedOption) {
-                        searchInput.value = selectedOption.dataset.display;
-                        selectedOption.classList.add('selected');
-                    }
-                }
+            // Show preview container
+            filePreviewContainer.classList.remove('d-none');
+        } else {
+            // Hide preview container
+            filePreviewContainer.classList.add('d-none');
+        }
+    });
 
-                // Show dropdown when clicking on search input
-                searchInput.addEventListener('click', function(e) {
-                    e.stopPropagation();
+    // Remove file button
+    if (removeFileBtn) {
+        removeFileBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            filePreviewContainer.classList.add('d-none');
+        });
+    }
 
-                    // Close all other portals
-                    document.querySelectorAll('.dropdown-portal.active').forEach(p => {
-                        if (p.id !== `${prefix}Portal`) {
-                            p.classList.remove('active');
-                        }
-                    });
+    // Create portal elements for each dropdown
+    function createPortals() {
+        const selectContainers = document.querySelectorAll('.custom-select-container');
 
-                    // Toggle this portal
-                    const isOpen = portal.classList.contains('active');
+        selectContainers.forEach(container => {
+            const prefix = container.id.replace('Container', '');
+            const dropdown = document.getElementById(`${prefix}Dropdown`);
 
-                    if (!isOpen) {
-                        positionPortal();
-                        portal.classList.add('active');
-                        container.classList.add('open');
+            // Create portal if not exists
+            if (!document.getElementById(`${prefix}Portal`)) {
+                const portal = document.createElement('div');
+                portal.id = `${prefix}Portal`;
+                portal.className = 'dropdown-portal';
 
-                        // Reset filter and focus
-                        if (filterInput) {
-                            filterInput.value = '';
-                            setTimeout(() => filterInput.focus(), 50);
-                        }
-
-                        // Reset options visibility
-                        options.forEach(option => option.classList.remove('hidden'));
-                    } else {
-                        portal.classList.remove('active');
-                        container.classList.remove('open');
-                    }
-                });
-
-                // Close dropdown when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!e.target.closest(`#${prefix}Container`) &&
-                        !e.target.closest(`#${prefix}Portal`)) {
-                        portal.classList.remove('active');
-                        container.classList.remove('open');
-                    }
-                });
-
-                // Filter options as user types
-                if (filterInput) {
-                    filterInput.addEventListener('input', function() {
-                        const filter = this.value.toLowerCase();
-                        options.forEach(option => {
-                            const text = option.textContent.toLowerCase();
-                            if (text.includes(filter) || option.classList.contains(
-                                    'empty-option')) {
-                                option.classList.remove('hidden');
-                            } else {
-                                option.classList.add('hidden');
-                            }
-                        });
-                    });
-                }
-
-                // Handle option selection
-                options.forEach(option => {
-                    option.addEventListener('click', function(e) {
-                        e.stopPropagation();
-
-                        const value = this.dataset.value;
-                        const display = this.dataset.display;
-
-                        // Update hidden input and display
-                        hiddenInput.value = value;
-                        searchInput.value = display;
-
-                        // Mark as selected
-                        options.forEach(opt => opt.classList.remove('selected'));
-                        this.classList.add('selected');
-
-                        // Close dropdown
-                        portal.classList.remove('active');
-                        container.classList.remove('open');
-
-                        // Remove invalid state if set
-                        searchInput.classList.remove('is-invalid');
-                        container.classList.remove('is-invalid');
-
-                        // Trigger change event
-                        const event = new Event('change', {
-                            bubbles: true
-                        });
-                        hiddenInput.dispatchEvent(event);
-
-                        // Specific actions for certain fields
-                        if (prefix === 'kategori') {
-                            updateJenisDokumen(value);
-                        }
-                    });
-                });
-
-                // Create portal if doesn't exist
-                function createPortalForSelect(prefix) {
-                    const origDropdown = document.getElementById(`${prefix}Dropdown`);
-
-                    if (!origDropdown) return null;
-
-                    const portal = document.createElement('div');
-                    portal.id = `${prefix}Portal`;
-                    portal.className = 'dropdown-portal';
-
-                    // Clone dropdown to preserve structure
-                    const clonedDropdown = origDropdown.cloneNode(true);
+                // Move dropdown to portal
+                if (dropdown) {
+                    // Clone the dropdown to preserve event listeners
+                    const clonedDropdown = dropdown.cloneNode(true);
                     portal.appendChild(clonedDropdown);
                     document.body.appendChild(portal);
 
-                    // Remove original
-                    origDropdown.parentNode.removeChild(origDropdown);
-
-                    return portal;
+                    // Remove original dropdown
+                    dropdown.parentNode.removeChild(dropdown);
                 }
+            }
+        });
+    }
 
-                // Update position on scroll and resize
-                window.addEventListener('resize', function() {
-                    if (portal.classList.contains('active')) {
-                        positionPortal();
-                    }
-                });
+    // Initialize custom select with portal approach
+    function initCustomSelect(prefix, hiddenInputId) {
+        const searchInput = document.getElementById(`${prefix}Search`);
+        const container = document.getElementById(`${prefix}Container`);
+        const portal = document.getElementById(`${prefix}Portal`) || createPortalForSelect(prefix);
+        const dropdown = portal.querySelector(`.custom-select-dropdown`);
+        const filterInput = portal.querySelector(`#${prefix}FilterInput`);
+        const options = portal.querySelectorAll('.custom-select-option');
+        const hiddenInput = document.getElementById(hiddenInputId);
 
-                window.addEventListener('scroll', function() {
-                    if (portal.classList.contains('active')) {
-                        positionPortal();
-                    }
-                });
+        // Position portal function
+        function positionPortal() {
+            const rect = searchInput.getBoundingClientRect();
+            portal.style.top = `${rect.bottom}px`;
+            portal.style.left = `${rect.left}px`;
+            portal.style.width = `${rect.width}px`;
+        }
 
-                // Keyboard navigation
-                searchInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        this.click();
-                    } else if (e.key === 'Escape' && portal.classList.contains('active')) {
-                        e.preventDefault();
-                        portal.classList.remove('active');
-                        container.classList.remove('open');
-                    }
-                });
+        // Initialize selected value if exists
+        const initialValue = hiddenInput.value;
+        if (initialValue) {
+            // For all fields, search by data-value attribute
+            const selectedOption = Array.from(options).find(option => option.dataset.value === initialValue);
 
+            if (selectedOption) {
+                searchInput.value = selectedOption.dataset.display;
+                selectedOption.classList.add('selected');
+            }
+        }
+
+        // Show dropdown when clicking on search input
+        searchInput.addEventListener('click', function(e) {
+            e.stopPropagation();
+
+            // Close all other portals
+            document.querySelectorAll('.dropdown-portal.active').forEach(p => {
+                if (p.id !== `${prefix}Portal`) {
+                    p.classList.remove('active');
+                }
+            });
+
+            // Toggle this portal
+            const isOpen = portal.classList.contains('active');
+
+            if (!isOpen) {
+                positionPortal();
+                portal.classList.add('active');
+                container.classList.add('open');
+
+                // Reset filter and focus
                 if (filterInput) {
-                    filterInput.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') {
-                            e.preventDefault();
-                            portal.classList.remove('active');
-                            container.classList.remove('open');
-                        }
-                    });
+                    filterInput.value = '';
+                    setTimeout(() => filterInput.focus(), 50);
                 }
+
+                // Reset options visibility
+                options.forEach(option => option.classList.remove('hidden'));
+            } else {
+                portal.classList.remove('active');
+                container.classList.remove('open');
             }
+        });
 
-            // Function to update jenis dokumen options based on selected kategori
-            function updateJenisDokumen(kategoriId) {
-                const jenisPortal = document.getElementById('jenisPortal');
-                if (!jenisPortal) return;
-
-                const jenisOptions = jenisPortal.querySelector('#jenisOptions');
-                const jenisSearch = document.getElementById('jenisSearch');
-                const jenisHiddenInput = document.getElementById('JenisDok');
-
-                // Keep the empty option
-                const emptyOption = jenisOptions.querySelector('.empty-option');
-                jenisOptions.innerHTML = '';
-                jenisOptions.appendChild(emptyOption);
-
-                // Save current selected value
-                const currentValue = jenisHiddenInput.value;
-
-                // Reset jenis value if category changed
-                if (!kategoriId) {
-                    jenisHiddenInput.value = '';
-                    jenisSearch.value = '';
-                    return;
-                }
-
-                // Get dokumen list for selected kategori
-                const dokumenList = jenisDokumenByKategori[kategoriId] || [];
-
-                // Add options - jenis dokumen already sorted by GolDok from controller
-                dokumenList.forEach(dokumen => {
-                    const option = document.createElement('div');
-                    option.className = 'custom-select-option';
-                    option.dataset.value = dokumen.JenisDok;
-                    option.dataset.display = dokumen.JenisDok;
-                    option.dataset.goldok = dokumen.GolDok || 999; // Add GolDok as data attribute
-                    option.textContent = dokumen.JenisDok;
-
-                    // Set selected if matching current value
-                    if (dokumen.JenisDok === currentValue) {
-                        option.classList.add('selected');
-                        jenisSearch.value = dokumen.JenisDok;
-                    }
-
-                    option.addEventListener('click', function(e) {
-                        e.stopPropagation();
-
-                        jenisHiddenInput.value = this.dataset.value;
-                        jenisSearch.value = this.dataset.display;
-
-                        const allOptions = jenisOptions.querySelectorAll('.custom-select-option');
-                        allOptions.forEach(opt => opt.classList.remove('selected'));
-                        this.classList.add('selected');
-
-                        jenisPortal.classList.remove('active');
-                        document.getElementById('jenisContainer').classList.remove('open');
-
-                        jenisSearch.classList.remove('is-invalid');
-                        document.getElementById('jenisContainer').classList.remove('is-invalid');
-
-                        const event = new Event('change', {
-                            bubbles: true
-                        });
-                        jenisHiddenInput.dispatchEvent(event);
-                    });
-
-                    jenisOptions.appendChild(option);
-                });
-
-                // If current value doesn't exist in the new options, clear it
-                const valueExists = dokumenList.some(dokumen => dokumen.JenisDok === currentValue);
-                if (!valueExists) {
-                    jenisHiddenInput.value = '';
-                    jenisSearch.value = '';
-                }
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest(`#${prefix}Container`) &&
+                !e.target.closest(`#${prefix}Portal`)) {
+                portal.classList.remove('active');
+                container.classList.remove('open');
             }
+        });
 
-            // Function to calculate and display validity period
-            function hitungMasaBerlaku() {
-                const validasiDok = document.querySelector('input[name="ValidasiDok"]:checked').value;
-                const tglTerbit = document.getElementById('TglTerbitDok').value;
-                const tglBerakhir = document.getElementById('TglBerakhirDok').value;
-                const masaBerlakuField = document.getElementById('MasaBerlaku');
-
-                if (validasiDok === 'Tetap') {
-                    masaBerlakuField.value = 'Tetap';
-                    return;
-                }
-
-                if (tglTerbit && tglBerakhir) {
-                    const startDate = new Date(tglTerbit);
-                    const endDate = new Date(tglBerakhir);
-
-                    if (endDate < startDate) {
-                        masaBerlakuField.value = 'Tanggal berakhir harus setelah tanggal terbit';
-                        return;
-                    }
-
-                    // Calculate difference in years, months, and days
-                    let years = endDate.getFullYear() - startDate.getFullYear();
-                    let months = endDate.getMonth() - startDate.getMonth();
-                    let days = endDate.getDate() - startDate.getDate();
-
-                    if (days < 0) {
-                        months--;
-                        // Add days from previous month
-                        const lastDayOfMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
-                        days += lastDayOfMonth;
-                    }
-
-                    if (months < 0) {
-                        years--;
-                        months += 12;
-                    }
-
-                    let result = '';
-                    if (years > 0) result += years + ' thn ';
-                    if (months > 0) result += months + ' bln ';
-                    if (days > 0) result += days + ' hri';
-
-                    masaBerlakuField.value = result || '0 hri';
-                } else {
-                    masaBerlakuField.value = '';
-                }
-            }
-
-            // Function to calculate and display reminder period
-            function hitungMasaPengingat() {
-                const tglPengingat = document.getElementById('TglPengingat').value;
-                const tglBerakhir = document.getElementById('TglBerakhirDok').value;
-                const masaPengingatField = document.getElementById('MasaPengingat');
-
-                if (tglPengingat && tglBerakhir) {
-                    const reminderDate = new Date(tglPengingat);
-                    const expiryDate = new Date(tglBerakhir);
-
-                    if (reminderDate > expiryDate) {
-                        masaPengingatField.value = 'Tanggal pengingat harus sebelum tanggal berakhir';
-                        return;
-                    }
-
-                    // Calculate difference in days
-                    const diffTime = Math.abs(expiryDate - reminderDate);
-                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                    masaPengingatField.value = diffDays + ' hari';
-                } else {
-                    masaPengingatField.value = '-';
-                }
-            }
-
-            // Function to toggle visibility of fields based on validity type
-            function toggleFieldsVisibility() {
-                const validasiDok = document.querySelector('input[name="ValidasiDok"]:checked').value;
-                const tglBerakhirGroup = document.querySelector('.tgl-berakhir-group');
-                const tglPengingatGroup = document.querySelector('.tgl-pengingat-group');
-                const tglBerakhirInput = document.getElementById('TglBerakhirDok');
-                const tglBerakhirLabel = tglBerakhirGroup.querySelector('.form-label');
-                const tglPengingatInput = document.getElementById('TglPengingat');
-
-                if (validasiDok === 'Tetap') {
-                    tglBerakhirGroup.style.display = 'none';
-                    tglPengingatGroup.style.display = 'none';
-                    document.getElementById('TglBerakhirDok').value = '';
-                    document.getElementById('TglPengingat').value = '';
-                    document.getElementById('MasaBerlaku').value = 'Tetap';
-                    document.getElementById('MasaPengingat').value = '-';
-
-                    // Remove required attribute
-                    tglBerakhirInput.removeAttribute('required');
-                    tglPengingatInput.removeAttribute('required');
-                } else {
-                    tglBerakhirGroup.style.display = 'block';
-                    tglPengingatGroup.style.display = 'block';
-
-                    // Add required marker to label
-                    if (!tglBerakhirLabel.innerHTML.includes('*')) {
-                        tglBerakhirLabel.innerHTML = tglBerakhirLabel.innerHTML +
-                            ' <span class="text-danger">*</span>';
-                    }
-
-                    // Add required attribute
-                    tglBerakhirInput.setAttribute('required', 'required');
-
-                    hitungMasaBerlaku();
-                    hitungMasaPengingat();
-                }
-            }
-
-            // Function to highlight missing fields
-            function highlightMissingFields() {
-                document.querySelectorAll('[required]').forEach(function(input) {
-                    if (!input.value) {
-                        input.classList.add('is-invalid');
-
-                        // Handle custom select validation
-                        if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
-                                'Dok'))) {
-                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') + 'Container';
-                            const container = document.getElementById(containerId);
-
-                            if (container) {
-                                container.classList.add('is-invalid');
-                                const searchInput = container.querySelector('.custom-select-search');
-                                if (searchInput) {
-                                    searchInput.classList.add('is-invalid');
-                                }
-                            }
-                        }
-
-                        // Create error message if it doesn't exist
-                        if (!input.nextElementSibling || !input.nextElementSibling.classList.contains(
-                                'invalid-feedback')) {
-                            const feedback = document.createElement('div');
-                            feedback.className = 'invalid-feedback';
-                            feedback.textContent = 'Field ini wajib diisi';
-                            input.parentNode.insertBefore(feedback, input.nextElementSibling);
-                        }
-                    }
-                });
-
-                // Animate invalid fields
-                document.querySelectorAll('.is-invalid').forEach(element => {
-                    element.classList.add('animate__animated', 'animate__shakeX');
-                    setTimeout(() => {
-                        element.classList.remove('animate__shakeX');
-                    }, 1000);
-                });
-            }
-
-            // Add event listeners for validity type
-            document.querySelectorAll('.validasi-dokumen').forEach(function(radio) {
-                radio.addEventListener('change', toggleFieldsVisibility);
-            });
-
-            // Add event listeners for dates
-            document.querySelectorAll('.tanggal-input').forEach(function(input) {
-                input.addEventListener('change', function() {
-                    if (this.id === 'TglTerbitDok' || this.id === 'TglBerakhirDok') {
-                        hitungMasaBerlaku();
-                    }
-                    if (this.id === 'TglPengingat' || this.id === 'TglBerakhirDok') {
-                        hitungMasaPengingat();
+        // Filter options as user types
+        if (filterInput) {
+            filterInput.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                options.forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    if (text.includes(filter) || option.classList.contains(
+                            'empty-option')) {
+                        option.classList.remove('hidden');
+                    } else {
+                        option.classList.add('hidden');
                     }
                 });
             });
+        }
 
-            // Form validation and submission
-            const form = document.getElementById('dokumenKaryawanForm');
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
+        // Handle option selection
+        options.forEach(option => {
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
 
-                    // Close any open dropdowns
-                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
-                        portal.classList.remove('active');
-                    });
-                    document.querySelectorAll('.custom-select-container').forEach(container => {
-                        container.classList.remove('open');
-                    });
+                const value = this.dataset.value;
+                const display = this.dataset.display;
 
-                    // Add alert for validation errors
-                    const errorAlert = document.createElement('div');
-                    errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
-                    errorAlert.innerHTML = `
-                        <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
-                        <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    `;
+                // Update hidden input and display
+                hiddenInput.value = value;
+                searchInput.value = display;
 
-                    // Insert alert at top of form
-                    const firstElement = form.firstElementChild;
-                    form.insertBefore(errorAlert, firstElement);
+                // Mark as selected
+                options.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
 
-                    // Scroll to alert
-                    errorAlert.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                // Close dropdown
+                portal.classList.remove('active');
+                container.classList.remove('open');
 
-                    // Highlight missing fields
-                    highlightMissingFields();
-                }
-            });
+                // Remove invalid state if set
+                searchInput.classList.remove('is-invalid');
+                container.classList.remove('is-invalid');
 
-            // Initialize
-            createPortals();
+                // Trigger change event
+                const event = new Event('change', {
+                    bubbles: true
+                });
+                hiddenInput.dispatchEvent(event);
 
-            // Initialize each select
-            initCustomSelect('karyawan', 'IdKodeA04');
-            initCustomSelect('kategori', 'KategoriDok');
-            initCustomSelect('jenis', 'JenisDok');
-
-            // Initialize form state
-            toggleFieldsVisibility();
-
-            // Kategori change handler untuk update jenis dokumen
-            document.getElementById('KategoriDok').addEventListener('change', function() {
-                updateJenisDokumen(this.value);
-            });
-
-            // Get kategori ID from selected kategori name
-            function getKategoriIdFromName(kategoriName) {
-                const kategoriDropdown = document.getElementById('kategoriPortal');
-                if (!kategoriDropdown) return null;
-
-                const options = kategoriDropdown.querySelectorAll('.custom-select-option');
-                for (const option of options) {
-                    if (option.textContent.trim() === kategoriName) {
-                        return option.dataset.value;
-                    }
-                }
-                return null;
-            }
-
-            // Initialize jenis dokumen based on current kategori
-            const currentKategori = document.getElementById('KategoriDok').value;
-            const kategoriId = getKategoriIdFromName(currentKategori) || currentKategori;
-
-            if (kategoriId) {
-                // Need to find the category ID that matches the kategori name
-                updateJenisDokumen(kategoriId);
-            }
-
-            // Initialize periods
-            if (document.getElementById('TglTerbitDok').value && document.getElementById('TglBerakhirDok').value) {
-                hitungMasaBerlaku();
-            }
-
-            if (document.getElementById('TglPengingat').value && document.getElementById('TglBerakhirDok').value) {
-                hitungMasaPengingat();
-            }
-
-            // Add global escape key handler
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
-                        portal.classList.remove('active');
-                    });
-                    document.querySelectorAll('.custom-select-container').forEach(container => {
-                        container.classList.remove('open');
-                    });
+                // Specific actions for certain fields
+                if (prefix === 'kategori') {
+                    updateJenisDokumen(value);
                 }
             });
         });
+
+        // Create portal if doesn't exist
+        function createPortalForSelect(prefix) {
+            const origDropdown = document.getElementById(`${prefix}Dropdown`);
+
+            if (!origDropdown) return null;
+
+            const portal = document.createElement('div');
+            portal.id = `${prefix}Portal`;
+            portal.className = 'dropdown-portal';
+
+            // Clone dropdown to preserve structure
+            const clonedDropdown = origDropdown.cloneNode(true);
+            portal.appendChild(clonedDropdown);
+            document.body.appendChild(portal);
+
+            // Remove original
+            origDropdown.parentNode.removeChild(origDropdown);
+
+            return portal;
+        }
+
+        // Update position on scroll and resize
+        window.addEventListener('resize', function() {
+            if (portal.classList.contains('active')) {
+                positionPortal();
+            }
+        });
+
+        window.addEventListener('scroll', function() {
+            if (portal.classList.contains('active')) {
+                positionPortal();
+            }
+        });
+
+        // Keyboard navigation
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.click();
+            } else if (e.key === 'Escape' && portal.classList.contains('active')) {
+                e.preventDefault();
+                portal.classList.remove('active');
+                container.classList.remove('open');
+            }
+        });
+
+        if (filterInput) {
+            filterInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    portal.classList.remove('active');
+                    container.classList.remove('open');
+                }
+            });
+        }
+    }
+
+    // Function to update jenis dokumen options based on selected kategori
+    function updateJenisDokumen(kategoriId) {
+        console.log("updateJenisDokumen called with kategoriId:", kategoriId);
+
+        const jenisPortal = document.getElementById('jenisPortal');
+        if (!jenisPortal) {
+            console.error("Jenis portal not found");
+            return;
+        }
+
+        const jenisOptions = jenisPortal.querySelector('#jenisOptions');
+        const jenisSearch = document.getElementById('jenisSearch');
+        const jenisHiddenInput = document.getElementById('JenisDok');
+
+        console.log("Current JenisDok value:", jenisHiddenInput.value);
+        console.log("Selected JenisDok value:", selectedJenisDok);
+
+        // Keep the empty option
+        const emptyOption = jenisOptions.querySelector('.empty-option');
+        jenisOptions.innerHTML = '';
+        jenisOptions.appendChild(emptyOption);
+
+        // Get the selected value before updating options
+        let previouslySelected = jenisHiddenInput.value;
+
+        // Don't reset value if it matches the previously selected jenis dokumen
+        if (previouslySelected !== selectedJenisDok) {
+            previouslySelected = selectedJenisDok;
+        }
+
+        // Reset if no category is selected
+        if (!kategoriId) {
+            console.log("No kategori selected");
+            return;
+        }
+
+        // Get dokumen list for selected kategori
+        const dokumenList = jenisDokumenByKategori[kategoriId] || [];
+        console.log("Dokumen list for kategori:", dokumenList);
+
+        // Add options - jenis dokumen already sorted by GolDok from controller
+        dokumenList.forEach(dokumen => {
+            const option = document.createElement('div');
+            option.className = 'custom-select-option';
+            option.dataset.value = dokumen.JenisDok;
+            option.dataset.display = dokumen.JenisDok;
+            option.textContent = dokumen.JenisDok;
+
+            // Check if this option should be selected
+            const shouldBeSelected = dokumen.JenisDok === selectedJenisDok;
+            if (shouldBeSelected) {
+                console.log("Found matching jenis:", dokumen.JenisDok);
+                option.classList.add('selected');
+                jenisSearch.value = dokumen.JenisDok;
+                jenisHiddenInput.value = dokumen.JenisDok;
+            }
+
+            // Add click event handler
+            option.addEventListener('click', function(e) {
+                e.stopPropagation();
+
+                jenisHiddenInput.value = this.dataset.value;
+                jenisSearch.value = this.dataset.display;
+
+                const allOptions = jenisOptions.querySelectorAll('.custom-select-option');
+                allOptions.forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+
+                jenisPortal.classList.remove('active');
+                document.getElementById('jenisContainer').classList.remove('open');
+
+                jenisSearch.classList.remove('is-invalid');
+                document.getElementById('jenisContainer').classList.remove('is-invalid');
+
+                const event = new Event('change', {
+                    bubbles: true
+                });
+                jenisHiddenInput.dispatchEvent(event);
+            });
+
+            jenisOptions.appendChild(option);
+        });
+
+        // If we have a previously selected value and it's in the new options list,
+        // make sure it's selected
+        if (previouslySelected) {
+            console.log("Looking for previously selected value:", previouslySelected);
+
+            // Check all options for a match
+            const allOptions = jenisOptions.querySelectorAll('.custom-select-option');
+            let matchFound = false;
+
+            allOptions.forEach(option => {
+                if (option.dataset.value === previouslySelected) {
+                    console.log("Found matching option for:", previouslySelected);
+                    option.classList.add('selected');
+                    jenisSearch.value = option.dataset.display;
+                    jenisHiddenInput.value = option.dataset.value;
+                    matchFound = true;
+                }
+            });
+
+            if (!matchFound) {
+                console.log("No matching option found for:", previouslySelected);
+            }
+        }
+    }
+
+    // Function to calculate and display validity period
+    function hitungMasaBerlaku() {
+        const validasiDok = document.querySelector('input[name="ValidasiDok"]:checked').value;
+        const tglTerbit = document.getElementById('TglTerbitDok').value;
+        const tglBerakhir = document.getElementById('TglBerakhirDok').value;
+        const masaBerlakuField = document.getElementById('MasaBerlaku');
+
+        if (validasiDok === 'Tetap') {
+            masaBerlakuField.value = 'Tetap';
+            return;
+        }
+
+        if (tglTerbit && tglBerakhir) {
+            const startDate = new Date(tglTerbit);
+            const endDate = new Date(tglBerakhir);
+
+            if (endDate < startDate) {
+                masaBerlakuField.value = 'Tanggal berakhir harus setelah tanggal terbit';
+                return;
+            }
+
+            // Calculate difference in years, months, and days
+            let years = endDate.getFullYear() - startDate.getFullYear();
+            let months = endDate.getMonth() - startDate.getMonth();
+            let days = endDate.getDate() - startDate.getDate();
+
+            if (days < 0) {
+                months--;
+                // Add days from previous month
+                const lastDayOfMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 0).getDate();
+                days += lastDayOfMonth;
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            let result = '';
+            if (years > 0) result += years + ' thn ';
+            if (months > 0) result += months + ' bln ';
+            if (days > 0) result += days + ' hri';
+
+            masaBerlakuField.value = result || '0 hri';
+        } else {
+            masaBerlakuField.value = '';
+        }
+    }
+
+    // Function to calculate and display reminder period
+    function hitungMasaPengingat() {
+        const tglPengingat = document.getElementById('TglPengingat').value;
+        const tglBerakhir = document.getElementById('TglBerakhirDok').value;
+        const masaPengingatField = document.getElementById('MasaPengingat');
+
+        if (tglPengingat && tglBerakhir) {
+            const reminderDate = new Date(tglPengingat);
+            const expiryDate = new Date(tglBerakhir);
+
+            if (reminderDate > expiryDate) {
+                masaPengingatField.value = 'Tanggal pengingat harus sebelum tanggal berakhir';
+                return;
+            }
+
+            // Calculate difference in days
+            const diffTime = Math.abs(expiryDate - reminderDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            masaPengingatField.value = diffDays + ' hari';
+        } else {
+            masaPengingatField.value = '-';
+        }
+    }
+
+    // Function to toggle visibility of fields based on validity type
+    function toggleFieldsVisibility() {
+        const validasiDok = document.querySelector('input[name="ValidasiDok"]:checked').value;
+        const tglBerakhirGroup = document.querySelector('.tgl-berakhir-group');
+        const tglPengingatGroup = document.querySelector('.tgl-pengingat-group');
+        const tglBerakhirInput = document.getElementById('TglBerakhirDok');
+        const tglBerakhirLabel = tglBerakhirGroup.querySelector('.form-label');
+        const tglPengingatInput = document.getElementById('TglPengingat');
+
+        if (validasiDok === 'Tetap') {
+            tglBerakhirGroup.style.display = 'none';
+            tglPengingatGroup.style.display = 'none';
+            document.getElementById('TglBerakhirDok').value = '';
+            document.getElementById('TglPengingat').value = '';
+            document.getElementById('MasaBerlaku').value = 'Tetap';
+            document.getElementById('MasaPengingat').value = '-';
+
+            // Remove required attribute
+            tglBerakhirInput.removeAttribute('required');
+            tglPengingatInput.removeAttribute('required');
+        } else {
+            tglBerakhirGroup.style.display = 'block';
+            tglPengingatGroup.style.display = 'block';
+
+            // Add required marker to label
+            if (!tglBerakhirLabel.innerHTML.includes('*')) {
+                tglBerakhirLabel.innerHTML = tglBerakhirLabel.innerHTML +
+                    ' <span class="text-danger">*</span>';
+            }
+
+            // Add required attribute
+            tglBerakhirInput.setAttribute('required', 'required');
+
+            hitungMasaBerlaku();
+            hitungMasaPengingat();
+        }
+    }
+
+    // Function to validate file input
+    function validateFileInput() {
+        if (fileInput.files && fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            const validTypes = ['pdf', 'jpg', 'jpeg', 'png'];
+
+            // Validate file type
+            if (!validTypes.includes(fileExt)) {
+                fileInput.classList.add('is-invalid');
+                fileValidationMessage.textContent =
+                    'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
+                fileValidationMessage.classList.remove('d-none');
+                return false;
+            }
+
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                fileInput.classList.add('is-invalid');
+                fileValidationMessage.textContent = 'Ukuran file maksimal 5MB.';
+                fileValidationMessage.classList.remove('d-none');
+                return false;
+            }
+
+            fileInput.classList.remove('is-invalid');
+            fileValidationMessage.classList.add('d-none');
+            return true;
+        }
+
+        // No file selected is valid (we already have a file)
+        return true;
+    }
+
+    // Function to highlight missing fields
+    function highlightMissingFields() {
+        document.querySelectorAll('[required]').forEach(function(input) {
+            if (!input.value) {
+                input.classList.add('is-invalid');
+
+                // Handle custom select validation
+                if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
+                        'Dok'))) {
+                    const containerId = input.id.replace('IdKode', '').replace('Dok', '') + 'Container';
+                    const container = document.getElementById(containerId);
+
+                    if (container) {
+                        container.classList.add('is-invalid');
+                        const searchInput = container.querySelector('.custom-select-search');
+                        if (searchInput) {
+                            searchInput.classList.add('is-invalid');
+                        }
+                    }
+                }
+
+                // Create error message if it doesn't exist
+                if (!input.nextElementSibling || !input.nextElementSibling.classList.contains(
+                        'invalid-feedback')) {
+                    const feedback = document.createElement('div');
+                    feedback.className = 'invalid-feedback';
+                    feedback.textContent = 'Field ini wajib diisi';
+                    input.parentNode.insertBefore(feedback, input.nextElementSibling);
+                }
+            }
+        });
+
+        // Animate invalid fields
+        document.querySelectorAll('.is-invalid').forEach(element => {
+            element.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                element.classList.remove('animate__shakeX');
+            }, 1000);
+        });
+    }
+
+    // Add event listeners for validity type
+    document.querySelectorAll('.validasi-dokumen').forEach(function(radio) {
+        radio.addEventListener('change', toggleFieldsVisibility);
+    });
+
+    // Add event listeners for dates
+    document.querySelectorAll('.tanggal-input').forEach(function(input) {
+        input.addEventListener('change', function() {
+            if (this.id === 'TglTerbitDok' || this.id === 'TglBerakhirDok') {
+                hitungMasaBerlaku();
+            }
+            if (this.id === 'TglPengingat' || this.id === 'TglBerakhirDok') {
+                hitungMasaPengingat();
+            }
+        });
+    });
+
+    // Form validation and submission
+    const form = document.getElementById('dokumenKaryawanForm');
+    form.addEventListener('submit', function(event) {
+        // Validate file input first if file is selected
+        const fileIsValid = validateFileInput();
+
+        if (!fileIsValid || !form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            // Close any open dropdowns
+            document.querySelectorAll('.dropdown-portal').forEach(portal => {
+                portal.classList.remove('active');
+            });
+            document.querySelectorAll('.custom-select-container').forEach(container => {
+                container.classList.remove('open');
+            });
+
+            // Add alert for validation errors
+            const errorAlert = document.createElement('div');
+            errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
+            errorAlert.innerHTML = `
+                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
+                <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            // Insert alert at top of form
+            const firstElement = form.firstElementChild;
+            form.insertBefore(errorAlert, firstElement);
+
+            // Scroll to alert
+            errorAlert.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+            // Highlight missing fields
+            highlightMissingFields();
+        }
+    });
+
+    // Initialize
+    createPortals();
+
+    // Initialize each select
+    initCustomSelect('karyawan', 'IdKodeA04');
+    initCustomSelect('kategori', 'KategoriDok');
+    initCustomSelect('jenis', 'JenisDok');
+
+    // Initialize form state
+    toggleFieldsVisibility();
+
+    // Kategori change handler untuk update jenis dokumen
+    document.getElementById('KategoriDok').addEventListener('change', function() {
+        updateJenisDokumen(this.value);
+    });
+
+    // Initialize jenis dokumen based on current kategori
+    const currentKategori = document.getElementById('KategoriDok').value;
+    console.log("Initial current kategori:", currentKategori);
+
+    if (currentKategori) {
+        // Call initially
+        updateJenisDokumen(currentKategori);
+
+        // And also try with a slight delay to ensure DOM is ready
+        setTimeout(() => {
+            updateJenisDokumen(currentKategori);
+        }, 100);
+    }
+
+    // Initialize periods
+    if (document.getElementById('TglTerbitDok').value && document.getElementById('TglBerakhirDok').value) {
+        hitungMasaBerlaku();
+    }
+
+    if (document.getElementById('TglPengingat').value && document.getElementById('TglBerakhirDok').value) {
+        hitungMasaPengingat();
+    }
+
+    // Add global escape key handler
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.dropdown-portal').forEach(portal => {
+                portal.classList.remove('active');
+            });
+            document.querySelectorAll('.custom-select-container').forEach(container => {
+                container.classList.remove('open');
+            });
+        }
+    });
+
+    // Also make sure kategori is properly initialized
+    // This will help ensure the display shows the correct value
+    (function initializeKategoriDisplay() {
+        const kategoriValue = document.getElementById('KategoriDok').value;
+        const kategoriSearch = document.getElementById('kategoriSearch');
+        const kategoriPortal = document.getElementById('kategoriPortal');
+
+        if (kategoriValue && kategoriPortal) {
+            const options = kategoriPortal.querySelectorAll('.custom-select-option');
+            const selectedOption = Array.from(options).find(option => option.dataset.value === kategoriValue);
+
+            if (selectedOption && kategoriSearch) {
+                console.log("Setting kategori display to:", selectedOption.dataset.display);
+                kategoriSearch.value = selectedOption.dataset.display;
+            }
+        }
+    })();
+});
     </script>
 @endpush
