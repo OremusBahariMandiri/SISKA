@@ -196,7 +196,7 @@
                             <a class="submenu-link {{ request()->is('formulir-dokumen*') ? 'active' : '' }}"
                                 href="{{ route('formulir-dokumen.index') }}">
                                 <i class="fas fa-clipboard-list"></i>
-                                <span>Formulir Dokumen</span>
+                                <span>Formulir</span>
                             </a>
                         </li>
                     @endif
