@@ -157,15 +157,6 @@
                                 </a>
                             </li>
                         @endif
-                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('formulir-dokumen'))
-                            <li class="nav-item">
-                                <a class="submenu-link {{ request()->is('formulir-dokumen*') ? 'active' : '' }}"
-                                    href="{{ route('formulir-dokumen.index') }}">
-                                    <i class="fas fa-clipboard-list"></i>
-                                    <span>Formulir Dokumen</span>
-                                </a>
-                            </li>
-                        @endif
                     </ul>
                 </li>
                 @endif
@@ -180,6 +171,7 @@
 
                     // Check if user has access to any Dokumen submenu
                     $hasDokumenAccess = Auth::user()->is_admin ||
+                        Auth::user()->hasAccess('formulir-dokumen') ||
                         Auth::user()->hasAccess('dokumen-karyawan') ||
                         Auth::user()->hasAccess('dokumen-kontrak') ||
                         Auth::user()->hasAccess('dokumen-karir') ||
@@ -199,6 +191,15 @@
                         </div>
                     </a>
                     <ul class="sidebar-submenu {{ $dokumenActive ? 'show' : '' }}" id="manajemenDokumen">
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('formulir-dokumen'))
+                        <li class="nav-item">
+                            <a class="submenu-link {{ request()->is('formulir-dokumen*') ? 'active' : '' }}"
+                                href="{{ route('formulir-dokumen.index') }}">
+                                <i class="fas fa-clipboard-list"></i>
+                                <span>Formulir Dokumen</span>
+                            </a>
+                        </li>
+                    @endif
                         {{-- Dokumen Karyawan --}}
                         @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-karyawan'))
                             <li class="nav-item">

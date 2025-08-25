@@ -40,15 +40,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">No. Registrasi</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->NoRegDok }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Kategori Dokumen</label>
@@ -67,6 +58,16 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
                                                     <div class="form-control">{{ $dokumenKaryawan->JenisDok }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">No. Registrasi</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <div class="form-control">{{ $dokumenKaryawan->NoRegDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
