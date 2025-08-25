@@ -32,132 +32,143 @@ class DokumenKaryawanController extends Controller
     // Update the index method in DokumenKaryawanController
     public function index()
     {
-       // Get user permissions for this menu
-       $userPermissions = [];
-       if (auth()->check()) {
-           $user = auth()->user();
-           if ($user->is_admin) {
-               // Admin has all permissions
-               $userPermissions = [
-                   'tambah' => true,
-                   'ubah' => true,
-                   'hapus' => true,
-                   'download' => true,
-                   'detail' => true,
-                   'monitoring' => true,
-               ];
-           } else {
-               // Get specific permissions from user access
-               $access = $user->userAccess()->where('MenuAcs', 'dokumen-karyawan')->first();
-               if ($access) {
-                   $userPermissions = [
-                       'tambah' => (bool)$access->TambahAcs,
-                       'ubah' => (bool)$access->UbahAcs,
-                       'hapus' => (bool)$access->HapusAcs,
-                       'download' => (bool)$access->DownloadAcs,
-                       'detail' => (bool)$access->DetailAcs,
-                       'monitoring' => (bool)$access->MonitoringAcs,
-                   ];
-               }
-           }
-       }
+        // Get user permissions for this menu
+        $userPermissions = [];
+        if (auth()->check()) {
+            $user = auth()->user();
+            if ($user->is_admin) {
+                // Admin has all permissions
+                $userPermissions = [
+                    'tambah' => true,
+                    'ubah' => true,
+                    'hapus' => true,
+                    'download' => true,
+                    'detail' => true,
+                    'monitoring' => true,
+                ];
+            } else {
+                // Get specific permissions from user access
+                $access = $user->userAccess()->where('MenuAcs', 'dokumen-karyawan')->first();
+                if ($access) {
+                    $userPermissions = [
+                        'tambah' => (bool)$access->TambahAcs,
+                        'ubah' => (bool)$access->UbahAcs,
+                        'hapus' => (bool)$access->HapusAcs,
+                        'download' => (bool)$access->DownloadAcs,
+                        'detail' => (bool)$access->DetailAcs,
+                        'monitoring' => (bool)$access->MonitoringAcs,
+                    ];
+                }
+            }
+        }
 
-       // Ambil dokumen karyawan dengan join ke Jenis Dokumen untuk mendapatkan GolDok
-       $dokumenKaryawan = DB::table('B01DmDokKaryawan')
-           ->select(
-               'B01DmDokKaryawan.*',
-               'A04DmKaryawan.NamaKry',
-               'A07DmJenisDok.GolDok as GolDokValue' // Ganti nama untuk menghindari konflik
-           )
-           ->leftJoin('A04DmKaryawan', 'B01DmDokKaryawan.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
-           ->leftJoin('A07DmJenisDok', function($join) {
-               $join->on('B01DmDokKaryawan.JenisDok', '=', 'A07DmJenisDok.JenisDok');
-           })
-           ->get();
+        // Ambil dokumen karyawan dengan join ke Jenis Dokumen untuk mendapatkan GolDok
+        $dokumenKaryawan = DB::table('B01DmDokKaryawan')
+            ->select(
+                'B01DmDokKaryawan.*',
+                'A04DmKaryawan.NamaKry',
+                'A07DmJenisDok.GolDok as GolDokValue' // Ganti nama untuk menghindari konflik
+            )
+            ->leftJoin('A04DmKaryawan', 'B01DmDokKaryawan.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
+            ->leftJoin('A07DmJenisDok', function ($join) {
+                $join->on('B01DmDokKaryawan.JenisDok', '=', 'A07DmJenisDok.JenisDok');
+            })
+            ->get();
 
-       // Konversi stdClass objects ke collections agar lebih mudah dimanipulasi
-       $dokumenKaryawan = collect($dokumenKaryawan)->map(function($item) {
-           // Konversi tanggal menjadi objek Carbon
-           if (!empty($item->TglTerbitDok)) {
-               $item->TglTerbitDok = \Carbon\Carbon::parse($item->TglTerbitDok);
-           }
-           if (!empty($item->TglBerakhirDok)) {
-               $item->TglBerakhirDok = \Carbon\Carbon::parse($item->TglBerakhirDok);
-           }
-           if (!empty($item->TglPengingat)) {
-               $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
-           }
+        // Konversi stdClass objects ke collections agar lebih mudah dimanipulasi
+        $dokumenKaryawan = collect($dokumenKaryawan)->map(function ($item) {
+            // Konversi tanggal menjadi objek Carbon
+            if (!empty($item->TglTerbitDok)) {
+                $item->TglTerbitDok = \Carbon\Carbon::parse($item->TglTerbitDok);
+            }
+            if (!empty($item->TglBerakhirDok)) {
+                $item->TglBerakhirDok = \Carbon\Carbon::parse($item->TglBerakhirDok);
+            }
+            if (!empty($item->TglPengingat)) {
+                $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
+            }
 
-           // Pastikan nilai GolDok adalah integer untuk pengurutan numerik yang benar
-           $item->GolDok = is_null($item->GolDokValue) ? 999 : (int)$item->GolDokValue;
+            // Pastikan nilai GolDok adalah integer - GUARANTEED INTEGER CONVERSION
+            $item->GolDok = isset($item->GolDokValue) && is_numeric($item->GolDokValue) ? (int)$item->GolDokValue : 999;
 
-           return $item;
-       });
+            // Log untuk membantu debugging
+            Log::debug('Parsed GolDok value', [
+                'jenis_dokumen' => $item->JenisDok,
+                'raw_goldok' => $item->GolDokValue,
+                'parsed_goldok' => $item->GolDok,
+                'type' => gettype($item->GolDok)
+            ]);
 
-       // Kelompokkan dokumen berdasarkan karyawan
-       $dokumenByKaryawan = $dokumenKaryawan->groupBy('IdKodeA04');
+            return $item;
+        });
 
-       // Urutkan karyawan berdasarkan nama
-       $karyawanNames = [];
-       foreach ($dokumenByKaryawan as $karyawanId => $documents) {
-           if (!empty($documents->first()->NamaKry)) {
-               $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
-           } else {
-               $karyawanNames[$karyawanId] = 'Unknown';
-           }
-       }
-       asort($karyawanNames);
+        // Kelompokkan dokumen berdasarkan karyawan
+        $dokumenByKaryawan = $dokumenKaryawan->groupBy('IdKodeA04');
 
-       // Gabungkan dokumen dengan urutan: karyawan, lalu GolDok
-       $sortedDokumen = collect();
-       foreach ($karyawanNames as $karyawanId => $name) {
-           // Urutkan dokumen dengan numeric sorting berdasarkan GolDok
-           $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function($doc) {
-               return (int)$doc->GolDok; // Cast ke integer untuk pengurutan numerik
-           });
-           $sortedDokumen = $sortedDokumen->concat($docs);
-       }
+        // Urutkan karyawan berdasarkan nama
+        $karyawanNames = [];
+        foreach ($dokumenByKaryawan as $karyawanId => $documents) {
+            if (!empty($documents->first()->NamaKry)) {
+                $karyawanNames[$karyawanId] = $documents->first()->NamaKry;
+            } else {
+                $karyawanNames[$karyawanId] = 'Unknown';
+            }
+        }
+        asort($karyawanNames);
 
-       // Debug: pastikan pengurutan sudah benar
-       Log::info('Dokumen setelah diurutkan:', [
-           'dokumen' => $sortedDokumen->map(function($item) {
-               return [
-                   'id' => $item->id,
-                   'karyawan' => $item->NamaKry,
-                   'jenis_dokumen' => $item->JenisDok,
-                   'goldok' => $item->GolDok,
-               ];
-           })
-       ]);
+        // Gabungkan dokumen dengan urutan: karyawan, lalu GolDok
+        $sortedDokumen = collect();
+        foreach ($karyawanNames as $karyawanId => $name) {
+            // Urutkan dokumen dengan numeric sorting berdasarkan GolDok
+            $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function ($doc) {
+                // CONSISTENT: Always use integer comparison for GolDok
+                return (int)$doc->GolDok;
+            });
+            $sortedDokumen = $sortedDokumen->concat($docs);
+        }
 
-       // Ubah kembali ke model object agar relationships dapat diakses
-       $dokumenKaryawan = $sortedDokumen->map(function($item) {
-           // Tambahkan properti-properti yang diperlukan untuk view
-           $dokumen = new DokumenKaryawan();
-           foreach ((array)$item as $key => $value) {
-               $dokumen->$key = $value;
-           }
+        // Debug: pastikan pengurutan sudah benar - LOG EVERY DOCUMENT'S SORTING INFORMATION
+        Log::info('Dokumen setelah diurutkan:', [
+            'dokumen' => $sortedDokumen->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'karyawan' => $item->NamaKry,
+                    'jenis_dokumen' => $item->JenisDok,
+                    'goldok_raw' => $item->GolDokValue,
+                    'goldok_used' => $item->GolDok,
+                    'goldok_type' => gettype($item->GolDok)
+                ];
+            })
+        ]);
 
-           // Add karyawan and kategori objects
-           $karyawan = new Karyawan();
-           $karyawan->NamaKry = $item->NamaKry;
-           $karyawan->IdKode = $item->IdKodeA04;
-           $dokumen->karyawan = $karyawan;
+        // Ubah kembali ke model object agar relationships dapat diakses
+        $dokumenKaryawan = $sortedDokumen->map(function ($item) {
+            // Tambahkan properti-properti yang diperlukan untuk view
+            $dokumen = new DokumenKaryawan();
+            foreach ((array)$item as $key => $value) {
+                $dokumen->$key = $value;
+            }
 
-           $kategori = new KategoriDokumen();
-           $kategori->KategoriDok = $item->KategoriDok;
-           $dokumen->kategori = $kategori;
+            // Add karyawan and kategori objects
+            $karyawan = new Karyawan();
+            $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->IdKode = $item->IdKodeA04;
+            $dokumen->karyawan = $karyawan;
 
-           // Add is_expired attribute
-           $dokumen->is_expired = false;
-           if ($dokumen->TglBerakhirDok && $dokumen->StatusDok === 'Berlaku') {
-               $dokumen->is_expired = \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->isPast();
-           }
+            $kategori = new KategoriDokumen();
+            $kategori->KategoriDok = $item->KategoriDok;
+            $dokumen->kategori = $kategori;
 
-           return $dokumen;
-       });
+            // Add is_expired attribute
+            $dokumen->is_expired = false;
+            if ($dokumen->TglBerakhirDok && $dokumen->StatusDok === 'Berlaku') {
+                $dokumen->is_expired = \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->isPast();
+            }
 
-       return view('dokumen-karyawan.index', compact('dokumenKaryawan', 'userPermissions'));
+            return $dokumen;
+        });
+
+        return view('dokumen-karyawan.index', compact('dokumenKaryawan', 'userPermissions'));
     }
 
     /**
@@ -188,13 +199,13 @@ class DokumenKaryawanController extends Controller
 
         // Sort each employee's documents by GolDok
         foreach ($groupedByEmployee as &$employeeData) {
-            usort($employeeData['documents'], function($a, $b) {
+            usort($employeeData['documents'], function ($a, $b) {
                 return $a->GolDok - $b->GolDok;
             });
         }
 
         // Sort employees by name for consistent display
-        uksort($groupedByEmployee, function($a, $b) use ($groupedByEmployee) {
+        uksort($groupedByEmployee, function ($a, $b) use ($groupedByEmployee) {
             $nameA = $groupedByEmployee[$a]['employee'] ? $groupedByEmployee[$a]['employee']->NamaKry : '';
             $nameB = $groupedByEmployee[$b]['employee'] ? $groupedByEmployee[$b]['employee']->NamaKry : '';
             return strcmp($nameA, $nameB);
