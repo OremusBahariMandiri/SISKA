@@ -87,21 +87,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-group mb-3">
-                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <input type="text"
-                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok"
-                                                        value="{{ old('NoRegDok', $dokumenLegalitas->NoRegDok) }}"
-                                                        placeholder="Masukkan nomor registrasi dokumen" required>
-                                                    @error('NoRegDok')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
+
 
                                             <div class="form-group mb-3">
                                                 <label for="KategoriDok" class="form-label fw-bold">Kategori Dokumen <span
@@ -183,6 +169,22 @@
 
                                                     @error('JenisDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
+                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <input type="text"
+                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
+                                                        id="NoRegDok" name="NoRegDok"
+                                                        value="{{ old('NoRegDok', $dokumenLegalitas->NoRegDok) }}"
+                                                        placeholder="Masukkan nomor registrasi dokumen" required>
+                                                    @error('NoRegDok')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
                                             </div>

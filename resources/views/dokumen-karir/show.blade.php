@@ -41,15 +41,6 @@
                                             </div>
                                         </div>
 
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">No. Registrasi</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <div class="form-control">{{ $dokumenKarir->NoRegDok }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Jabatan</label>
@@ -102,6 +93,16 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-file-alt"></i></span>
                                                     <div class="form-control">{{ $dokumenKarir->JenisDok }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">No. Registrasi</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <div class="form-control">{{ $dokumenKarir->NoRegDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
