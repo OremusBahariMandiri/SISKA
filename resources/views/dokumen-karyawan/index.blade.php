@@ -1048,40 +1048,40 @@ $(document).ready(function() {
     }, 5000);
 
     // Add reload button for debugging
-    $('<button>')
-        .attr('id', 'reloadDataButton')
-        .addClass('btn btn-sm btn-outline-primary')
-        .html('<i class="fas fa-sync-alt me-1"></i> Reload Data')
-        .css({
-            'position': 'fixed',
-            'bottom': '60px',
-            'right': '20px',
-            'z-index': '1000',
-            'opacity': '0.8'
-        })
-        .on('click', function() {
-            // Reload the page to get fresh data
-            window.location.reload();
-        })
-        .appendTo('body');
+    // $('<button>')
+    //     .attr('id', 'reloadDataButton')
+    //     .addClass('btn btn-sm btn-outline-primary')
+    //     .html('<i class="fas fa-sync-alt me-1"></i> Reload Data')
+    //     .css({
+    //         'position': 'fixed',
+    //         'bottom': '60px',
+    //         'right': '20px',
+    //         'z-index': '1000',
+    //         'opacity': '0.8'
+    //     })
+    //     .on('click', function() {
+    //         // Reload the page to get fresh data
+    //         window.location.reload();
+    //     })
+    //     .appendTo('body');
 
     // Add sort button for debugging/testing
-    $('<button>')
-        .attr('id', 'manualSortButton')
-        .addClass('btn btn-sm btn-outline-primary')
-        .html('<i class="fas fa-sort me-1"></i> Manual Sort')
-        .css({
-            'position': 'fixed',
-            'bottom': '20px',
-            'right': '20px',
-            'z-index': '1000',
-            'opacity': '0.8'
-        })
-        .on('click', function() {
-            manualSortTable();
-            updateDocumentStats();
-        })
-        .appendTo('body');
+    // $('<button>')
+    //     .attr('id', 'manualSortButton')
+    //     .addClass('btn btn-sm btn-outline-primary')
+    //     .html('<i class="fas fa-sort me-1"></i> Manual Sort')
+    //     .css({
+    //         'position': 'fixed',
+    //         'bottom': '20px',
+    //         'right': '20px',
+    //         'z-index': '1000',
+    //         'opacity': '0.8'
+    //     })
+    //     .on('click', function() {
+    //         manualSortTable();
+    //         updateDocumentStats();
+    //     })
+    //     .appendTo('body');
 });
     </script>
 @endpush
