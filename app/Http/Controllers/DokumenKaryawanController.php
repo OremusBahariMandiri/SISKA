@@ -30,6 +30,8 @@ class DokumenKaryawanController extends Controller
     }
 
     // Update the index method in DokumenKaryawanController
+    // Berikut adalah perbaikan untuk metode index() di DokumenKaryawanController
+
     public function index()
     {
         // Get user permissions for this menu
@@ -62,12 +64,12 @@ class DokumenKaryawanController extends Controller
             }
         }
 
-        // Retrieve document data with JenisDokumen join to get GolDok
+        // Retrieve document data with JenisDokumen join to get GolDok - with explicit casting
         $dokumenKaryawan = DB::table('B01DmDokKaryawan')
             ->select(
                 'B01DmDokKaryawan.*',
                 'A04DmKaryawan.NamaKry',
-                'A07DmJenisDok.GolDok as GolDokRaw' // Renamed to avoid potential conflicts
+                DB::raw('CAST(A07DmJenisDok.GolDok AS INTEGER) as GolDokRaw') // Explicit casting
             )
             ->leftJoin('A04DmKaryawan', 'B01DmDokKaryawan.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
             ->leftJoin('A07DmJenisDok', function ($join) {
@@ -75,13 +77,13 @@ class DokumenKaryawanController extends Controller
             })
             ->get();
 
-        // Detailed debug logging before processing
+        // Log raw values before processing
         Log::debug('Raw dokumen data before processing:', [
             'count' => $dokumenKaryawan->count(),
             'sample_raw' => $dokumenKaryawan->take(3)->toArray()
         ]);
 
-        // Convert stdClass objects to collections with proper data type handling
+        // Convert stdClass objects to collections with IMPROVED data type handling
         $dokumenKaryawan = collect($dokumenKaryawan)->map(function ($item) {
             // Convert dates to Carbon objects
             if (!empty($item->TglTerbitDok)) {
@@ -94,43 +96,29 @@ class DokumenKaryawanController extends Controller
                 $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
             }
 
-            // IMPROVED: More robust handling of GolDok values
-            // First try to get the value directly from the query result
-            $rawGolDok = property_exists($item, 'GolDokRaw') ? $item->GolDokRaw : null;
+            // IMPROVED: Handle GolDok dengan lebih robust untuk cross-platform compatibility
+            try {
+                // Cast raw value to integer using intval(), which is more reliable cross-platform
+                if (isset($item->GolDokRaw)) {
+                    // Explicitly cast to integer
+                    $item->GolDok = intval($item->GolDokRaw);
 
-            // If that didn't work, try falling back to existing GolDok if it exists
-            if ($rawGolDok === null && property_exists($item, 'GolDok')) {
-                $rawGolDok = $item->GolDok;
-            }
-
-            // Do thorough validation and type conversion
-            if ($rawGolDok !== null) {
-                // Remove any non-numeric characters
-                $cleanGolDok = preg_replace('/[^0-9]/', '', (string)$rawGolDok);
-
-                // If we have a numeric value, use it; otherwise default to 999
-                if (!empty($cleanGolDok)) {
-                    $item->GolDok = (int)$cleanGolDok;
+                    // Debug log each conversion
+                    Log::debug("GolDok conversion for {$item->JenisDok}: Raw value [{$item->GolDokRaw}] => Parsed value [{$item->GolDok}]");
                 } else {
-                    $item->GolDok = 999;
+                    $item->GolDok = 999; // Default value
+                    Log::debug("No GolDokRaw found for {$item->JenisDok}, using default 999");
                 }
-            } else {
-                // No value found, use default
+            } catch (\Exception $e) {
+                // Handle any potential errors by setting default value
                 $item->GolDok = 999;
+                Log::error("Error parsing GolDok for {$item->JenisDok}: " . $e->getMessage());
             }
-
-            // Log for debugging - make this very explicit
-            Log::debug('Processed GolDok value for ' . ($item->JenisDok ?? 'unknown'), [
-                'jenis_dokumen' => $item->JenisDok ?? 'unknown',
-                'raw_goldok' => $rawGolDok,
-                'parsed_goldok' => $item->GolDok,
-                'type' => gettype($item->GolDok)
-            ]);
 
             return $item;
         });
 
-        // Group documents by employee
+        // Group documents by employee with improved handling
         $dokumenByKaryawan = $dokumenKaryawan->groupBy('IdKodeA04');
 
         // Sort employees by name
@@ -147,42 +135,29 @@ class DokumenKaryawanController extends Controller
         // Combine documents sorted by employee name, then by GolDok
         $sortedDokumen = collect();
         foreach ($karyawanNames as $karyawanId => $name) {
-            // Log before sorting for this employee
-            Log::debug('Before sorting for employee: ' . $name, [
-                'employee_id' => $karyawanId,
-                'doc_count' => $dokumenByKaryawan[$karyawanId]->count(),
-                'goldok_values' => $dokumenByKaryawan[$karyawanId]->pluck('GolDok')->toArray()
-            ]);
-
-            // Sort documents with consistent numeric sorting based on GolDok
-            $docs = $dokumenByKaryawan[$karyawanId]->sortBy(function ($doc) {
-                // Always ensure integer comparison for GolDok
-                $golDok = property_exists($doc, 'GolDok') ? $doc->GolDok : 999;
-                return (int)$golDok;
+            // Ensure GolDok values are consistently typed before sorting
+            $docs = $dokumenByKaryawan[$karyawanId]->map(function ($doc) {
+                // Make sure GolDok is definitely an integer
+                $doc->GolDok = intval($doc->GolDok ?? 999);
+                return $doc;
             });
 
-            // Log after sorting for this employee
-            Log::debug('After sorting for employee: ' . $name, [
-                'employee_id' => $karyawanId,
-                'sorted_goldok_values' => $docs->pluck('GolDok')->toArray()
+            // Now sort using the properly typed values
+            $docs = $docs->sortBy('GolDok');
+
+            // Debug log the sorting results
+            Log::debug("Sorted documents for {$name}:", [
+                'documents' => $docs->map(function ($doc) {
+                    return [
+                        'jenis' => $doc->JenisDok,
+                        'goldok' => $doc->GolDok,
+                        'goldok_type' => gettype($doc->GolDok)
+                    ];
+                })->toArray()
             ]);
 
             $sortedDokumen = $sortedDokumen->concat($docs);
         }
-
-        // Debug log after all sorting is complete
-        Log::info('Documents after sorting:', [
-            'total_count' => $sortedDokumen->count(),
-            'sample_sorted' => $sortedDokumen->take(5)->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'karyawan' => $item->NamaKry,
-                    'jenis_dokumen' => $item->JenisDok,
-                    'goldok' => $item->GolDok,
-                    'goldok_type' => gettype($item->GolDok)
-                ];
-            })->toArray()
-        ]);
 
         // Convert back to model objects so relationships can be accessed
         $dokumenKaryawan = $sortedDokumen->map(function ($item) {
