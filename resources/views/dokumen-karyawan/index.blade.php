@@ -76,8 +76,10 @@
                                     @foreach ($dokumenKaryawan as $index => $dokumen)
                                         <tr data-tgl-pengingat="{{ $dokumen->TglPengingat ? $dokumen->TglPengingat->format('Y-m-d') : '' }}"
                                             data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? $dokumen->TglBerakhirDok->format('Y-m-d') : '' }}"
-                                            data-goldok="{{ $dokumen->GolDok ?? 999 }}"
-                                            data-employee-id="{{ $dokumen->IdKodeA04 }}">
+                                            data-goldok="{{ (int)($dokumen->GolDok ?? 999) }}"
+                                            data-employee-id="{{ $dokumen->IdKodeA04 }}"
+                                            data-employee-name="{{ $dokumen->karyawan->NamaKry ?? '-' }}"
+                                            data-jenis-dok="{{ $dokumen->JenisDok }}">
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
@@ -586,36 +588,6 @@
                 $('#dokumenKaryawanTable').DataTable().destroy();
             }
 
-            // Improved custom sorting for employee-goldok that ensures cross-platform consistency
-            $.fn.dataTable.ext.order['employee-goldok'] = function(settings, col) {
-                return this.api().column(col, {
-                    order: 'index'
-                }).nodes().map(function(td, i) {
-                    const $row = $(td).closest('tr');
-                    const employeeId = $row.data('employee-id') || '';
-
-                    // CRITICAL FIX: Ensure GolDok is always handled as a number
-                    // 1. Get the raw value as stored in the data attribute
-                    const goldokRaw = $row.data('goldok');
-
-                    // 2. Force conversion to a number using Number() which is more reliable cross-platform than parseInt
-                    //    Always provide a fallback value (999) if conversion fails
-                    const goldok = (goldokRaw !== undefined && goldokRaw !== null && !isNaN(Number(
-                            goldokRaw))) ?
-                        Number(goldokRaw) :
-                        999;
-
-                    // Debug logging to verify values are being processed correctly
-                    console.log(
-                        `Row ${i}: Employee=${employeeId}, GolDok Raw=${goldokRaw} (${typeof goldokRaw}), ` +
-                        `GolDok Parsed=${goldok} (${typeof goldok})`
-                    );
-
-                    // Format for sorting: combine employee ID with padded goldok value
-                    return employeeId + '-' + String(goldok).padStart(5, '0');
-                });
-            };
-
             // Fungsi untuk mendapatkan statistik dokumen - perbaikan untuk menghitung dengan benar
             function updateDocumentStats() {
                 // Hapus kelas highlight terlebih dahulu untuk memastikan penghitungan yang bersih
@@ -873,77 +845,76 @@
                 }
             );
 
-            // Updated function to debug GolDok values - improved for cross-platform diagnostics
-            function debugGolDokValues() {
-                console.log('CROSS-PLATFORM GOLDOK DEBUG:');
-                console.log('=========================');
+            // NEW APPROACH: Client-side manual sorting independent of DataTables
+            function manualSortTable() {
+                console.log("Performing manual employee+GolDok sort");
 
-                try {
-                    const values = [];
+                // Collection to hold our sorted data
+                const employeeGroups = {};
 
-                    $('#dokumenKaryawanTable tbody tr').each(function(index) {
-                        const $row = $(this);
-                        const employeeId = $row.data('employee-id') || '';
-                        const jenisDok = $row.find('td:eq(3)').text();
+                // First pass: group rows by employee
+                $('#dokumenKaryawanTable tbody tr').each(function() {
+                    const row = $(this);
+                    const employeeId = row.data('employee-id') || '';
+                    const employeeName = row.data('employee-name') || '';
 
-                        // Get the raw data attribute value without any type conversion
-                        const goldokRaw = $row.data('goldok');
+                    if (!employeeGroups[employeeId]) {
+                        employeeGroups[employeeId] = {
+                            id: employeeId,
+                            name: employeeName,
+                            rows: []
+                        };
+                    }
 
-                        // Use multiple conversion methods to diagnose potential issues
-                        const goldokNumber = Number(goldokRaw);
-                        const goldokParseInt = parseInt(goldokRaw, 10);
-                        const goldokToString = String(goldokRaw);
+                    employeeGroups[employeeId].rows.push(row);
+                });
 
-                        // Store info for sorting diagnostic
-                        values.push({
-                            index,
-                            employeeId,
-                            jenisDok,
-                            goldokRaw,
-                            goldokNumber,
-                            goldokParseInt,
-                            goldokToString,
-                            typeRaw: typeof goldokRaw
-                        });
+                // Sort employees by name
+                const sortedEmployeeIds = Object.keys(employeeGroups).sort((a, b) => {
+                    return employeeGroups[a].name.localeCompare(employeeGroups[b].name);
+                });
 
-                        // Log detailed information for each row
-                        console.log(
-                            `Row ${index}: Employee=${employeeId}, JenisDok=${jenisDok}\n` +
-                            `  - GolDok Raw: ${goldokRaw} (${typeof goldokRaw})\n` +
-                            `  - Number(): ${goldokNumber} (${typeof goldokNumber})\n` +
-                            `  - parseInt(): ${goldokParseInt} (${typeof goldokParseInt})\n` +
-                            `  - String(): ${goldokToString} (${typeof goldokToString})`
-                        );
+                // For each employee group, sort rows by GolDok
+                for (const employeeId of sortedEmployeeIds) {
+                    const group = employeeGroups[employeeId];
+
+                    // Sort rows by GolDok - explicitly using String to force numeric comparison
+                    group.rows.sort((rowA, rowB) => {
+                        // Always convert to Number for consistent comparison
+                        const golDokA = Number($(rowA).data('goldok')) || 999;
+                        const golDokB = Number($(rowB).data('goldok')) || 999;
+
+                        return golDokA - golDokB;
                     });
-
-                    // Sort and compare
-                    console.log('SORTING TEST:');
-
-                    // Sort by raw value
-                    const sortedByRaw = [...values].sort((a, b) => a.goldokRaw - b.goldokRaw);
-
-                    // Sort by Number conversion
-                    const sortedByNumber = [...values].sort((a, b) => a.goldokNumber - b.goldokNumber);
-
-                    // Sort by parseInt conversion
-                    const sortedByParseInt = [...values].sort((a, b) => a.goldokParseInt - b.goldokParseInt);
-
-                    console.log('Sorted by Raw:', sortedByRaw.map(v => `${v.jenisDok}:${v.goldokRaw}`));
-                    console.log('Sorted by Number():', sortedByNumber.map(v => `${v.jenisDok}:${v.goldokNumber}`));
-                    console.log('Sorted by parseInt():', sortedByParseInt.map(v =>
-                        `${v.jenisDok}:${v.goldokParseInt}`));
-
-                } catch (e) {
-                    console.error("Error in debugGolDokValues:", e);
                 }
+
+                // Now reattach rows in sorted order
+                const tbody = $('#dokumenKaryawanTable tbody');
+                let rowIndex = 0;
+
+                // Clear tbody first
+                tbody.empty();
+
+                // Add rows back in sorted order
+                for (const employeeId of sortedEmployeeIds) {
+                    const group = employeeGroups[employeeId];
+
+                    for (const row of group.rows) {
+                        // Update row number
+                        row.find('td:first').text(rowIndex + 1);
+                        tbody.append(row);
+                        rowIndex++;
+                    }
+                }
+
+                console.log("Manual sorting completed");
             }
 
-            // Inisialisasi DataTable with cross-platform compatible GolDok handling
+            // Initialize DataTable without complex ordering
             var table = $('#dokumenKaryawanTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
-                ordering: true, // Enable ordering but use our custom sort
-                order: [], // Default to no initial sort
+                ordering: false, // Disable DataTables ordering - we'll do it ourselves
                 columnDefs: [{
                         // Highest priority for most important columns
                         responsivePriority: 1,
@@ -963,16 +934,6 @@
                         // Fourth priority for less important columns
                         responsivePriority: 4,
                         targets: [7, 8, 9, 11] // Peringatan, Catatan, File, Aksi
-                    },
-                    {
-                        // Use custom ordering for GolDok
-                        type: 'employee-goldok',
-                        targets: 3 // Column index for Jenis Dokumen
-                    },
-                    {
-                        // Disable ordering for action columns
-                        orderable: false,
-                        targets: [0, 9, 11] // Columns that can't be sorted (No, File, Aksi)
                     }
                 ],
                 buttons: [{
@@ -1005,13 +966,6 @@
                     console.log("DataTable drawCallback triggered");
 
                     try {
-                        // Update sequence number every time the table is redrawn
-                        this.api().column(0, {
-                            page: 'current'
-                        }).nodes().each(function(cell, i) {
-                            cell.innerHTML = i + 1;
-                        });
-
                         // Apply highlighting for visible rows
                         applyVisibleRowHighlighting();
 
@@ -1034,22 +988,14 @@
                         // Update text for warning period
                         updateMasaPengingatText();
 
-                        // Add a global event listener for clicking on the Jenis column header to sort by GolDok
-                        $('#dokumenKaryawanTable thead th:eq(3)').on('click', function() {
-                            table.order([3, 'asc']).draw();
-                        });
-
-                        // Wait until the table is fully initialized and all data is loaded
+                        // Initial manual sort
                         setTimeout(function() {
                             try {
-                                // Calculate stats from ALL data, not just what's visible on the current page
+                                // Manual sort independent of DataTables
+                                manualSortTable();
+
+                                // Calculate stats from ALL data
                                 updateDocumentStats();
-
-                                // Debug GolDok values after initialization
-                                debugGolDokValues();
-
-                                // Apply initial sorting by employee and GolDok
-                                sortTableByEmployeeAndGolDok();
                             } catch (e) {
                                 console.error("Error in setTimeout callback:", e);
                             }
@@ -1060,50 +1006,11 @@
                 }
             });
 
-            // Add this function to manually implement the sort we want
-            function sortTableByEmployeeAndGolDok() {
-                console.log("Applying manual employee+GolDok sorting");
-
-                // Get all rows as an array for sorting
-                const rows = Array.from($('#dokumenKaryawanTable tbody tr'));
-
-                // Sort the rows by employee ID and GolDok
-                rows.sort(function(a, b) {
-                    const employeeA = $(a).data('employee-id') || '';
-                    const employeeB = $(b).data('employee-id') || '';
-
-                    // First sort by employee ID
-                    if (employeeA < employeeB) return -1;
-                    if (employeeA > employeeB) return 1;
-
-                    // Then sort by GolDok if employee IDs are the same
-                    // Use Number() for consistent cross-platform conversion
-                    const goldokA = Number($(a).data('goldok')) || 999;
-                    const goldokB = Number($(b).data('goldok')) || 999;
-
-                    console.log(`Comparing: ${employeeA}:${goldokA} vs ${employeeB}:${goldokB}`);
-                    return goldokA - goldokB;
-                });
-
-                // Reattach sorted rows to the table
-                const tbody = $('#dokumenKaryawanTable tbody');
-                rows.forEach(function(row) {
-                    tbody.append(row);
-                });
-
-                // Update row numbers
-                $('#dokumenKaryawanTable tbody tr').each(function(index) {
-                    $(this).find('td:first').text(index + 1);
-                });
-
-                console.log("Manual sorting applied");
-            }
-
-            // Add manual sort button (can be removed in production)
+            // Add manual sort button for debugging
             $('<button>')
                 .attr('id', 'manualSortButton')
                 .addClass('btn btn-sm btn-outline-primary')
-                .html('<i class="fas fa-sort me-1"></i> Sort by GolDok')
+                .html('<i class="fas fa-sort me-1"></i> Sort by Employee+GolDok')
                 .css({
                     'position': 'fixed',
                     'bottom': '20px',
@@ -1111,8 +1018,13 @@
                     'z-index': '1000',
                     'opacity': '0.8'
                 })
-                .on('click', sortTableByEmployeeAndGolDok)
+                .on('click', manualSortTable)
                 .appendTo('body');
+
+            // Add toggle to sort header click for Jenis column
+            $('#dokumenKaryawanTable thead th:eq(3)').css('cursor', 'pointer').on('click', function() {
+                manualSortTable();
+            });
 
             // Event untuk filter dan export button
             $('#filterButton').on('click', function() {
@@ -1165,6 +1077,9 @@
 
                 // Update highlight untuk baris yang terlihat
                 applyVisibleRowHighlighting();
+
+                // Re-apply manual sorting after search/filter
+                manualSortTable();
             });
 
             // Highlight filter button jika ada filter aktif
@@ -1320,23 +1235,74 @@ body.swal2-shown {
                 $(".alert").fadeOut("slow");
             }, 5000);
 
-            // When the document is fully loaded, perform additional checks
-            setTimeout(function() {
-                // Log the data attributes of the first few rows as a sanity check
-                console.log("DATA ATTRIBUTE CHECK:");
-                $('#dokumenKaryawanTable tbody tr').slice(0, 5).each(function(index) {
-                    const $row = $(this);
-                    console.log(`Row ${index} jQuery.data():`, {
-                        'employee-id': $row.data('employee-id'),
-                        'goldok': $row.data('goldok'),
-                        'data-goldok attribute': $row.attr('data-goldok')
+            // Diagnostic function to log employee-goldok data structures
+            function logEmployeeGolDokData() {
+                console.log("EMPLOYEE-GOLDOK DATA DIAGNOSTIC:");
+
+                const employeeGroups = {};
+
+                $('#dokumenKaryawanTable tbody tr').each(function(index) {
+                    const row = $(this);
+                    const employeeId = row.data('employee-id') || '';
+                    const employeeName = row.data('employee-name') || '';
+                    const jenisDok = row.data('jenis-dok') || '';
+
+                    // Get GolDok multiple ways to diagnose platform differences
+                    const goldokRaw = row.data('goldok');
+                    const goldokInt = parseInt(goldokRaw, 10);
+                    const goldokNum = Number(goldokRaw);
+                    const goldokStr = String(goldokRaw);
+
+                    if (!employeeGroups[employeeId]) {
+                        employeeGroups[employeeId] = {
+                            id: employeeId,
+                            name: employeeName,
+                            documents: []
+                        };
+                    }
+
+                    employeeGroups[employeeId].documents.push({
+                        index,
+                        jenisDok,
+                        goldokRaw,
+                        goldokInt,
+                        goldokNum,
+                        goldokStr,
+                        typeOf: typeof goldokRaw
                     });
                 });
 
-                // Apply the initial sort after everything is fully loaded
-                sortTableByEmployeeAndGolDok();
+                // Log data structure
+                console.log("Employee Groups:", employeeGroups);
 
-                // Inisialisasi awal
+                // Log a sample sort for each employee
+                Object.keys(employeeGroups).forEach(employeeId => {
+                    const group = employeeGroups[employeeId];
+                    if (group.documents.length > 1) {
+                        console.log(`Sorting test for employee ${group.name}:`);
+
+                        // Sort using parseInt
+                        const byInt = [...group.documents].sort((a, b) => a.goldokInt - b.goldokInt);
+
+                        // Sort using Number
+                        const byNum = [...group.documents].sort((a, b) => a.goldokNum - b.goldokNum);
+
+                        console.log("Original:", group.documents.map(d => `${d.jenisDok}:${d.goldokRaw}`));
+                        console.log("By parseInt:", byInt.map(d => `${d.jenisDok}:${d.goldokInt}`));
+                        console.log("By Number:", byNum.map(d => `${d.jenisDok}:${d.goldokNum}`));
+                    }
+                });
+            }
+
+            // Call diagnostic function after table is loaded
+            setTimeout(function() {
+                // Log diagnostic data
+                logEmployeeGolDokData();
+
+                // Apply manual sort
+                manualSortTable();
+
+                // Initialize other display features
                 updateMasaPengingatText();
                 updateDocumentStats();
             }, 1000);
