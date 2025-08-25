@@ -1007,7 +1007,7 @@
             });
 
             // Add manual sort button for debugging
-            $('<button>')
+            
                 .attr('id', 'manualSortButton')
                 .addClass('btn btn-sm btn-outline-primary')
                 .html('<i class="fas fa-sort me-1"></i> Sort by Employee+GolDok')
