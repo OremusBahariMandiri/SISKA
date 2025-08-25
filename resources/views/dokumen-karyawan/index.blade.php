@@ -868,48 +868,60 @@
             // Add a function to debug GolDok values - this helps diagnose sorting issues
             function debugGolDokValues() {
                 console.log('Debugging all GolDok values in table:');
-                $('#dokumenKaryawanTable tbody tr').each(function(index) {
-                    const $row = $(this);
-                    const employeeId = $row.data('employee-id') || '';
-                    // ALWAYS use parseInt with radix 10 for consistent numeric conversion
-                    const goldok = parseInt($row.data('goldok') || '999', 10);
-                    const jenisDok = $row.find('td:eq(3)').text();
+                try {
+                    $('#dokumenKaryawanTable tbody tr').each(function(index) {
+                        const $row = $(this);
+                        const employeeId = $row.data('employee-id') || '';
 
-                    console.log(
-                        `Row ${index}: Employee=${employeeId}, JenisDok=${jenisDok}, GolDok=${goldok}, Type=${typeof goldok}`
+                        // IMPORTANT: Get the actual data attribute value
+                        const goldokRaw = $row.data('goldok');
+
+                        // ALWAYS use parseInt with radix 10 for consistent numeric conversion
+                        // And provide a very explicit fallback of 999
+                        const goldok = goldokRaw !== undefined && goldokRaw !== null ?
+                            parseInt(goldokRaw, 10) : 999;
+
+                        const jenisDok = $row.find('td:eq(3)').text();
+
+                        console.log(
+                            `Row ${index}: Employee=${employeeId}, JenisDok=${jenisDok}, ` +
+                            `GolDok Raw=${goldokRaw} (${typeof goldokRaw}), ` +
+                            `GolDok Parsed=${goldok} (${typeof goldok})`
                         );
-                });
+                    });
+                } catch (e) {
+                    console.error("Error in debugGolDokValues:", e);
+                }
             }
-
             // Inisialisasi DataTable dengan ordering yang konsisten
             var table = $('#dokumenKaryawanTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
                 ordering: false, // Disable default ordering to preserve our server-side sort
                 columnDefs: [{
-                        // Prioritas tertinggi untuk kolom yang paling penting
+                        // Highest priority for most important columns
                         responsivePriority: 1,
                         targets: [0, 1, 2, 11] // No, No.Reg, Nama Karyawan, Status
                     },
                     {
-                        // Prioritas kedua untuk kolom penting lainnya
+                        // Second priority for other important columns
                         responsivePriority: 2,
                         targets: [3, 4] // Kategori, Jenis
                     },
                     {
-                        // Prioritas ketiga untuk kolom tanggal
+                        // Third priority for date columns
                         responsivePriority: 3,
                         targets: [5, 6, 7] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat
                     },
                     {
-                        // Prioritas keempat untuk kolom yang tidak terlalu penting
+                        // Fourth priority for less important columns
                         responsivePriority: 4,
                         targets: [8, 10] // Peringatan, Aksi
                     },
                     {
-                        // Kolom yang tidak bisa di-sort
+                        // Columns that can't be sorted
                         orderable: false,
-                        targets: '_all' // Semua kolom tidak bisa di-sort
+                        targets: '_all' // All columns can't be sorted
                     }
                 ],
                 buttons: [{
@@ -937,44 +949,56 @@
                         }
                     }
                 ],
-                // Atur agar nomor selalu mulai dari 1 pada tiap halaman
+                // Set numbering to always start from 1 on each page
                 drawCallback: function() {
                     // Debug what's happening in the draw callback
                     console.log("DataTable drawCallback triggered");
 
-                    // Mengupdate nomor urut setiap kali tabel digambar ulang
-                    this.api().column(0, {
-                        page: 'current'
-                    }).nodes().each(function(cell, i) {
-                        cell.innerHTML = i + 1;
-                    });
+                    try {
+                        // Update sequence number every time the table is redrawn
+                        this.api().column(0, {
+                            page: 'current'
+                        }).nodes().each(function(cell, i) {
+                            cell.innerHTML = i + 1;
+                        });
 
-                    // Apply highlighting untuk baris yang terlihat
-                    applyVisibleRowHighlighting();
+                        // Apply highlighting for visible rows
+                        applyVisibleRowHighlighting();
 
-                    // Update text untuk masa peringatan
-                    updateMasaPengingatText();
+                        // Update text for warning period
+                        updateMasaPengingatText();
+                    } catch (e) {
+                        console.error("Error in drawCallback:", e);
+                    }
                 },
                 initComplete: function() {
                     console.log("DataTable initComplete triggered");
 
-                    // Force style search input box
-                    $('.dataTables_filter input').addClass('form-control');
+                    try {
+                        // Force style search input box
+                        $('.dataTables_filter input').addClass('form-control');
 
-                    // Apply initial highlighting
-                    applyVisibleRowHighlighting();
+                        // Apply initial highlighting
+                        applyVisibleRowHighlighting();
 
-                    // Update text untuk masa peringatan
-                    updateMasaPengingatText();
+                        // Update text for warning period
+                        updateMasaPengingatText();
 
-                    // Tunggu sampai tabel selesai diinisialisasi dan semua data dimuat
-                    setTimeout(function() {
-                        // Hitung stats dari SEMUA data, bukan hanya yang terlihat di halaman saat ini
-                        updateDocumentStats();
+                        // Wait until the table is fully initialized and all data is loaded
+                        setTimeout(function() {
+                            try {
+                                // Calculate stats from ALL data, not just what's visible on the current page
+                                updateDocumentStats();
 
-                        // Debug GolDok values after initialization
-                        debugGolDokValues();
-                    }, 500);
+                                // Debug GolDok values after initialization
+                                debugGolDokValues();
+                            } catch (e) {
+                                console.error("Error in setTimeout callback:", e);
+                            }
+                        }, 500);
+                    } catch (e) {
+                        console.error("Error in initComplete:", e);
+                    }
                 }
             });
 
