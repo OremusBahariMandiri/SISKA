@@ -16,7 +16,7 @@
                             <button type="button" class="btn btn-light me-2" id="exportButton">
                                 <i class="fas fa-download me-1"></i> Export
                             </button>
-                            @if(auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
+                            @if (auth()->user()->is_admin || ($userPermissions['tambah'] ?? false))
                                 <a href="{{ route('dokumen-karyawan.create') }}" class="btn btn-light">
                                     <i class="fas fa-plus-circle me-1"></i> Tambah
                                 </a>
@@ -135,7 +135,7 @@
                                             <!-- Bagian tombol aksi sesuai dengan hak akses -->
                                             <td>
                                                 <div class="d-flex gap-1 justify-content-center">
-                                                    @if(auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                         <a href="{{ route('dokumen-karyawan.show', $dokumen->id) }}"
                                                             class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                             title="Detail" style="background-color: #4a90e2;">
@@ -143,7 +143,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['ubah'] ?? false))
                                                         <a href="{{ route('dokumen-karyawan.edit', $dokumen->id) }}"
                                                             class="btn btn-sm text-white" data-bs-toggle="tooltip"
                                                             title="Edit" style="background-color: #8e44ad;">
@@ -151,7 +151,7 @@
                                                         </a>
                                                     @endif
 
-                                                    @if(auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
+                                                    @if (auth()->user()->is_admin || ($userPermissions['hapus'] ?? false))
                                                         <button type="button" class="btn btn-sm text-white delete-confirm"
                                                             data-bs-toggle="tooltip" title="Hapus"
                                                             style="background-color: #f700ff;"
@@ -586,14 +586,24 @@
                 $('#dokumenKaryawanTable').DataTable().destroy();
             }
 
-            // Tambahkan pengurutan kustom untuk employee-goldok
+            // Tambahkan pengurutan kustom untuk employee-goldok yang konsisten
             $.fn.dataTable.ext.order['employee-goldok'] = function(settings, col) {
-                return this.api().column(col, {order:'index'}).nodes().map(function(td, i) {
+                return this.api().column(col, {
+                    order: 'index'
+                }).nodes().map(function(td, i) {
                     const $row = $(td).closest('tr');
                     const employeeId = $row.data('employee-id') || '';
-                    const goldok = parseInt($row.data('goldok') || 999);
+
+                    // IMPORTANT: Always parse as integer to ensure numeric sorting
+                    // Use parseInt with radix 10 to ensure consistent numeric conversion
+                    const goldok = parseInt($row.data('goldok') || '999', 10);
+
+                    // For debugging - log the values in the console
+                    console.log(
+                        `Row ${i}: Employee=${employeeId}, GolDok=${goldok}, Type=${typeof goldok}`);
 
                     // Format untuk pengurutan: employee ID + goldok dengan padding
+                    // Use padStart to ensure lexicographical sorting works as expected
                     return employeeId + '-' + String(goldok).padStart(5, '0');
                 });
             };
@@ -855,7 +865,23 @@
                 }
             );
 
-            // Inisialisasi DataTable (with error handling)
+            // Add a function to debug GolDok values - this helps diagnose sorting issues
+            function debugGolDokValues() {
+                console.log('Debugging all GolDok values in table:');
+                $('#dokumenKaryawanTable tbody tr').each(function(index) {
+                    const $row = $(this);
+                    const employeeId = $row.data('employee-id') || '';
+                    // ALWAYS use parseInt with radix 10 for consistent numeric conversion
+                    const goldok = parseInt($row.data('goldok') || '999', 10);
+                    const jenisDok = $row.find('td:eq(3)').text();
+
+                    console.log(
+                        `Row ${index}: Employee=${employeeId}, JenisDok=${jenisDok}, GolDok=${goldok}, Type=${typeof goldok}`
+                        );
+                });
+            }
+
+            // Inisialisasi DataTable dengan ordering yang konsisten
             var table = $('#dokumenKaryawanTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
@@ -913,6 +939,9 @@
                 ],
                 // Atur agar nomor selalu mulai dari 1 pada tiap halaman
                 drawCallback: function() {
+                    // Debug what's happening in the draw callback
+                    console.log("DataTable drawCallback triggered");
+
                     // Mengupdate nomor urut setiap kali tabel digambar ulang
                     this.api().column(0, {
                         page: 'current'
@@ -927,6 +956,8 @@
                     updateMasaPengingatText();
                 },
                 initComplete: function() {
+                    console.log("DataTable initComplete triggered");
+
                     // Force style search input box
                     $('.dataTables_filter input').addClass('form-control');
 
@@ -940,6 +971,9 @@
                     setTimeout(function() {
                         // Hitung stats dari SEMUA data, bukan hanya yang terlihat di halaman saat ini
                         updateDocumentStats();
+
+                        // Debug GolDok values after initialization
+                        debugGolDokValues();
                     }, 500);
                 }
             });
@@ -989,6 +1023,8 @@
 
             // Event listener untuk table draw event
             table.on('draw.dt', function() {
+                console.log("DataTable draw.dt event triggered");
+
                 // Update text untuk baris yang terlihat
                 updateMasaPengingatText();
 
@@ -1053,32 +1089,32 @@
             $('<style>')
                 .prop('type', 'text/css')
                 .html(`
-    /* Ensure SweetAlert appears above all other elements */
-    .swal2-container {
-        z-index: 2060 !important; /* Higher than Bootstrap modal backdrop (2050) */
-    }
+/* Ensure SweetAlert appears above all other elements */
+.swal2-container {
+    z-index: 2060 !important; /* Higher than Bootstrap modal backdrop (2050) */
+}
 
-    /* Prevent Bootstrap modals from interfering */
-    .modal-backdrop {
-        z-index: 1050 !important;
-    }
+/* Prevent Bootstrap modals from interfering */
+.modal-backdrop {
+    z-index: 1050 !important;
+}
 
-    .modal {
-        z-index: 1055 !important;
-    }
+.modal {
+    z-index: 1055 !important;
+}
 
-    /* Fix for Windows browsers */
-    body.swal2-shown {
-        overflow-y: hidden !important;
-        padding-right: 0 !important;
-    }
+/* Fix for Windows browsers */
+body.swal2-shown {
+    overflow-y: hidden !important;
+    padding-right: 0 !important;
+}
 
-    /* Ensure SweetAlert is visible on mobile devices */
-    @media (max-width: 500px) {
-        .swal2-popup {
-            width: 90% !important;
-        }
+/* Ensure SweetAlert is visible on mobile devices */
+@media (max-width: 500px) {
+    .swal2-popup {
+        width: 90% !important;
     }
+}
 `)
                 .appendTo('head');
 
@@ -1099,19 +1135,19 @@
 
             // Form untuk export
             $(`
-    <form id="exportForm" action="{{ route('dokumen-karyawan.export-excel') }}" method="POST" class="d-none">
-        @csrf
-        <input type="hidden" name="filter_noreg" id="export_filter_noreg">
-        <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
-        <input type="hidden" name="filter_kategori" id="export_filter_kategori">
-        <input type="hidden" name="filter_jenis" id="export_filter_jenis">
-        <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
-        <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
-        <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
-        <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
-        <input type="hidden" name="filter_status" id="export_filter_status">
-    </form>
-    `).insertAfter('#dokumenKaryawanTable');
+<form id="exportForm" action="{{ route('dokumen-karyawan.export-excel') }}" method="POST" class="d-none">
+    @csrf
+    <input type="hidden" name="filter_noreg" id="export_filter_noreg">
+    <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
+    <input type="hidden" name="filter_kategori" id="export_filter_kategori">
+    <input type="hidden" name="filter_jenis" id="export_filter_jenis">
+    <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
+    <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
+    <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
+    <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
+    <input type="hidden" name="filter_status" id="export_filter_status">
+</form>
+`).insertAfter('#dokumenKaryawanTable');
 
             // Update event handler untuk tombol Export Excel
             $('#exportExcel').on('click', function() {
@@ -1152,6 +1188,10 @@
             // Inisialisasi awal
             updateMasaPengingatText();
             updateDocumentStats();
+
+            // Debug logging to help track the GolDok values
+            console.log("Document ready completed - Debug GolDok values in 1 second");
+            setTimeout(debugGolDokValues, 1000);
         });
     </script>
 @endpush
