@@ -28,15 +28,6 @@
                                         <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Dokumen</h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">No. Registrasi</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <div class="form-control">{{ $dokumenKontrak->NoRegDok }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Karyawan</label>
@@ -44,6 +35,16 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-user"></i></span>
                                                     <div class="form-control">{{ $dokumenKontrak->karyawan->NamaKry ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">No. Registrasi</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <div class="form-control">{{ $dokumenKontrak->NoRegDok }}</div>
                                                 </div>
                                             </div>
                                         </div>
