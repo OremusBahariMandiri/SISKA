@@ -54,21 +54,6 @@
                                             <input type="text" class="form-control" id="IdKode" name="IdKode"
                                                 value="{{ old('IdKode', $dokumenKaryawan->IdKode) }}" hidden readonly>
 
-                                            <div class="form-group mb-3">
-                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <input type="text"
-                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok"
-                                                        value="{{ old('NoRegDok', $dokumenKaryawan->NoRegDok) }}"
-                                                        placeholder="Masukkan nomor registrasi dokumen" required>
-                                                    @error('NoRegDok')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="IdKodeA04" class="form-label fw-bold">Karyawan <span
@@ -116,6 +101,22 @@
                                             </div>
 
                                             <div class="form-group mb-3">
+                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <input type="text"
+                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
+                                                        id="NoRegDok" name="NoRegDok"
+                                                        value="{{ old('NoRegDok', $dokumenKaryawan->NoRegDok) }}"
+                                                        placeholder="Masukkan nomor registrasi dokumen" required>
+                                                    @error('NoRegDok')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
                                                 <label for="KategoriDok" class="form-label fw-bold">Kategori Dokumen <span
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
@@ -133,7 +134,7 @@
 
                                                                 <input type="text" id="kategoriFilterInput"
                                                                     class="form-control" placeholder="Ketik untuk mencari">
-                                                    
+
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
                                                                     data-value="" data-display="-- Pilih Kategori --">--
