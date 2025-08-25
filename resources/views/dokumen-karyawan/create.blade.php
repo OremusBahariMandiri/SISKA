@@ -53,20 +53,6 @@
                                             <input type="text" class="form-control" id="IdKode" name="IdKode"
                                                 value="{{ old('IdKode', $newId) }}" hidden readonly>
 
-                                            <div class="form-group mb-3">
-                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
-                                                        class="text-danger">*</span></label>
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                                    <input type="text"
-                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok') }}"
-                                                        placeholder="Masukkan nomor registrasi dokumen" required>
-                                                    @error('NoRegDok')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
-                                                </div>
-                                            </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="IdKodeA04" class="form-label fw-bold">Karyawan <span
@@ -111,6 +97,21 @@
                                             </div>
 
                                             <div class="form-group mb-3">
+                                                <label for="NoRegDok" class="form-label fw-bold">Nomor Registrasi <span
+                                                        class="text-danger">*</span></label>
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
+                                                    <input type="text"
+                                                        class="form-control @error('NoRegDok') is-invalid @enderror"
+                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok') }}"
+                                                        placeholder="Masukkan nomor registrasi dokumen" required>
+                                                    @error('NoRegDok')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group mb-3">
                                                 <label for="KategoriDok" class="form-label fw-bold">Kategori Dokumen <span
                                                         class="text-danger">*</span></label>
                                                 <div class="input-group">
@@ -126,7 +127,8 @@
                                                         <div class="custom-select-dropdown" id="kategoriDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="kategoriFilterInput"
-                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options">
                                                                 <div class="custom-select-option empty-option"
@@ -167,11 +169,13 @@
                                                         <div class="custom-select-dropdown" id="jenisDropdown">
                                                             <div class="custom-select-search-wrapper">
                                                                 <input type="text" id="jenisFilterInput"
-                                                                    class="form-control" placeholder="Ketik untuk mencari">
+                                                                    class="form-control"
+                                                                    placeholder="Ketik untuk mencari">
                                                             </div>
                                                             <div class="custom-select-options" id="jenisOptions">
                                                                 <div class="custom-select-option empty-option"
-                                                                    data-value="" data-display="-- Pilih Jenis Dokumen --">--
+                                                                    data-value=""
+                                                                    data-display="-- Pilih Jenis Dokumen --">--
                                                                     Pilih Jenis Dokumen --</div>
                                                                 <!-- Options will be populated dynamically based on selected category -->
                                                             </div>
@@ -1046,7 +1050,8 @@
                         // Handle custom select validation
                         if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
                                 'Dok'))) {
-                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') + 'Container';
+                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') +
+                                'Container';
                             const container = document.getElementById(containerId);
 
                             if (container) {

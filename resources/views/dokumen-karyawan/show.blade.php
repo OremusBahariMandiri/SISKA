@@ -10,7 +10,8 @@
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                         <span class="fw-bold"><i class="fas fa-file-alt me-2"></i>Detail Dokumen Karyawan</span>
                         <div>
-                            <a href="{{ route('dokumen-karyawan.edit', $dokumenKaryawan->id) }}" class="btn btn-warning btn-sm me-2">
+                            <a href="{{ route('dokumen-karyawan.edit', $dokumenKaryawan->id) }}"
+                                class="btn btn-warning btn-sm me-2">
                                 <i class="fas fa-edit me-1"></i>Edit
                             </a>
                             <a href="{{ route('dokumen-karyawan.index') }}" class="btn btn-light btn-sm">
@@ -29,6 +30,17 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="info-group mb-3">
+                                            <label class="info-label fw-bold">Karyawan</label>
+                                            <div class="info-value">
+                                                <div class="input-group">
+                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                                    <div class="form-control">
+                                                        {{ $dokumenKaryawan->karyawan->NamaKry ?? '-' }}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="info-group mb-3">
                                             <label class="info-label fw-bold">No. Registrasi</label>
                                             <div class="info-value">
                                                 <div class="input-group">
@@ -39,21 +51,12 @@
                                         </div>
 
                                         <div class="info-group mb-3">
-                                            <label class="info-label fw-bold">Karyawan</label>
-                                            <div class="info-value">
-                                                <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->karyawan->NamaKry ?? '-' }}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="info-group mb-3">
                                             <label class="info-label fw-bold">Kategori Dokumen</label>
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                    <div class="form-control">{{ $dokumenKaryawan->kategori->KategoriDok ?? '-' }}</div>
+                                                    <div class="form-control">
+                                                        {{ $dokumenKaryawan->kategori->KategoriDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -73,7 +76,8 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-align-left"></i></span>
-                                                    <div class="form-control min-height-100">{{ $dokumenKaryawan->KetDok ?? '-' }}</div>
+                                                    <div class="form-control min-height-100">
+                                                        {{ $dokumenKaryawan->KetDok ?? '-' }}</div>
                                                 </div>
                                             </div>
                                         </div>
@@ -85,7 +89,8 @@
                             <div class="col-md-6">
                                 <div class="card border-secondary h-100">
                                     <div class="card-header bg-secondary bg-opacity-25 text-white">
-                                        <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal</h5>
+                                        <h5 class="mb-0"><i class="fas fa-calendar-alt me-2"></i>Masa Berlaku & Tanggal
+                                        </h5>
                                     </div>
                                     <div class="card-body">
                                         <div class="info-group mb-3">
@@ -93,7 +98,7 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text">
-                                                        @if($dokumenKaryawan->ValidasiDok === 'Tetap')
+                                                        @if ($dokumenKaryawan->ValidasiDok === 'Tetap')
                                                             <i class="fas fa-infinity text-primary"></i>
                                                         @else
                                                             <i class="fas fa-sync text-success"></i>
@@ -108,7 +113,8 @@
                                             <label class="info-label fw-bold">Tanggal Terbit</label>
                                             <div class="info-value">
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-calendar-plus"></i></span>
                                                     <div class="form-control">
                                                         {{ $dokumenKaryawan->TglTerbitDok ? $dokumenKaryawan->TglTerbitDok->format('d/m/Y') : '-' }}
                                                     </div>
@@ -120,13 +126,17 @@
                                             <label class="info-label fw-bold">Tanggal Berakhir</label>
                                             <div class="info-value">
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-calendar-times"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-calendar-times"></i></span>
                                                     <div class="form-control">
-                                                        @if($dokumenKaryawan->TglBerakhirDok)
-                                                            <span class="{{ $dokumenKaryawan->is_expired ? 'text-danger fw-bold' : '' }}">
+                                                        @if ($dokumenKaryawan->TglBerakhirDok)
+                                                            <span
+                                                                class="{{ $dokumenKaryawan->is_expired ? 'text-danger fw-bold' : '' }}">
                                                                 {{ $dokumenKaryawan->TglBerakhirDok->format('d/m/Y') }}
-                                                                @if($dokumenKaryawan->is_expired)
-                                                                    <i class="fas fa-exclamation-circle text-danger ms-1" data-bs-toggle="tooltip" title="Sudah kedaluwarsa"></i>
+                                                                @if ($dokumenKaryawan->is_expired)
+                                                                    <i class="fas fa-exclamation-circle text-danger ms-1"
+                                                                        data-bs-toggle="tooltip"
+                                                                        title="Sudah kedaluwarsa"></i>
                                                                 @endif
                                                             </span>
                                                         @else
@@ -141,7 +151,8 @@
                                             <label class="info-label fw-bold">Masa Berlaku</label>
                                             <div class="info-value">
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-hourglass-half"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-hourglass-half"></i></span>
                                                     <div class="form-control">{{ $dokumenKaryawan->MasaBerlaku }}</div>
                                                 </div>
                                             </div>
@@ -186,14 +197,14 @@
                                             <div class="info-value">
                                                 <div class="input-group">
                                                     <span class="input-group-text">
-                                                        @if($dokumenKaryawan->StatusDok === 'Berlaku')
+                                                        @if ($dokumenKaryawan->StatusDok === 'Berlaku')
                                                             <i class="fas fa-check-circle text-success"></i>
                                                         @else
                                                             <i class="fas fa-times-circle text-danger"></i>
                                                         @endif
                                                     </span>
                                                     <div class="form-control">
-                                                        @if($dokumenKaryawan->StatusDok === 'Berlaku')
+                                                        @if ($dokumenKaryawan->StatusDok === 'Berlaku')
                                                             <span class="badge bg-success">Berlaku</span>
                                                         @else
                                                             <span class="badge bg-danger">Tidak Berlaku</span>
@@ -207,9 +218,12 @@
                                         <div class="info-group mb-3">
                                             <label class="info-label fw-bold">File Dokumen</label>
                                             <div class="info-value">
-                                                @if($dokumenKaryawan->FileDok)
+                                                @if ($dokumenKaryawan->FileDok)
                                                     @php
-                                                        $fileExt = pathinfo($dokumenKaryawan->FileDok, PATHINFO_EXTENSION);
+                                                        $fileExt = pathinfo(
+                                                            $dokumenKaryawan->FileDok,
+                                                            PATHINFO_EXTENSION,
+                                                        );
                                                         $iconClass = 'fas fa-file fa-2x text-secondary';
 
                                                         if ($fileExt === 'pdf') {
@@ -229,10 +243,12 @@
                                                                     <i class="{{ $iconClass }}"></i>
                                                                 </div>
                                                                 <div class="flex-grow-1">
-                                                                    <h6 class="mb-1 filename-multiline">{{ $dokumenKaryawan->FileDok }}</h6>
+                                                                    <h6 class="mb-1 filename-multiline">
+                                                                        {{ $dokumenKaryawan->FileDok }}</h6>
                                                                     <div class="d-flex mt-2">
                                                                         <a href="{{ route('viewdocumentkaryawan', $dokumenKaryawan->id) }}"
-                                                                            class="btn btn-sm btn-outline-primary me-2" target="_blank">
+                                                                            class="btn btn-sm btn-outline-primary me-2"
+                                                                            target="_blank">
                                                                             <i class="fas fa-eye me-1"></i> Lihat
                                                                         </a>
                                                                     </div>
@@ -242,7 +258,8 @@
                                                     </div>
                                                 @else
                                                     <div class="alert alert-warning mb-0">
-                                                        <i class="fas fa-exclamation-triangle me-1"></i> Tidak ada file dokumen yang tersedia.
+                                                        <i class="fas fa-exclamation-triangle me-1"></i> Tidak ada file
+                                                        dokumen yang tersedia.
                                                     </div>
                                                 @endif
                                             </div>
