@@ -62,15 +62,9 @@ class DokumenKaryawanController extends Controller
             }
         }
 
-        // Get all employees and documents first without worrying about sorting
-        $karyawanList = DB::table('A04DmKaryawan')
-            ->select('IdKode', 'NamaKry')
-            ->orderBy('NamaKry')
-            ->get();
-
         // Get all jenis dokumen with their GolDok values
         $jenisDokList = DB::table('A07DmJenisDok')
-            ->select('JenisDok', DB::raw('CAST(GolDok AS INTEGER) as GolDok'))
+            ->select('JenisDok', 'GolDok')
             ->get()
             ->keyBy('JenisDok');
 
@@ -96,54 +90,22 @@ class DokumenKaryawanController extends Controller
                 $item->TglPengingat = \Carbon\Carbon::parse($item->TglPengingat);
             }
 
-            // Explicitly assign GolDok value from jenisDokList
-            $item->GolDok = 999; // Default value
+            // Add GolDok value if JenisDok exists in jenisDokList
             if (isset($item->JenisDok) && isset($jenisDokList[$item->JenisDok])) {
-                $item->GolDok = (int)$jenisDokList[$item->JenisDok]->GolDok;
+                $item->GolDok = $jenisDokList[$item->JenisDok]->GolDok;
+            } else {
+                $item->GolDok = 999; // Default high value if not found
             }
 
             return $item;
         });
 
-        // Create a new collection grouped by employee
-        $byEmployee = [];
-        foreach ($processedDokumen as $dokumen) {
-            $employeeId = $dokumen->IdKodeA04;
-            if (!isset($byEmployee[$employeeId])) {
-                $byEmployee[$employeeId] = [
-                    'name' => $dokumen->NamaKry ?? 'Unknown',
-                    'documents' => []
-                ];
-            }
-            $byEmployee[$employeeId]['documents'][] = $dokumen;
-        }
-
-        // Sort employees by name
-        uasort($byEmployee, function ($a, $b) {
-            return strcmp($a['name'], $b['name']);
-        });
-
-        // Sort documents by GolDok within each employee group
-        foreach ($byEmployee as &$employee) {
-            usort($employee['documents'], function ($a, $b) {
-                $golDokA = (int)($a->GolDok ?? 999);
-                $golDokB = (int)($b->GolDok ?? 999);
-                return $golDokA - $golDokB;
-            });
-        }
-
-        // Flatten the array for view display
-        $sortedDokumen = collect();
-        foreach ($byEmployee as $employee) {
-            foreach ($employee['documents'] as $document) {
-                $sortedDokumen->push($document);
-            }
-        }
-
-        // Convert back to model objects
-        $dokumenKaryawan = $sortedDokumen->map(function ($item) {
-            // Add properties needed for the view
+        // Convert to model objects
+        $dokumenKaryawan = $processedDokumen->map(function ($item) {
+            // Create a new model
             $dokumen = new DokumenKaryawan();
+
+            // Copy all properties
             foreach ((array)$item as $key => $value) {
                 $dokumen->$key = $value;
             }
