@@ -238,7 +238,7 @@ class DokumenKaryawanController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -401,7 +401,7 @@ class DokumenKaryawanController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
             'KetDok' => 'nullable|string', // Add explicit validation for KetDok
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
