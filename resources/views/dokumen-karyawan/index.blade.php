@@ -76,7 +76,7 @@
                                     @foreach ($dokumenKaryawan as $index => $dokumen)
                                         <tr data-tgl-pengingat="{{ $dokumen->TglPengingat ? $dokumen->TglPengingat->format('Y-m-d') : '' }}"
                                             data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? $dokumen->TglBerakhirDok->format('Y-m-d') : '' }}"
-                                            data-goldok="{{ (int) ($dokumen->GolDok ?? 999) }}"
+                                            data-goldok="{{ (int)($dokumen->GolDok ?? 999) }}"
                                             data-employee-id="{{ $dokumen->IdKodeA04 }}"
                                             data-employee-name="{{ $dokumen->karyawan->NamaKry ?? '-' }}"
                                             data-jenis-dok="{{ $dokumen->JenisDok }}">
@@ -552,9 +552,7 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
-        // Perbaikan fungsi untuk sorting dan menangani pembaruan data
-// Perbaikan fungsi untuk sorting dan menangani pembaruan data
-$(document).ready(function() {
+      $(document).ready(function() {
     // Indonesian language configuration for DataTables
     const indonesianLanguage = {
         "emptyTable": "Tidak ada data yang tersedia pada tabel ini",
@@ -579,9 +577,9 @@ $(document).ready(function() {
     };
 
     // Initialize tooltips
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
     var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
+        return new bootstrap.Tooltip(tooltipTriggerEl)
     });
 
     // Prevent DataTables reinit error
@@ -590,209 +588,26 @@ $(document).ready(function() {
         $('#dokumenKaryawanTable').DataTable().destroy();
     }
 
-    // Add custom CSS directly to fix the layout
-    $('<style>')
-        .prop('type', 'text/css')
-        .html(`
-            /* Fix search input and pagination */
-            .dokumenKaryawanPage div.dataTables_wrapper div.dataTables_filter {
-                text-align: right;
-                margin-bottom: 1rem;
-            }
-            .dokumenKaryawanPage div.dataTables_wrapper div.dataTables_filter input {
-                width: 250px !important;
-                margin-left: 0.5em;
-            }
-            .dokumenKaryawanPage div.dataTables_wrapper div.dataTables_info {
-                padding-top: 0.55em;
-            }
-            .dokumenKaryawanPage div.dataTables_wrapper div.dataTables_paginate {
-                text-align: right;
-                margin: 0;
-                white-space: nowrap;
-            }
-            .dokumenKaryawanPage div.dataTables_wrapper div.dataTables_paginate ul.pagination {
-                margin: 2px 0;
-                white-space: nowrap;
-                justify-content: flex-end;
-            }
-            /* Fix for pagination look */
-            .dokumenKaryawanPage .pagination .page-item.active .page-link {
-                background-color: #0d6efd;
-                border-color: #0d6efd;
-                color: #fff;
-            }
-            .dokumenKaryawanPage .pagination .page-link {
-                color: #0d6efd;
-            }
-            /* Fix row highlight colors */
-            .dokumenKaryawanPage table#dokumenKaryawanTable tbody tr.highlight-red {
-                background-color: #fc0000 !important;
-                color: rgb(0, 0, 0) !important;
-            }
-            .dokumenKaryawanPage table#dokumenKaryawanTable tbody tr.highlight-yellow {
-                background-color: #ffff00 !important;
-                color: rgb(0, 0, 0) !important;
-            }
-            .dokumenKaryawanPage table#dokumenKaryawanTable tbody tr.highlight-orange {
-                background-color: #00e013 !important;
-                color: rgb(0, 0, 0) !important;
-            }
-            .dokumenKaryawanPage table#dokumenKaryawanTable tbody tr.highlight-gray {
-                background-color: #cccccc !important;
-                color: rgb(0, 0, 0) !important;
-            }
-        `)
-        .appendTo('head');
+    // Store all rows with their data in a global array
+    let allRows = [];
+    let isDataSorted = false;
 
-    // PRESERVED: Original functions for document statistics and warning text
-    function updateDocumentStats() {
-        // Reset highlight classes first
-        $('#dokumenKaryawanTable tbody tr').removeClass(
-            'highlight-red highlight-yellow highlight-orange highlight-gray');
+    // Function to sort all data once at initialization
+    function sortAllData() {
+        if (isDataSorted) return;
 
-        // Initialize counters
-        let expiredCount = 0;
-        let warningCount = 0;
+        console.log("Sorting all data...");
 
-        // Check each table row to determine status
-        $('#dokumenKaryawanTable tbody tr').each(function() {
-            const row = $(this);
-            let isExpired = false;
-            let isWarning = false;
-
-            // Check document status first
-            const statusText = row.find('td:eq(10)').text().trim();
-
-            // If status is "Tidak Berlaku", skip for expired/warning counting
-            if (statusText.includes("Tidak Berlaku")) {
-                row.addClass('highlight-gray');
-                return; // Continue to next row
-            }
-
-            // Logic for TglBerakhir (second priority)
-            const tglBerakhir = row.find('td:eq(5)').text().trim();
-            if (tglBerakhir !== '-') {
-                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
-
-                if (berakhirDate.isBefore(today)) {
-                    row.addClass('highlight-red');
-                    isExpired = true;
-                    expiredCount++;
-                    return; // Continue to next row
-                }
-            }
-
-            // Logic for TglPengingat
-            const tglPengingatStr = row.data('tgl-pengingat');
-            if (tglPengingatStr) {
-                const tglPengingat = moment(tglPengingatStr);
-                const today = moment();
-                const diffDays = tglPengingat.diff(today, 'days');
-
-                if (diffDays < 0 || diffDays === 0) {
-                    // Reminder date has passed or is today
-                    row.addClass('highlight-red');
-                    if (!isExpired) {
-                        expiredCount++;
-                        isExpired = true;
-                    }
-                    return; // Continue to next row
-                } else if (diffDays <= 7) {
-                    row.addClass('highlight-yellow');
-                    if (!isExpired) {
-                        warningCount++;
-                        isWarning = true;
-                    }
-                    return; // Continue to next row
-                } else if (diffDays <= 30) {
-                    row.addClass('highlight-orange');
-                    if (!isExpired && !isWarning) {
-                        warningCount++;
-                    }
-                    return; // Continue to next row
-                }
-            }
-
-            // Logic for TglBerakhir within 30 days (lowest priority)
-            if (tglBerakhir !== '-') {
-                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
-
-                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30, 'days'))) {
-                    row.addClass('highlight-yellow');
-                    if (!isExpired && !isWarning) {
-                        warningCount++;
-                    }
-                }
-            }
-        });
-
-        // Update counter badges with calculated data
-        $('#expiredDocsCount').text(expiredCount);
-        $('#warningDocsCount').text(warningCount);
-
-        // Always show badges regardless of count
-        $('#expiredDocsBadge').show();
-        $('#warningDocsBadge').show();
-    }
-
-    function updateMasaPengingatText() {
-        const today = moment();
-
-        $('#dokumenKaryawanTable tbody tr').each(function() {
-            const tglPengingatStr = $(this).data('tgl-pengingat');
-            const $masaPengingatCol = $(this).find('.sisa-peringatan-col');
-
-            // If no reminder date, skip this row
-            if (!tglPengingatStr) {
-                $masaPengingatCol.text('-');
-                return;
-            }
-
-            // Parse reminder date
-            const tglPengingat = moment(tglPengingatStr);
-
-            // Calculate difference in days
-            const diffDays = tglPengingat.diff(today, 'days');
-
-            // Determine text to display in reminder period column
-            let masaPengingatText = '';
-
-            if (diffDays < 0) {
-                // Reminder date has passed
-                masaPengingatText = 'Terlambat ' + Math.abs(diffDays) + ' hari';
-            } else if (diffDays === 0) {
-                // Reminder date is today
-                masaPengingatText = 'Hari ini';
-            } else {
-                // Reminder date is in the future
-                masaPengingatText = diffDays + ' hari lagi';
-            }
-
-            // Update reminder period text
-            $masaPengingatCol.text(masaPengingatText);
-        });
-    }
-
-    // Improved employee sorting function that preserves correct order
-    function manualSortTable() {
-        console.log("Performing manual employee+GolDok sort");
-
-        // Store all existing rows
-        const allRows = [];
-        $('#dokumenKaryawanTable tbody tr').each(function() {
-            allRows.push($(this));
-        });
-
-        // Create map of employees by ID with their rows
+        // Group all rows by employee
         const employeeGroups = {};
 
-        // First group rows by employee
-        allRows.forEach(function(row) {
-            const employeeId = row.data('employee-id') || '';
-            const employeeName = row.data('employee-name') || '';
+        // First collect all rows
+        $('#dokumenKaryawanTable tbody tr').each(function() {
+            const $row = $(this);
+            const employeeId = $row.data('employee-id') || '';
+            const employeeName = $row.data('employee-name') || '';
+            const goldok = Number($row.data('goldok')) || 999;
+            const rowHTML = $row[0].outerHTML;
 
             if (!employeeGroups[employeeId]) {
                 employeeGroups[employeeId] = {
@@ -802,67 +617,54 @@ $(document).ready(function() {
                 };
             }
 
-            employeeGroups[employeeId].rows.push(row);
+            employeeGroups[employeeId].rows.push({
+                goldok: goldok,
+                html: rowHTML
+            });
         });
 
+        // Sort each employee's rows by goldok
+        for (const employeeId in employeeGroups) {
+            employeeGroups[employeeId].rows.sort((a, b) => a.goldok - b.goldok);
+        }
+
         // Sort employees by name
-        const sortedEmployeeIds = Object.keys(employeeGroups).sort(function(a, b) {
+        const sortedEmployeeIds = Object.keys(employeeGroups).sort((a, b) => {
             return employeeGroups[a].name.localeCompare(employeeGroups[b].name);
         });
 
-        // For each employee, sort rows by GolDok
-        sortedEmployeeIds.forEach(function(employeeId) {
-            const group = employeeGroups[employeeId];
+        // Create the final sorted array
+        allRows = [];
+        for (const employeeId of sortedEmployeeIds) {
+            for (const row of employeeGroups[employeeId].rows) {
+                allRows.push(row.html);
+            }
+        }
 
-            // Sort rows by GolDok - use Number for consistent comparison
-            group.rows.sort(function(rowA, rowB) {
-                const golDokA = Number($(rowA).data('goldok')) || 999;
-                const golDokB = Number($(rowB).data('goldok')) || 999;
-                return golDokA - golDokB;
-            });
-        });
-
-        // Get the table body
+        // Apply the sorted data to the table
         const tbody = $('#dokumenKaryawanTable tbody');
-
-        // Clear existing rows
         tbody.empty();
 
-        // Add all rows back in sorted order
-        let rowIndex = 1;
-        sortedEmployeeIds.forEach(function(employeeId) {
-            const group = employeeGroups[employeeId];
-
-            group.rows.forEach(function(row) {
-                // Update row number (this will be overridden by drawCallback later)
-                row.find('td:first').text(rowIndex);
-
-                // Append row to tbody
-                tbody.append(row);
-                rowIndex++;
-            });
-        });
-
-        console.log("Manual sorting completed with " + (rowIndex-1) + " rows");
-
-        // After manual sorting, let DataTables know the data has changed
-        if ($.fn.dataTable.isDataTable('#dokumenKaryawanTable')) {
-            var table = $('#dokumenKaryawanTable').DataTable();
-            table.rows().invalidate().draw(false);
+        for (let i = 0; i < allRows.length; i++) {
+            const $row = $(allRows[i]);
+            $row.find('td:first').text(i + 1); // Update row number
+            tbody.append($row);
         }
+
+        isDataSorted = true;
+        console.log(`Sorted ${allRows.length} rows`);
     }
 
-    // Create DataTable with pagination - simplified configuration
+    // Call this function before initializing DataTables
+    sortAllData();
+
+    // Initialize DataTable with our sorted data
     var table = $('#dokumenKaryawanTable').DataTable({
         responsive: true,
         language: indonesianLanguage,
-        paging: true,
-        ordering: false, // Disable DataTables ordering - we'll do manual sorting
-        info: true,
-        searching: true,
-        processing: true,
-        pagingType: "simple_numbers",
-        lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "Semua"]],
+        ordering: false, // Disable DataTables ordering
+        pageLength: 10, // Default page length
+        lengthMenu: [10, 25, 50, 100], // Page length options
         columnDefs: [{
                 responsivePriority: 1,
                 targets: [0, 1, 2, 10] // No, No.Reg, Nama Karyawan, Status
@@ -880,112 +682,326 @@ $(document).ready(function() {
                 targets: [7, 8, 9, 11] // Peringatan, Catatan, File, Aksi
             }
         ],
+        buttons: [{
+                extend: 'excel',
+                text: 'Excel',
+                className: 'btn btn-sm btn-success d-none excel-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                className: 'btn btn-sm btn-danger d-none pdf-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'btn btn-sm btn-secondary d-none print-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            }
+        ],
+        drawCallback: function() {
+            console.log("DataTable drawCallback triggered");
+            try {
+                // Apply highlighting for visible rows
+                applyVisibleRowHighlighting();
+
+                // Update text for warning period
+                updateMasaPengingatText();
+
+                // Update document statistics
+                updateDocumentStats();
+
+                // Custom row numbers that respect pagination
+                const info = table.page.info();
+                const startIndex = info.start;
+
+                // Update row numbers on the current page
+                table.rows({page: 'current'}).nodes().each(function(row, i) {
+                    $(row).find('td:first').text(startIndex + i + 1);
+                });
+
+                // Customize info text to show "Baris X-Y dari Z"
+                customizeInfoText();
+            } catch (e) {
+                console.error("Error in drawCallback:", e);
+            }
+        },
         initComplete: function() {
             console.log("DataTable initComplete triggered");
 
-            // Force bootstrap styling
-            $('.dataTables_filter input').addClass('form-control');
-            $('.dataTables_length select').addClass('form-select form-select-sm');
+            try {
+                // Force style search input box
+                $('.dataTables_filter input').addClass('form-control');
 
-            // Fix layout after initialization
-            setTimeout(function() {
-                // Force search input width
-                $('.dataTables_filter input').css('width', '250px');
+                // Initial highlighting and stats
+                applyVisibleRowHighlighting();
+                updateMasaPengingatText();
+                updateDocumentStats();
 
-                // Force pagination to right align
-                $('.dataTables_paginate').css('text-align', 'right');
-
-                // Run the manual sort
-                try {
-                    manualSortTable();
-                    updateDocumentStats();
-                    updateMasaPengingatText();
-                } catch(e) {
-                    console.error("Error in initial setup:", e);
-                }
-            }, 200);
-        },
-        drawCallback: function() {
-            console.log("DataTable drawCallback triggered");
-
-            // Get current page info to calculate continuous row numbers
-            const pageInfo = this.api().page.info();
-            const startIndex = pageInfo.start; // Get the starting index for the current page
-
-            // Update row numbers for visible rows with continuous numbering
-            $(this).DataTable().column(0, {page: 'current'}).nodes().each(function(cell, i) {
-                cell.innerHTML = startIndex + i + 1; // Add 1 because indexes are zero-based
-            });
-
-            // Apply highlighting to rows
-            $('#dokumenKaryawanTable tbody tr').each(function() {
-                const row = $(this);
-
-                // Check document status first
-                const statusText = row.find('td:eq(10)').text().trim();
-                if (statusText.includes("Tidak Berlaku")) {
-                    row.addClass('highlight-gray');
-                    return;
-                }
-
-                // Check expiry date
-                const tglBerakhir = row.find('td:eq(5)').text().trim();
-                if (tglBerakhir !== '-') {
-                    const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                    const today = moment();
-
-                    if (berakhirDate.isBefore(today)) {
-                        row.addClass('highlight-red');
-                        return;
-                    }
-                }
-
-                // Check reminder date
-                const tglPengingatStr = row.data('tgl-pengingat');
-                if (tglPengingatStr) {
-                    const tglPengingat = moment(tglPengingatStr);
-                    const today = moment();
-                    const diffDays = tglPengingat.diff(today, 'days');
-
-                    if (diffDays <= 0) {
-                        row.addClass('highlight-red');
-                    } else if (diffDays <= 7) {
-                        row.addClass('highlight-yellow');
-                    } else if (diffDays <= 30) {
-                        row.addClass('highlight-orange');
-                    }
-                }
-            });
-
-            // Update reminder text
-            updateMasaPengingatText();
-
-            // Fix styling after each draw
-            $('.dataTables_filter input').css('width', '250px');
-            $('.dataTables_paginate').css('text-align', 'right');
+                // Customize info text
+                customizeInfoText();
+            } catch (e) {
+                console.error("Error in initComplete:", e);
+            }
         }
     });
 
-    // When page or length changes, re-sort the table
-    table.on('page.dt length.dt', function() {
-        setTimeout(function() {
-            // Re-apply the manual sort after pagination
-            manualSortTable();
-        }, 100);
-    });
-
-    // Additional styling adjustments
-    setTimeout(function() {
-        // Force direct CSS modifications
-        $('.dataTables_filter').css('text-align', 'right');
-        $('.dataTables_filter input').css('width', '250px');
-        $('.dataTables_paginate').css({
-            'text-align': 'right',
-            'margin-top': '0.5em'
+    // Function to customize the info text
+    function customizeInfoText() {
+        $('.dataTables_info').each(function() {
+            let text = $(this).text();
+            // Replace the text to include "Baris" (Rows)
+            text = text.replace('Menampilkan', 'Baris');
+            $(this).text(text);
         });
-    }, 500);
+    }
 
-    // Event listeners for filter and export buttons
+    // Fungsi untuk mendapatkan statistik dokumen
+    function updateDocumentStats() {
+        // Inisialisasi counter
+        let expiredCount = 0;
+        let warningCount = 0;
+
+        // Periksa setiap baris tabel untuk menentukan status
+        $('#dokumenKaryawanTable tbody tr').each(function() {
+            const row = $(this);
+            let isExpired = false;
+
+            // Cek status dokumen terlebih dahulu
+            const statusText = row.find('td:eq(10)').text().trim();
+
+            // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
+            if (statusText.includes("Tidak Berlaku")) {
+                return; // Lanjut ke baris berikutnya
+            }
+
+            // Logic untuk TglBerakhir (prioritas kedua)
+            const tglBerakhir = row.find('td:eq(5)').text().trim();
+            if (tglBerakhir !== '-') {
+                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                const today = moment();
+
+                if (berakhirDate.isBefore(today)) {
+                    expiredCount++;
+                    isExpired = true;
+                    return; // Lanjut ke baris berikutnya
+                }
+            }
+
+            // Logic untuk TglPengingat
+            const tglPengingatStr = row.data('tgl-pengingat');
+            if (tglPengingatStr) {
+                const tglPengingat = moment(tglPengingatStr);
+                const today = moment();
+                const diffDays = tglPengingat.diff(today, 'days');
+
+                if (diffDays < 0 || diffDays === 0) {
+                    // Tanggal pengingat sudah lewat atau hari ini
+                    if (!isExpired) {
+                        expiredCount++;
+                        isExpired = true;
+                    }
+                    return; // Lanjut ke baris berikutnya
+                } else if (diffDays <= 30) {
+                    if (!isExpired) {
+                        warningCount++;
+                    }
+                    return; // Lanjut ke baris berikutnya
+                }
+            }
+
+            // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
+            if (tglBerakhir !== '-' && !isExpired) {
+                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                const today = moment();
+
+                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30, 'days'))) {
+                    warningCount++;
+                }
+            }
+        });
+
+        // Update counter badges dengan data yang dihitung
+        $('#expiredDocsCount').text(expiredCount);
+        $('#warningDocsCount').text(warningCount);
+
+        // Selalu tampilkan badges terlepas dari jumlahnya
+        $('#expiredDocsBadge').show();
+        $('#warningDocsBadge').show();
+    }
+
+    // Fungsi untuk memperbarui teks masa peringatan
+    function updateMasaPengingatText() {
+        const today = moment();
+
+        $('#dokumenKaryawanTable tbody tr').each(function() {
+            const tglPengingatStr = $(this).data('tgl-pengingat');
+            const $masaPengingatCol = $(this).find('.sisa-peringatan-col');
+
+            // Jika tidak ada tanggal pengingat, lewati baris ini
+            if (!tglPengingatStr) {
+                $masaPengingatCol.text('-');
+                return;
+            }
+
+            // Parse tanggal pengingat
+            const tglPengingat = moment(tglPengingatStr);
+
+            // Hitung selisih dalam hari
+            const diffDays = tglPengingat.diff(today, 'days');
+
+            // Menentukan teks yang akan ditampilkan di kolom masa peringatan
+            let masaPengingatText = '';
+
+            if (diffDays < 0) {
+                // Tanggal pengingat sudah lewat
+                masaPengingatText = 'Terlambat ' + Math.abs(diffDays) + ' hari';
+            } else if (diffDays === 0) {
+                // Tanggal pengingat hari ini
+                masaPengingatText = 'Hari ini';
+            } else {
+                // Tanggal pengingat di masa depan
+                masaPengingatText = diffDays + ' hari lagi';
+            }
+
+            // Update teks masa peringatan
+            $masaPengingatCol.text(masaPengingatText);
+        });
+    }
+
+    // Fungsi untuk highlighting baris yang terlihat saja
+    function applyVisibleRowHighlighting() {
+        // Reset semua highlight di baris yang terlihat
+        $('#dokumenKaryawanTable tbody tr').removeClass(
+            'highlight-red highlight-yellow highlight-orange highlight-gray');
+
+        // Apply highlighting untuk baris yang terlihat saja
+        $('#dokumenKaryawanTable tbody tr').each(function() {
+            const row = $(this);
+
+            // Cek status dokumen terlebih dahulu (prioritas tertinggi)
+            const statusText = row.find('td:eq(10)').text().trim();
+
+            if (statusText.includes("Tidak Berlaku")) {
+                row.addClass('highlight-gray');
+                return; // Stop di sini - abu-abu memiliki prioritas tertinggi
+            }
+
+            // Logic untuk TglBerakhir (prioritas kedua)
+            const tglBerakhir = row.find('td:eq(5)').text().trim();
+            if (tglBerakhir !== '-') {
+                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                const today = moment();
+
+                if (berakhirDate.isBefore(today)) {
+                    row.addClass('highlight-red');
+                    return; // Stop di sini - merah memiliki prioritas
+                }
+            }
+
+            // Logic untuk TglPengingat (prioritas ketiga)
+            const tglPengingatStr = row.data('tgl-pengingat');
+            if (tglPengingatStr) {
+                const tglPengingat = moment(tglPengingatStr);
+                const today = moment();
+                const diffDays = tglPengingat.diff(today, 'days');
+
+                if (diffDays < 0 || diffDays === 0) {
+                    // Tanggal pengingat sudah lewat atau hari ini
+                    row.addClass('highlight-red');
+                    return; // Stop di sini - merah memiliki prioritas
+                } else if (diffDays <= 7) {
+                    row.addClass('highlight-yellow');
+                    return; // Stop di sini - kuning memiliki prioritas selanjutnya
+                } else if (diffDays <= 30) {
+                    row.addClass('highlight-orange');
+                    return; // Stop di sini
+                }
+            }
+
+            // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
+            if (tglBerakhir !== '-') {
+                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                const today = moment();
+
+                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
+                        'days'))) {
+                    row.addClass('highlight-yellow');
+                }
+            }
+        });
+    }
+
+    // Format tanggal untuk filter
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            // Tanggal terbit filter
+            let terbitFrom = $('#filter_tgl_terbit_from').val();
+            let terbitTo = $('#filter_tgl_terbit_to').val();
+            let terbitDate = data[4] !== '-' ? moment(data[4], 'DD/MM/YYYY') : null;
+
+            if (terbitDate === null) {
+                if (terbitFrom === '' && terbitTo === '') {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+
+            if ((terbitFrom === '' && terbitTo === '') ||
+                (terbitFrom === '' && terbitDate.isSameOrBefore(moment(terbitTo))) ||
+                (terbitTo === '' && terbitDate.isSameOrAfter(moment(terbitFrom))) ||
+                (terbitDate.isBetween(moment(terbitFrom), moment(terbitTo), null, '[]'))) {
+
+                // Tanggal berakhir filter
+                let berakhirFrom = $('#filter_tgl_berakhir_from').val();
+                let berakhirTo = $('#filter_tgl_berakhir_to').val();
+                let berakhirDate = data[5] !== '-' ? moment(data[5], 'DD/MM/YYYY') : null;
+
+                if (berakhirDate === null) {
+                    if (berakhirFrom === '' && berakhirTo === '') {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                if ((berakhirFrom === '' && berakhirTo === '') ||
+                    (berakhirFrom === '' && berakhirDate.isSameOrBefore(moment(berakhirTo))) ||
+                    (berakhirTo === '' && berakhirDate.isSameOrAfter(moment(berakhirFrom))) ||
+                    (berakhirDate.isBetween(moment(berakhirFrom), moment(berakhirTo), null, '[]'))) {
+
+                    // Filter status dokumen
+                    let status = $('#filter_status').val();
+                    if (status === '') {
+                        return true;
+                    } else if (status === 'Valid') {
+                        return data[10].includes("Berlaku") &&
+                            (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
+                    } else if (status === 'Warning') {
+                        return berakhirDate &&
+                            berakhirDate.isAfter(moment()) &&
+                            berakhirDate.isBefore(moment().add(30, 'days'));
+                    } else if (status === 'Expired') {
+                        return berakhirDate && berakhirDate.isBefore(moment());
+                    }
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+    );
+
+    // Event untuk filter dan export button
     $('#filterButton').on('click', function() {
         $('#filterModal').modal('show');
     });
@@ -994,50 +1010,34 @@ $(document).ready(function() {
         $('#exportModal').modal('show');
     });
 
-    // Apply Filter handler
+    // Modifikasi event handler untuk tombol Apply Filter
     $('#applyFilter').on('click', function() {
-        // Apply filters to columns
+        // Terapkan filter untuk kolom-kolom
         table.column(1).search($('#filter_noreg').val()); // No Reg
         table.column(2).search($('#filter_karyawan').val()); // Karyawan
         table.column(3).search($('#filter_jenis').val()); // Jenis Dokumen
 
-        // Redraw table with filters
+        // Refresh table untuk menerapkan semua filter
         table.draw();
         $('#filterModal').modal('hide');
 
-        // After filter is applied, re-sort the table
-        setTimeout(function() {
-            manualSortTable();
-        }, 100);
-
-        // Highlight filter button if active
+        // Highlight filter button jika ada filter aktif
         highlightFilterButton();
-
-        // Update statistics
-        updateDocumentStats();
     });
 
-    // Reset Filter handler
+    // Modify the Reset Filter event handler
     $('#resetFilter').on('click', function() {
-        // Reset form fields
+        // Reset the form fields
         $('#filterForm')[0].reset();
 
-        // Remove active class
+        // Remove active class from filter button
         $('#filterButton').removeClass('filter-active');
 
         // Reset table filters
         table.search('').columns().search('').draw();
-
-        // Re-sort the table
-        setTimeout(function() {
-            manualSortTable();
-        }, 100);
-
-        // Update statistics
-        updateDocumentStats();
     });
 
-    // Highlight filter button if any filter is active
+    // Highlight filter button jika ada filter aktif
     function highlightFilterButton() {
         if ($('#filter_noreg').val() ||
             $('#filter_karyawan').val() ||
@@ -1056,129 +1056,86 @@ $(document).ready(function() {
 
     // Export buttons
     $('#exportExcel').on('click', function() {
-        // Fill export form with current filters
-        $('#export_filter_noreg').val($('#filter_noreg').val());
-        $('#export_filter_karyawan').val($('#filter_karyawan').val());
-        $('#export_filter_kategori').val($('#filter_kategori').val());
-        $('#export_filter_jenis').val($('#filter_jenis').val());
-        $('#export_filter_tgl_terbit_from').val($('#filter_tgl_terbit_from').val());
-        $('#export_filter_tgl_terbit_to').val($('#filter_tgl_terbit_to').val());
-        $('#export_filter_tgl_berakhir_from').val($('#filter_tgl_berakhir_from').val());
-        $('#export_filter_tgl_berakhir_to').val($('#filter_tgl_berakhir_to').val());
-
-        // Convert visual status to filter value
-        let statusFilter = '';
-        if ($('#filter_status').val() === 'Valid') statusFilter = 'Valid';
-        else if ($('#filter_status').val() === 'Warning') statusFilter = 'Warning';
-        else if ($('#filter_status').val() === 'Expired') statusFilter = 'Expired';
-        $('#export_filter_status').val(statusFilter);
-
-        // Submit export form
-        $('#exportForm').submit();
+        $('.excel-export-btn').trigger('click');
         $('#exportModal').modal('hide');
     });
 
     $('#exportPdf').on('click', function() {
-        // Simple PDF export via print
-        var style = `
-            <style>
-                table { border-collapse: collapse; width: 100%; }
-                th, td { border: 1px solid #ddd; padding: 8px; }
-                th { background-color: #f2f2f2; }
-                tr:nth-child(even) { background-color: #f9f9f9; }
-                .document-title { text-align: center; margin-bottom: 20px; }
-            </style>
-        `;
-
-        var printWindow = window.open('', '_blank');
-        printWindow.document.write('<html><head><title>Dokumen Karyawan</title>' + style + '</head><body>');
-        printWindow.document.write('<h1 class="document-title">Data Dokumen Karyawan</h1>');
-
-        // Clone table without action column
-        var clonedTable = $('#dokumenKaryawanTable').clone();
-        clonedTable.find('tr').each(function() {
-            $(this).find('th:last-child, td:last-child').remove();
-        });
-
-        printWindow.document.write(clonedTable.prop('outerHTML'));
-        printWindow.document.write('</body></html>');
-        printWindow.document.close();
-        printWindow.print();
+        $('.pdf-export-btn').trigger('click');
         $('#exportModal').modal('hide');
     });
 
     $('#exportPrint').on('click', function() {
-        // Direct print
-        window.print();
+        $('.print-export-btn').trigger('click');
         $('#exportModal').modal('hide');
     });
 
-    // Delete confirmation handler
+    // Handle Delete Confirmation
     $(document).on('click', '.delete-confirm', function(e) {
+        // Prevent any default action
         e.preventDefault();
         e.stopPropagation();
 
-        // Get document info
+        // Get document ID and name
         var id = $(this).data('id');
         var name = $(this).data('name');
 
-        // Set modal content
+        // Set the document name in the modal
         $('#dokumenNameToDelete').text(name);
+
+        // Set form action URL
         $('#deleteForm').attr('action', "/dokumen-karyawan/" + id);
 
-        // Show modal
+        // Show the delete confirmation modal
         $('#deleteConfirmationModal').modal('show');
     });
 
-    // Row click handler for detail page
+    // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
     $('#dokumenKaryawanTable tbody').on('click', 'tr', function(e) {
-        // Skip if clicking button/link
+        // Jangan ikuti link jika yang diklik adalah tombol atau link di dalam baris
         if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
             $(e.target).closest('button').length || $(e.target).closest('a').length) {
             return;
         }
 
-        // Navigate to detail page
+        // Dapatkan URL detail
         var detailLink = $(this).find('a[title="Detail"]').attr('href');
         if (detailLink) {
             window.location.href = detailLink;
         }
     });
 
-    // Row hover effects
-    $('#dokumenKaryawanTable tbody').on('mouseenter', 'tr', function() {
-        $(this).addClass('row-hover-active');
-    }).on('mouseleave', 'tr', function() {
-        $(this).removeClass('row-hover-active');
-    });
+    // Add a reset button for debugging
+    // $('<button>')
+    //     .attr('id', 'resetSortingButton')
+    //     .addClass('btn btn-sm btn-outline-danger')
+    //     .html('<i class="fas fa-sync-alt me-1"></i> Reset Sorting')
+    //     .css({
+    //         'position': 'fixed',
+    //         'bottom': '20px',
+    //         'right': '20px',
+    //         'z-index': '1000',
+    //         'opacity': '0.8'
+    //     })
+    //     .on('click', function() {
+    //         // Reset sorting flag
+    //         isDataSorted = false;
 
-    // Add export form
-    $(`
-    <form id="exportForm" action="{{ route('dokumen-karyawan.export-excel') }}" method="POST" class="d-none">
-        @csrf
-        <input type="hidden" name="filter_noreg" id="export_filter_noreg">
-        <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
-        <input type="hidden" name="filter_kategori" id="export_filter_kategori">
-        <input type="hidden" name="filter_jenis" id="export_filter_jenis">
-        <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
-        <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
-        <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
-        <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
-        <input type="hidden" name="filter_status" id="export_filter_status">
-    </form>
-    `).insertAfter('#dokumenKaryawanTable');
+    //         // Force a table redraw
+    //         table.draw();
 
-    // Auto-hide alerts
+    //         // Re-sort the data
+    //         setTimeout(function() {
+    //             sortAllData();
+    //             table.draw();
+    //         }, 100);
+    //     })
+    //     .appendTo('body');
+
+    // Auto-hide alerts after 5 seconds
     setTimeout(function() {
         $(".alert").fadeOut("slow");
     }, 5000);
-
-    // Apply direct styling fixes at multiple points to ensure they stick
-    $(window).on('resize', function() {
-        $('.dataTables_filter').css('text-align', 'right');
-        $('.dataTables_filter input').css('width', '250px');
-        $('.dataTables_paginate').css('text-align', 'right');
-    });
 });
     </script>
 @endpush
