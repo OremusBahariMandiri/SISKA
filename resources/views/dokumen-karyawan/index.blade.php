@@ -59,8 +59,9 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th>No Registrasi</th>
+                                        <th>NRK</th>
                                         <th>Nama Karyawan</th>
+                                        <th>No Registrasi</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
@@ -81,8 +82,9 @@
                                             data-employee-name="{{ $dokumen->karyawan->NamaKry ?? '-' }}"
                                             data-jenis-dok="{{ $dokumen->JenisDok }}">
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $dokumen->NoRegDok }}</td>
+                                            <td>{{ $dokumen->karyawan->NrkKry ?? '-' }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
+                                            <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -878,67 +880,97 @@
     }
 
     // Fungsi untuk highlighting baris yang terlihat saja
-    function applyVisibleRowHighlighting() {
-        // Reset semua highlight di baris yang terlihat
-        $('#dokumenKaryawanTable tbody tr').removeClass(
-            'highlight-red highlight-yellow highlight-orange highlight-gray');
+// Fungsi untuk highlighting baris yang terlihat saja
+function applyVisibleRowHighlighting() {
+    // Reset semua highlight di baris yang terlihat
+    $('#dokumenKaryawanTable tbody tr').removeClass(
+        'highlight-red highlight-yellow highlight-orange highlight-gray');
 
-        // Apply highlighting untuk baris yang terlihat saja
-        $('#dokumenKaryawanTable tbody tr').each(function() {
-            const row = $(this);
+    // Apply highlighting untuk baris yang terlihat saja
+    $('#dokumenKaryawanTable tbody tr').each(function() {
+        const row = $(this);
 
-            // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-            const statusText = row.find('td:eq(10)').text().trim();
+        // Debugging line - remove in production
+        console.log("Processing row:", row.find('td:eq(1)').text());
 
-            if (statusText.includes("Tidak Berlaku")) {
-                row.addClass('highlight-gray');
-                return; // Stop di sini - abu-abu memiliki prioritas tertinggi
+        // Cek status dokumen terlebih dahulu (prioritas tertinggi)
+        const statusText = row.find('td:eq(11)').text().trim(); // Adjusted index for status column
+
+        // Debug - remove in production
+        console.log("Status text:", statusText);
+
+        if (statusText.includes("Tidak Berlaku")) {
+            row.addClass('highlight-gray');
+            return; // Stop di sini - abu-abu memiliki prioritas tertinggi
+        }
+
+        // Logic untuk TglBerakhir (prioritas kedua)
+        const tglBerakhir = row.find('td:eq(6)').text().trim(); // Adjusted index for TglBerakhir column
+
+        // Debug - remove in production
+        console.log("Tgl Berakhir:", tglBerakhir);
+
+        if (tglBerakhir !== '-') {
+            // Parse date properly with moment
+            const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+            const today = moment().startOf('day'); // Set to start of day for accurate comparison
+
+            // Debug - remove in production
+            console.log("Berakhir date:", berakhirDate.format('YYYY-MM-DD'), "Today:", today.format('YYYY-MM-DD'));
+            console.log("Is before today:", berakhirDate.isBefore(today));
+
+            if (berakhirDate.isBefore(today)) {
+                row.addClass('highlight-red');
+                return; // Stop di sini - merah memiliki prioritas
             }
+        }
 
-            // Logic untuk TglBerakhir (prioritas kedua)
-            const tglBerakhir = row.find('td:eq(5)').text().trim();
-            if (tglBerakhir !== '-') {
-                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
+        // Logic untuk TglPengingat (prioritas ketiga)
+        const tglPengingatStr = row.data('tgl-pengingat');
 
-                if (berakhirDate.isBefore(today)) {
-                    row.addClass('highlight-red');
-                    return; // Stop di sini - merah memiliki prioritas
-                }
+        // Debug - remove in production
+        console.log("Tgl Pengingat data attr:", tglPengingatStr);
+
+        if (tglPengingatStr && tglPengingatStr !== '') {
+            const tglPengingat = moment(tglPengingatStr);
+            const today = moment().startOf('day'); // Set to start of day for accurate comparison
+            const diffDays = tglPengingat.diff(today, 'days');
+
+            // Debug - remove in production
+            console.log("Pengingat date:", tglPengingat.format('YYYY-MM-DD'), "Diff days:", diffDays);
+
+            if (diffDays < 0) {
+                // Tanggal pengingat sudah lewat
+                row.addClass('highlight-red');
+                return; // Stop di sini - merah memiliki prioritas
+            } else if (diffDays === 0) {
+                // Tanggal pengingat hari ini
+                row.addClass('highlight-yellow');
+                return; // Stop di sini - kuning memiliki prioritas selanjutnya
+            } else if (diffDays <= 7) {
+                row.addClass('highlight-yellow');
+                return; // Stop di sini - kuning memiliki prioritas selanjutnya
+            } else if (diffDays <= 30) {
+                row.addClass('highlight-orange');
+                return; // Stop di sini
             }
+        }
 
-            // Logic untuk TglPengingat (prioritas ketiga)
-            const tglPengingatStr = row.data('tgl-pengingat');
-            if (tglPengingatStr) {
-                const tglPengingat = moment(tglPengingatStr);
-                const today = moment();
-                const diffDays = tglPengingat.diff(today, 'days');
+        // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
+        if (tglBerakhir !== '-') {
+            const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+            const today = moment().startOf('day'); // Set to start of day for accurate comparison
 
-                if (diffDays < 0 || diffDays === 0) {
-                    // Tanggal pengingat sudah lewat atau hari ini
-                    row.addClass('highlight-red');
-                    return; // Stop di sini - merah memiliki prioritas
-                } else if (diffDays <= 7) {
-                    row.addClass('highlight-yellow');
-                    return; // Stop di sini - kuning memiliki prioritas selanjutnya
-                } else if (diffDays <= 30) {
-                    row.addClass('highlight-orange');
-                    return; // Stop di sini
-                }
+            // Debug - remove in production
+            console.log("Checking expiration in 30 days. Days until expiration:",
+                        berakhirDate.diff(today, 'days'));
+
+            if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30, 'days'))) {
+                row.addClass('highlight-yellow');
             }
-
-            // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
-            if (tglBerakhir !== '-') {
-                const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
-
-                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
-                        'days'))) {
-                    row.addClass('highlight-yellow');
-                }
-            }
-        });
-    }
+        }
+    });
+}
 
     // Format tanggal untuk filter
     $.fn.dataTable.ext.search.push(

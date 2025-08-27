@@ -72,7 +72,8 @@ class DokumenKaryawanController extends Controller
         $dokumenKaryawan = DB::table('B01DmDokKaryawan')
             ->select(
                 'B01DmDokKaryawan.*',
-                'A04DmKaryawan.NamaKry'
+                'A04DmKaryawan.NamaKry',
+                'A04DmKaryawan.NrkKry'
             )
             ->leftJoin('A04DmKaryawan', 'B01DmDokKaryawan.IdKodeA04', '=', 'A04DmKaryawan.IdKode')
             ->get();
@@ -113,6 +114,7 @@ class DokumenKaryawanController extends Controller
             // Add karyawan and kategori objects
             $karyawan = new Karyawan();
             $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->NrkKry = $item->NrkKry;
             $karyawan->IdKode = $item->IdKodeA04;
             $dokumen->karyawan = $karyawan;
 
