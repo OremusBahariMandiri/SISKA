@@ -59,8 +59,9 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="5%">No</th>
-                                        <th>No Registrasi</th>
+                                        <th>NRK</th>
                                         <th>Nama Karyawan</th>
+                                        <th>No Registrasi</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
                                         <th>Tgl Berakhir</th>
@@ -76,13 +77,14 @@
                                     @foreach ($dokumenKaryawan as $index => $dokumen)
                                         <tr data-tgl-pengingat="{{ $dokumen->TglPengingat ? $dokumen->TglPengingat->format('Y-m-d') : '' }}"
                                             data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? $dokumen->TglBerakhirDok->format('Y-m-d') : '' }}"
-                                            data-goldok="{{ (int)($dokumen->GolDok ?? 999) }}"
+                                            data-goldok="{{ (int) ($dokumen->GolDok ?? 999) }}"
                                             data-employee-id="{{ $dokumen->IdKodeA04 }}"
                                             data-employee-name="{{ $dokumen->karyawan->NamaKry ?? '-' }}"
                                             data-jenis-dok="{{ $dokumen->JenisDok }}">
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $dokumen->NoRegDok }}</td>
+                                            <td>{{ $dokumen->karyawan->NrkKry ?? '-' }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
+                                            <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
                                                 @if ($dokumen->TglTerbitDok)
@@ -552,7 +554,7 @@
     <script src="https://cdn.datatables.net/buttons/2.2.2/js/buttons.colVis.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
     <script>
-      $(document).ready(function() {
+$(document).ready(function() {
     // Indonesian language configuration for DataTables
     const indonesianLanguage = {
         "emptyTable": "Tidak ada data yang tersedia pada tabel ini",
@@ -716,15 +718,14 @@
                 // Update text for warning period
                 updateMasaPengingatText();
 
-                // Update document statistics
-                updateDocumentStats();
-
                 // Custom row numbers that respect pagination
                 const info = table.page.info();
                 const startIndex = info.start;
 
                 // Update row numbers on the current page
-                table.rows({page: 'current'}).nodes().each(function(row, i) {
+                table.rows({
+                    page: 'current'
+                }).nodes().each(function(row, i) {
                     $(row).find('td:first').text(startIndex + i + 1);
                 });
 
@@ -744,7 +745,11 @@
                 // Initial highlighting and stats
                 applyVisibleRowHighlighting();
                 updateMasaPengingatText();
-                updateDocumentStats();
+
+                // Delay document stats calculation to ensure all data is processed
+                setTimeout(function() {
+                    updateDocumentStats();
+                }, 500);
 
                 // Customize info text
                 customizeInfoText();
@@ -764,66 +769,65 @@
         });
     }
 
-    // Fungsi untuk mendapatkan statistik dokumen
+    // Fungsi untuk menghitung statistik dokumen dari SEMUA data
     function updateDocumentStats() {
         // Inisialisasi counter
         let expiredCount = 0;
         let warningCount = 0;
 
-        // Periksa setiap baris tabel untuk menentukan status
-        $('#dokumenKaryawanTable tbody tr').each(function() {
-            const row = $(this);
-            let isExpired = false;
+        // Penting: Gunakan table.rows().nodes() untuk mendapatkan SEMUA baris tabel,
+        // bukan hanya yang terlihat pada halaman saat ini
+        const allRows = table.rows().nodes();
 
-            // Cek status dokumen terlebih dahulu
-            const statusText = row.find('td:eq(10)').text().trim();
+        // Periksa setiap baris untuk menentukan status
+        $(allRows).each(function() {
+            const row = $(this);
+
+            // 1. Cek status dokumen terlebih dahulu
+            const statusText = row.find('td:eq(11)').text().trim();
 
             // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
             if (statusText.includes("Tidak Berlaku")) {
-                return; // Lanjut ke baris berikutnya
+                return true; // Lanjut ke baris berikutnya
             }
 
-            // Logic untuk TglBerakhir (prioritas kedua)
-            const tglBerakhir = row.find('td:eq(5)').text().trim();
+            // 2. Cek apakah dokumen expired berdasarkan TglBerakhir
+            const tglBerakhir = row.find('td:eq(6)').text().trim();
             if (tglBerakhir !== '-') {
                 const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
+                const today = moment().startOf('day');
 
                 if (berakhirDate.isBefore(today)) {
                     expiredCount++;
-                    isExpired = true;
-                    return; // Lanjut ke baris berikutnya
+                    return true; // Sudah dihitung sebagai expired, lanjut ke baris berikutnya
                 }
             }
 
-            // Logic untuk TglPengingat
+            // 3. Cek TglPengingat untuk expired/warning
             const tglPengingatStr = row.data('tgl-pengingat');
             if (tglPengingatStr) {
                 const tglPengingat = moment(tglPengingatStr);
-                const today = moment();
+                const today = moment().startOf('day');
                 const diffDays = tglPengingat.diff(today, 'days');
 
-                if (diffDays < 0 || diffDays === 0) {
+                if (diffDays <= 0) {
                     // Tanggal pengingat sudah lewat atau hari ini
-                    if (!isExpired) {
-                        expiredCount++;
-                        isExpired = true;
-                    }
-                    return; // Lanjut ke baris berikutnya
+                    expiredCount++;
+                    return true; // continue
                 } else if (diffDays <= 30) {
-                    if (!isExpired) {
-                        warningCount++;
-                    }
-                    return; // Lanjut ke baris berikutnya
+                    // Warning: dalam 30 hari
+                    warningCount++;
+                    return true; // continue
                 }
             }
 
-            // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
-            if (tglBerakhir !== '-' && !isExpired) {
+            // 4. Cek TglBerakhir untuk warning (30 hari)
+            if (tglBerakhir !== '-') {
                 const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
+                const today = moment().startOf('day');
+                const diffDays = berakhirDate.diff(today, 'days');
 
-                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30, 'days'))) {
+                if (diffDays > 0 && diffDays <= 30) {
                     warningCount++;
                 }
             }
@@ -833,6 +837,9 @@
         $('#expiredDocsCount').text(expiredCount);
         $('#warningDocsCount').text(warningCount);
 
+        // Log untuk debugging
+        console.log(`Counted from all data: ${expiredCount} expired, ${warningCount} warning`);
+
         // Selalu tampilkan badges terlepas dari jumlahnya
         $('#expiredDocsBadge').show();
         $('#warningDocsBadge').show();
@@ -840,7 +847,7 @@
 
     // Fungsi untuk memperbarui teks masa peringatan
     function updateMasaPengingatText() {
-        const today = moment();
+        const today = moment().startOf('day');
 
         $('#dokumenKaryawanTable tbody tr').each(function() {
             const tglPengingatStr = $(this).data('tgl-pengingat');
@@ -849,7 +856,7 @@
             // Jika tidak ada tanggal pengingat, lewati baris ini
             if (!tglPengingatStr) {
                 $masaPengingatCol.text('-');
-                return;
+                return true; // continue
             }
 
             // Parse tanggal pengingat
@@ -887,53 +894,54 @@
         $('#dokumenKaryawanTable tbody tr').each(function() {
             const row = $(this);
 
-            // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-            const statusText = row.find('td:eq(10)').text().trim();
-
+            // 1. Check document status first (highest priority)
+            const statusText = row.find('td:eq(11)').text().trim();
             if (statusText.includes("Tidak Berlaku")) {
                 row.addClass('highlight-gray');
-                return; // Stop di sini - abu-abu memiliki prioritas tertinggi
+                return true; // continue to next iteration
             }
 
-            // Logic untuk TglBerakhir (prioritas kedua)
-            const tglBerakhir = row.find('td:eq(5)').text().trim();
+            // 2. Check if expired based on TglBerakhir
+            const tglBerakhir = row.find('td:eq(6)').text().trim();
             if (tglBerakhir !== '-') {
                 const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
+                const today = moment().startOf('day');
 
                 if (berakhirDate.isBefore(today)) {
                     row.addClass('highlight-red');
-                    return; // Stop di sini - merah memiliki prioritas
+                    return true; // Stop processing this row
                 }
             }
 
-            // Logic untuk TglPengingat (prioritas ketiga)
+            // 3. Check TglPengingat for warning/expired status
             const tglPengingatStr = row.data('tgl-pengingat');
             if (tglPengingatStr) {
                 const tglPengingat = moment(tglPengingatStr);
-                const today = moment();
+                const today = moment().startOf('day');
                 const diffDays = tglPengingat.diff(today, 'days');
 
-                if (diffDays < 0 || diffDays === 0) {
-                    // Tanggal pengingat sudah lewat atau hari ini
+                if (diffDays <= 0) {
+                    // Already expired or today
                     row.addClass('highlight-red');
-                    return; // Stop di sini - merah memiliki prioritas
+                    return true;
                 } else if (diffDays <= 7) {
+                    // Urgent warning: within 7 days
                     row.addClass('highlight-yellow');
-                    return; // Stop di sini - kuning memiliki prioritas selanjutnya
+                    return true;
                 } else if (diffDays <= 30) {
+                    // Warning: within 30 days
                     row.addClass('highlight-orange');
-                    return; // Stop di sini
+                    return true;
                 }
             }
 
-            // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
+            // 4. Check TglBerakhir for warning (within 30 days)
             if (tglBerakhir !== '-') {
                 const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                const today = moment();
+                const today = moment().startOf('day');
+                const diffDays = berakhirDate.diff(today, 'days');
 
-                if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
-                        'days'))) {
+                if (diffDays > 0 && diffDays <= 30) {
                     row.addClass('highlight-yellow');
                 }
             }
@@ -1105,32 +1113,12 @@
         }
     });
 
-    // Add a reset button for debugging
-    // $('<button>')
-    //     .attr('id', 'resetSortingButton')
-    //     .addClass('btn btn-sm btn-outline-danger')
-    //     .html('<i class="fas fa-sync-alt me-1"></i> Reset Sorting')
-    //     .css({
-    //         'position': 'fixed',
-    //         'bottom': '20px',
-    //         'right': '20px',
-    //         'z-index': '1000',
-    //         'opacity': '0.8'
-    //     })
-    //     .on('click', function() {
-    //         // Reset sorting flag
-    //         isDataSorted = false;
-
-    //         // Force a table redraw
-    //         table.draw();
-
-    //         // Re-sort the data
-    //         setTimeout(function() {
-    //             sortAllData();
-    //             table.draw();
-    //         }, 100);
-    //     })
-    //     .appendTo('body');
+    // TAMBAHAN: Event listener untuk event search.dt, reordering, page change, dll
+    // yang akan selalu memperbarui styling baris yang terlihat
+    table.on('draw.dt', function() {
+        applyVisibleRowHighlighting();
+        updateMasaPengingatText();
+    });
 
     // Auto-hide alerts after 5 seconds
     setTimeout(function() {
