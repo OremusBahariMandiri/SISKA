@@ -178,3 +178,37 @@ ALTER TABLE A11DmFormulirDok
 ADD NamaPrsh VARCHAR (20),
 ADD CONSTRAINT fk_formulirdok_perusahaan
 FOREIGN KEY (NamaPrsh) REFERENCES A03DmPerusahaan(IdKode);
+
+CREATE TABLE B06DokBpisKes (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    IdKode VARCHAR(20) NOT NULL,
+    IdKodeA04 VARCHAR(20),
+    NoRegDok VARCHAR(50) NOT NULL,
+    KategoriDok VARCHAR(50) NOT NULL,
+    JenisDok VARCHAR(50) NOT NULL,
+    TglTerbitDok DATE NOT NULL,
+    TglBerakhirDok DATE NOT NULL,
+    MasaBerlaku VARCHAR(100),
+    KetDok TEXT,
+    UpahKtrKry DECIMAL(15,2),
+    UpahBrshKry DECIMAL(15,2),
+    IuranPrshPersen DECIMAL(5,2),
+    IuranPrshRp DECIMAL(15,2),
+    IuranKryPersen DECIMAL(5,2),
+    IuranKryRp DECIMAL(15,2),
+    IuranKry1Rp DECIMAL(15,2),
+    IuranKry2Rp DECIMAL(15,2),
+    IuranKry3Rp DECIMAL(15,2),
+    JmlPrshRp DECIMAL(15,2),
+    JmlKryRp DECIMAL(15,2),
+    TotIuran DECIMAL(15,2),
+    FileDok VARCHAR(255),
+    StatusDok VARCHAR(20) NOT NULL,
+    created_by VARCHAR(50),
+    updated_by VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (IdKodeA04) REFERENCES A04DmKaryawan(IdKode),
+    FOREIGN KEY (created_by) REFERENCES A01DmUser(IdKode),
+    FOREIGN KEY (updated_by) REFERENCES A01DmUser(IdKode)
+);

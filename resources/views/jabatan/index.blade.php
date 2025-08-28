@@ -55,7 +55,8 @@
                                                 <div class="d-flex gap-1 justify-content-center">
                                                     @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
                                                         <a href="{{ route('jabatan.show', $jbt->id) }}"
-                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Detail">
+                                                            class="btn btn-sm btn-info" data-bs-toggle="tooltip"
+                                                            title="Detail">
                                                             <i class="fas fa-eye"></i>
                                                         </a>
                                                     @endif
@@ -72,8 +73,8 @@
                                                         <button type="button" class="btn btn-sm btn-danger delete-confirm"
                                                             data-bs-toggle="tooltip" title="Hapus"
                                                             data-id="{{ $jbt->id }}"
-                                                            data-name="{{ $jbt->GolonganJbt }}"
-                                                            data-bs-toggle="tooltip" title="Hapus">
+                                                            data-name="{{ $jbt->GolonganJbt }}" data-bs-toggle="tooltip"
+                                                            title="Hapus">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     @endif
@@ -236,6 +237,7 @@
     <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.bootstrap5.min.js"></script>
 
     <script>
+        // Modified DataTables initialization script
         $(document).ready(function() {
             // Inisialisasi DataTables jika belum ada
             if (!$.fn.DataTable.isDataTable('#jabatanTable')) {
@@ -243,7 +245,15 @@
                     responsive: true,
                     language: {
                         url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
-                    }
+                    },
+                    // Set initial order to first column (GolonganJbt, which is index 1)
+                    order: [
+                        [1, 'asc']
+                    ],
+                    // Keep server-side order as primary sort
+                    ordering: true,
+                    // Save state so user's sort preferences persist
+                    stateSave: true
                 });
             }
 
@@ -254,7 +264,7 @@
                 }
             });
 
-            // MODIFIED: Use event delegation for delete confirmation
+            // Use event delegation for delete confirmation
             $(document).on('click', '.delete-confirm', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -274,7 +284,7 @@
                 $('#deleteConfirmationModal').modal('show');
             });
 
-            // MODIFIED: Use event delegation for row click
+            // Use event delegation for row click
             $(document).on('click', '#jabatanTable tbody tr', function(e) {
                 // Don't follow link if clicking on buttons or links
                 if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
@@ -292,7 +302,7 @@
                 @endif
             });
 
-            // MODIFIED: Use event delegation for hover effects
+            // Use event delegation for hover effects
             $(document).on('mouseenter', '#jabatanTable tbody tr', function() {
                 $(this).addClass('row-hover-active');
             }).on('mouseleave', '#jabatanTable tbody tr', function() {

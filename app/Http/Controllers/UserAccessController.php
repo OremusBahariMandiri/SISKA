@@ -48,6 +48,7 @@ class UserAccessController extends Controller
             'dokumen-kontrak' => 'Dokumen Kontrak',
             'dokumen-karir' => 'Dokumen Karir',
             'dokumen-legalitas' => 'Dokumen Legalitas',
+            'dokumen-bpjs-kesehatan' => 'Dokumen BPJS Kesehatan',
 
         // Add other menus here
         ];

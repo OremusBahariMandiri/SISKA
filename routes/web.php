@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\BpjsKesehatanController;
 use App\Http\Controllers\DepartemenController;
+use App\Http\Controllers\DokumenBpjsKesehatanController;
 use App\Http\Controllers\DokumenKarirController;
 use App\Http\Controllers\DokumenKaryawanController;
 use App\Http\Controllers\DokumenKontrakController;
@@ -110,6 +112,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('dokumen-legalitas', DokumenLegalitasController::class);
     Route::get('dokumen-legalitas/{dokumenLegalitas}/view-document', [DokumenLegalitasController::class, 'viewDocument'])->name('dokumen-legalitas.viewDocument');
     Route::post('/dokumen-legalitas/export-excel', [DokumenLegalitasController::class, 'exportExcel'])->name('dokumen-legalitas.export-excel');
+
+    //Dokumen Bpjs Kesehatan Route
+    Route::resource('dokumen-bpjs-kesehatan', DokumenBpjsKesehatanController::class);
+    Route::get('dokumen-bpjs-kesehatan/{dokumenBpjsKesehatan}/view-document', [DokumenBpjsKesehatanController::class, 'viewDocument'])->name('dokumen-bpjs-kesehatan.viewDocument');
+    Route::post('/dokumen-bpjs-kesehatan/export-excel', [DokumenBpjsKesehatanController::class, 'exportExcel'])->name('dokumen-bpjs-kesehatan.export-excel');
 
     //SETTINGS Route
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

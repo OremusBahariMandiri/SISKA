@@ -243,6 +243,17 @@
                                 </a>
                             </li>
                         @endif
+
+                        {{-- Dokumen Bpjs Kesehatan --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-bpjs-kesehatan'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-bpjs-kesehatan*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-bpjs-kesehatan.index') }}">
+                                    <i class="fas fa-file-medical"></i>
+                                    <span>BPJS Kesehatan</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 @endif
