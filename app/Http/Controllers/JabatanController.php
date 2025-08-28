@@ -25,7 +25,8 @@ class JabatanController extends Controller
      */
     public function index()
     {
-        $jabatan = Jabatan::all();
+        // Modified: Sort jabatan by GolonganJbt in ascending order
+        $jabatan = Jabatan::orderBy('GolonganJbt', 'asc')->get();
 
         // Get user permissions for this menu
         $userPermissions = [];
