@@ -636,7 +636,70 @@
                 $('#dokumenKontrakTable').DataTable().destroy();
             }
 
-            // Fungsi untuk mendapatkan statistik dokumen - perbaikan untuk menghitung dengan benar
+            // Fungsi untuk highlighting baris yang terlihat saja
+            function applyVisibleRowHighlighting() {
+                // Reset semua highlight di baris yang terlihat
+                $('#dokumenKontrakTable tbody tr').removeClass(
+                    'highlight-red highlight-yellow highlight-orange highlight-gray');
+
+                // Apply highlighting untuk baris yang terlihat saja
+                $('#dokumenKontrakTable tbody tr').each(function() {
+                    const row = $(this);
+
+                    // Cek status dokumen terlebih dahulu (prioritas tertinggi)
+                    const statusText = row.find('td:eq(11)').text().trim();
+
+                    if (statusText.includes("Tidak Berlaku")) {
+                        row.addClass('highlight-gray');
+                        return; // Stop di sini - abu-abu memiliki prioritas tertinggi
+                    }
+
+                    // Logic untuk TglBerakhir (prioritas kedua)
+                    const tglBerakhir = row.find('td:eq(6)').text().trim();
+                    if (tglBerakhir !== '-') {
+                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                        const today = moment();
+
+                        if (berakhirDate.isBefore(today)) {
+                            row.addClass('highlight-red');
+                            return; // Stop di sini - merah memiliki prioritas
+                        }
+                    }
+
+                    // Logic untuk TglPengingat (prioritas ketiga)
+                    const tglPengingatStr = row.data('tgl-pengingat');
+                    if (tglPengingatStr) {
+                        const tglPengingat = moment(tglPengingatStr);
+                        const today = moment();
+                        const diffDays = tglPengingat.diff(today, 'days');
+
+                        if (diffDays < 0 || diffDays === 0) {
+                            // Tanggal pengingat sudah lewat atau hari ini
+                            row.addClass('highlight-red');
+                            return; // Stop di sini - merah memiliki prioritas
+                        } else if (diffDays <= 7) {
+                            row.addClass('highlight-yellow');
+                            return; // Stop di sini - kuning memiliki prioritas selanjutnya
+                        } else if (diffDays <= 30) {
+                            row.addClass('highlight-orange');
+                            return; // Stop di sini
+                        }
+                    }
+
+                    // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
+                    if (tglBerakhir !== '-') {
+                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
+                        const today = moment();
+
+                        if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
+                                'days'))) {
+                            row.addClass('highlight-yellow');
+                        }
+                    }
+                });
+            }
+
+            // Fungsi untuk mendapatkan statistik dokumen
             function updateDocumentStats() {
                 // Hapus kelas highlight terlebih dahulu untuk memastikan penghitungan yang bersih
                 $('#dokumenKontrakTable tbody tr').removeClass(
@@ -653,7 +716,7 @@
                     let isWarning = false;
 
                     // Cek status dokumen terlebih dahulu
-                    const statusText = row.find('td:eq(9)').text().trim();
+                    const statusText = row.find('td:eq(11)').text().trim();
 
                     // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
                     if (statusText.includes("Tidak Berlaku")) {
@@ -769,69 +832,6 @@
                 });
             }
 
-            // Fungsi untuk highlighting baris yang terlihat saja
-            function applyVisibleRowHighlighting() {
-                // Reset semua highlight di baris yang terlihat
-                $('#dokumenKontrakTable tbody tr').removeClass(
-                    'highlight-red highlight-yellow highlight-orange highlight-gray');
-
-                // Apply highlighting untuk baris yang terlihat saja
-                $('#dokumenKontrakTable tbody tr').each(function() {
-                    const row = $(this);
-
-                    // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-                    const statusText = row.find('td:eq(9)').text().trim();
-
-                    if (statusText.includes("Tidak Berlaku")) {
-                        row.addClass('highlight-gray');
-                        return; // Stop di sini - abu-abu memiliki prioritas tertinggi
-                    }
-
-                    // Logic untuk TglBerakhir (prioritas kedua)
-                    const tglBerakhir = row.find('td:eq(6)').text().trim();
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isBefore(today)) {
-                            row.addClass('highlight-red');
-                            return; // Stop di sini - merah memiliki prioritas
-                        }
-                    }
-
-                    // Logic untuk TglPengingat (prioritas ketiga)
-                    const tglPengingatStr = row.data('tgl-pengingat');
-                    if (tglPengingatStr) {
-                        const tglPengingat = moment(tglPengingatStr);
-                        const today = moment();
-                        const diffDays = tglPengingat.diff(today, 'days');
-
-                        if (diffDays < 0 || diffDays === 0) {
-                            // Tanggal pengingat sudah lewat atau hari ini
-                            row.addClass('highlight-red');
-                            return; // Stop di sini - merah memiliki prioritas
-                        } else if (diffDays <= 7) {
-                            row.addClass('highlight-yellow');
-                            return; // Stop di sini - kuning memiliki prioritas selanjutnya
-                        } else if (diffDays <= 30) {
-                            row.addClass('highlight-orange');
-                            return; // Stop di sini
-                        }
-                    }
-
-                    // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
-                                'days'))) {
-                            row.addClass('highlight-yellow');
-                        }
-                    }
-                });
-            }
-
             // Format tanggal untuk filter
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
@@ -876,7 +876,7 @@
                             if (status === '') {
                                 return true;
                             } else if (status === 'Valid') {
-                                return data[9].includes("Berlaku") &&
+                                return data[11].includes("Berlaku") &&
                                     (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
                             } else if (status === 'Warning') {
                                 return berakhirDate &&
@@ -893,39 +893,39 @@
                 }
             );
 
-            // Inisialisasi DataTable (with error handling)
+            // Inisialisasi DataTable
             var table = $('#dokumenKontrakTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
                 columnDefs: [{
                         // Prioritas tertinggi untuk kolom yang paling penting
                         responsivePriority: 1,
-                        targets: [0, 1, 2, 9] // No, No.Reg, Nama Karyawan, Status
+                        targets: [0, 1, 2, 11] // No, No.Reg, Nama Karyawan, Status
                     },
                     {
                         // Prioritas kedua untuk kolom penting lainnya
                         responsivePriority: 2,
-                        targets: [3, 4] // Kategori, Jenis
+                        targets: [3, 4] // Jenis, Perusahaan
                     },
                     {
                         // Prioritas ketiga untuk kolom tanggal
                         responsivePriority: 3,
-                        targets: [5, 6, 7] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat
+                        targets: [5, 6, 7, 8] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat, Peringatan
                     },
                     {
                         // Prioritas keempat untuk kolom yang tidak terlalu penting
                         responsivePriority: 4,
-                        targets: [8, 10] // Peringatan, Aksi
+                        targets: [9, 10, 12] // Catatan, File, Aksi
                     },
                     {
                         // Kolom yang tidak bisa di-sort
                         orderable: false,
-                        targets: [0, 10] // No dan Aksi
+                        targets: [0, 12] // No dan Aksi
                     },
                     {
-                        // Custom sorting untuk kolom Status (kolom 9)
+                        // Custom sorting untuk kolom Status (kolom 11)
                         // Memastikan dokumen "Tidak Berlaku" selalu di bawah
-                        targets: 9,
+                        targets: 11,
                         type: 'string',
                         render: function(data, type, row, meta) {
                             // Untuk tipe display, tampilkan data asli
@@ -942,7 +942,8 @@
                     }
                 ],
                 order: [
-                    [9, 'asc'], // Mengurutkan berdasarkan status terlebih dahulu
+                    [11,
+                    'asc'], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
                     [1, 'asc'] // Kemudian berdasarkan No. Reg
                 ],
                 buttons: [{
@@ -1008,12 +1009,12 @@
                 // Terapkan filter untuk kolom-kolom
                 table.column(1).search($('#filter_noreg').val()); // No Reg
                 table.column(2).search($('#filter_karyawan').val()); // Karyawan
-                table.column(3).search($('#filter_kategori').val()); // Kategori
-                table.column(4).search($('#filter_jenis').val()); // Jenis Dokumen
+                table.column(3).search($('#filter_jenis').val()); // Jenis
+                table.column(4).search($('#filter_kategori').val()); // Kategori
 
                 // Refresh table untuk menerapkan semua filter
                 table.draw();
-                $('#filterModal').modal('hide');
+                filterModal.hide();
 
                 // Highlight filter button jika ada filter aktif
                 highlightFilterButton();
@@ -1070,17 +1071,17 @@
             // Export buttons
             $('#exportExcel').on('click', function() {
                 $('.excel-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
+                exportModal.hide();
             });
 
             $('#exportPdf').on('click', function() {
                 $('.pdf-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
+                exportModal.hide();
             });
 
             $('#exportPrint').on('click', function() {
                 $('.print-export-btn').trigger('click');
-                $('#exportModal').modal('hide');
+                exportModal.hide();
             });
 
             // Handle Delete Confirmation
@@ -1103,39 +1104,6 @@
                 deleteConfirmationModal.show();
             });
 
-            // Add necessary styling for SweetAlert to override Bootstrap modals
-            $('<style>')
-                .prop('type', 'text/css')
-                .html(`
-    /* Ensure SweetAlert appears above all other elements */
-    .swal2-container {
-        z-index: 2060 !important; /* Higher than Bootstrap modal backdrop (2050) */
-    }
-
-    /* Prevent Bootstrap modals from interfering */
-    .modal-backdrop {
-        z-index: 1050 !important;
-    }
-
-    .modal {
-        z-index: 1055 !important;
-    }
-
-    /* Fix for Windows browsers */
-    body.swal2-shown {
-        overflow-y: hidden !important;
-        padding-right: 0 !important;
-    }
-
-    /* Ensure SweetAlert is visible on mobile devices */
-    @media (max-width: 500px) {
-        .swal2-popup {
-            width: 90% !important;
-        }
-    }
-`)
-                .appendTo('head');
-
             // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
             $('#dokumenKontrakTable tbody').on('click', 'tr', function(e) {
                 // Jangan ikuti link jika yang diklik adalah tombol atau link di dalam baris
@@ -1152,46 +1120,6 @@
                         window.location.href = detailLink;
                     }
                 @endif
-            });
-
-            // Form untuk export
-            $(`
-    <form id="exportForm" action="{{ route('dokumen-kontrak.export-excel') }}" method="POST" class="d-none">
-        @csrf
-        <input type="hidden" name="filter_noreg" id="export_filter_noreg">
-        <input type="hidden" name="filter_karyawan" id="export_filter_karyawan">
-        <input type="hidden" name="filter_kategori" id="export_filter_kategori">
-        <input type="hidden" name="filter_jenis" id="export_filter_jenis">
-        <input type="hidden" name="filter_tgl_terbit_from" id="export_filter_tgl_terbit_from">
-        <input type="hidden" name="filter_tgl_terbit_to" id="export_filter_tgl_terbit_to">
-        <input type="hidden" name="filter_tgl_berakhir_from" id="export_filter_tgl_berakhir_from">
-        <input type="hidden" name="filter_tgl_berakhir_to" id="export_filter_tgl_berakhir_to">
-        <input type="hidden" name="filter_status" id="export_filter_status">
-    </form>
-    `).insertAfter('#dokumenKontrakTable');
-
-            // Update event handler untuk tombol Export Excel
-            $('#exportExcel').on('click', function() {
-                // Salin nilai filter saat ini ke form export
-                $('#export_filter_noreg').val($('#filter_noreg').val());
-                $('#export_filter_karyawan').val($('#filter_karyawan').val());
-                $('#export_filter_kategori').val($('#filter_kategori').val());
-                $('#export_filter_jenis').val($('#filter_jenis').val());
-                $('#export_filter_tgl_terbit_from').val($('#filter_tgl_terbit_from').val());
-                $('#export_filter_tgl_terbit_to').val($('#filter_tgl_terbit_to').val());
-                $('#export_filter_tgl_berakhir_from').val($('#filter_tgl_berakhir_from').val());
-                $('#export_filter_tgl_berakhir_to').val($('#filter_tgl_berakhir_to').val());
-
-                // Konversi status visual ke nilai filter
-                let statusFilter = '';
-                if ($('#filter_status').val() === 'Valid') statusFilter = 'Valid';
-                else if ($('#filter_status').val() === 'Warning') statusFilter = 'Warning';
-                else if ($('#filter_status').val() === 'Expired') statusFilter = 'Expired';
-                $('#export_filter_status').val(statusFilter);
-
-                // Submit form export
-                $('#exportForm').submit();
-                $('#exportModal').modal('hide');
             });
 
             // Tambahkan efek flash saat baris di-hover
