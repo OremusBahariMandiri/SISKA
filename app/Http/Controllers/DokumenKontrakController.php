@@ -66,6 +66,7 @@ class DokumenKontrakController extends Controller
             ->select(
                 'B02DokKontrak.*',
                 'A04DmKaryawan.NamaKry',
+                'A04DmKaryawan.NrkKry',
                 'A03DmPerusahaan.NamaPrsh',
                 'A07DmJenisDok.GolDok as GolDokValue' // Ganti nama untuk menghindari konflik
             )
@@ -130,6 +131,7 @@ class DokumenKontrakController extends Controller
             // Add karyawan and kategori objects
             $karyawan = new Karyawan();
             $karyawan->NamaKry = $item->NamaKry;
+            $karyawan->NrkKry = $item->NrkKry;
             $karyawan->IdKode = $item->IdKodeA04;
             $dokumen->karyawan = $karyawan;
 
