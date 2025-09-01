@@ -254,6 +254,17 @@
                                 </a>
                             </li>
                         @endif
+
+                        {{-- Dokumen Bpjs Tenaga Kerja --}}
+                        @if (Auth::user()->is_admin || Auth::user()->hasAccess('dokumen-bpjs-tenaga-kerja'))
+                            <li class="nav-item">
+                                <a class="submenu-link {{ request()->is('dokumen-bpjs-tenaga-kerja*') ? 'active' : '' }}"
+                                    href="{{ route('dokumen-bpjs-tenaga-kerja.index') }}">
+                                    <i class="fas fa-briefcase"></i>
+                                    <span>BPJS Tenaga Kerja</span>
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </li>
                 @endif

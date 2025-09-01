@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BpjsKesehatanController;
 use App\Http\Controllers\DepartemenController;
 use App\Http\Controllers\DokumenBpjsKesehatanController;
+use App\Http\Controllers\DokumenBpjsTenagaKerjaController;
 use App\Http\Controllers\DokumenKarirController;
 use App\Http\Controllers\DokumenKaryawanController;
 use App\Http\Controllers\DokumenKontrakController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserAccessController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WilayahKerjaController;
+use App\Models\DokumenBpjsTenagaKerja;
 use App\Models\DokumenKarir;
 use App\Models\DokumenKaryawan;
 use Illuminate\Support\Facades\Route;
@@ -117,6 +119,11 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('dokumen-bpjs-kesehatan', DokumenBpjsKesehatanController::class);
     Route::get('dokumen-bpjs-kesehatan/{dokumenBpjsKesehatan}/view-document', [DokumenBpjsKesehatanController::class, 'viewDocument'])->name('dokumen-bpjs-kesehatan.viewDocument');
     Route::post('/dokumen-bpjs-kesehatan/export-excel', [DokumenBpjsKesehatanController::class, 'exportExcel'])->name('dokumen-bpjs-kesehatan.export-excel');
+
+    //Dokumen Bpjs Tenaga Kerja Route
+    Route::resource('dokumen-bpjs-tenaga-kerja', DokumenBpjsTenagaKerjaController::class);
+    Route::get('dokumen-bpjs-tenaga-kerja/{dokumenBpjsTenagaKerja}/view-document', [DokumenBpjsTenagaKerjaController::class, 'viewDocument'])->name('dokumen-bpjs-tenaga-kerja.viewDocument');
+    Route::post('/dokumen-bpjs-tenaga-kerja/export-excel', [DokumenBpjsTenagaKerjaController::class, 'exportExcel'])->name('dokumen-bpjs-tenaga-kerja.export-excel');
 
     //SETTINGS Route
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

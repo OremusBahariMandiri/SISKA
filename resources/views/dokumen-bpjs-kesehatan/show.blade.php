@@ -60,7 +60,7 @@
                                             <label for="IdKodeA04" class="form-label fw-bold">Karyawan</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                                <input type="text" class="form-control bg-light" id="IdKodeA04" value="{{ $dokumenBpjsKesehatan->karyawan->NamaKry ?? '-' }} - {{ $dokumenBpjsKesehatan->karyawan->NIP ?? '-' }}" disabled>
+                                                <input type="text" class="form-control bg-light" id="IdKodeA04" value="{{ $dokumenBpjsKesehatan->karyawan->NamaKry ?? '-' }} - {{ $dokumenBpjsKesehatan->karyawan->NrkKry ?? '-' }}" disabled>
                                             </div>
                                         </div>
 
@@ -68,7 +68,7 @@
                                             <label for="KategoriDok" class="form-label fw-bold">Kategori Dokumen</label>
                                             <div class="input-group">
                                                 <span class="input-group-text"><i class="fas fa-folder"></i></span>
-                                                <input type="text" class="form-control bg-light" id="KategoriDok" value="{{ $dokumenBpjsKesehatan->KategoriDok ?? '-' }}" disabled>
+                                                <input type="text" class="form-control bg-light" id="KategoriDok" value="{{ $dokumenBpjsKesehatan->kategori->KategoriDok ?? '-' }}" disabled>
                                             </div>
                                         </div>
 
@@ -318,7 +318,7 @@
                                                             <h6 class="mb-1 text-truncate">{{ basename($dokumenBpjsKesehatan->FileDok) }}</h6>
                                                             <div class="btn-group">
                                                                 <a href="{{ route('dokumen-bpjs-kesehatan.viewDocument', $dokumenBpjsKesehatan->id) }}" class="btn btn-sm btn-primary" target="_blank">
-                                                                    <i class="fas fa-eye me-1"></i> Lihat
+                                                                        <i class="fas fa-eye me-1"></i> Lihat
                                                                 </a>
                                                                 {{-- <a href="{{ route('dokumen-bpjs-kesehatan.download', $dokumenBpjsKesehatan->id) }}" class="btn btn-sm btn-success">
                                                                     <i class="fas fa-download me-1"></i> Unduh

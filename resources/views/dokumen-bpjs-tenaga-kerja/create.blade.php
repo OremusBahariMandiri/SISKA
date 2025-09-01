@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Edit Dokumen BPJS Kesehatan')
+@section('title', 'Tambah Dokumen BPJS Tenaga Kerja')
 
 @section('content')
     <div class="container">
@@ -8,8 +8,8 @@
             <div class="col-md-12">
                 <div class="card shadow">
                     <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <span class="fw-bold"><i class="fas fa-edit me-2"></i>Edit Dokumen BPJS Kesehatan</span>
-                        <a href="{{ route('dokumen-bpjs-kesehatan.index') }}" class="btn btn-light btn-sm">
+                        <span class="fw-bold"><i class="fas fa-file-medical me-2"></i>Tambah Dokumen BPJS Tenaga Kerja</span>
+                        <a href="{{ route('dokumen-bpjs-tenaga-kerja.index') }}" class="btn btn-light btn-sm">
                             <i class="fas fa-arrow-left me-1"></i>Kembali
                         </a>
                     </div>
@@ -44,12 +44,11 @@
                             <ul id="validationMessages" class="mt-2 mb-0"></ul>
                         </div>
 
-                        <form action="{{ route('dokumen-bpjs-kesehatan.update', $dokumenBpjsKesehatan->id) }}"
-                            method="POST" id="dokumenBpjsKesehatanForm" enctype="multipart/form-data">
+                        <form action="{{ route('dokumen-bpjs-tenaga-kerja.store') }}" method="POST"
+                            id="dokumenBpjsTenagaKerjaForm" enctype="multipart/form-data">
                             @csrf
-                            @method('PUT')
                             <input type="text" class="form-control" id="IdKode" name="IdKode"
-                                value="{{ old('IdKode', $dokumenBpjsKesehatan->IdKode) }}" hidden readonly>
+                                value="{{ old('IdKode', $newId) }}" hidden readonly>
 
                             <!-- Nav tabs for form sections -->
                             <ul class="nav nav-tabs mb-4" id="formTabs" role="tablist">
@@ -98,8 +97,7 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="karyawanContainer">
                                                         <input type="text" id="karyawanSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari karyawan..." autocomplete="off"
-                                                            value="{{ $dokumenBpjsKesehatan->karyawan->NamaKry ?? '' }}">
+                                                            placeholder="Cari karyawan..." autocomplete="off">
 
                                                         <div class="custom-select-dropdown" id="karyawanDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -123,8 +121,7 @@
                                                         </div>
 
                                                         <input type="hidden" name="IdKodeA04" id="IdKodeA04"
-                                                            value="{{ old('IdKodeA04', $dokumenBpjsKesehatan->IdKodeA04) }}"
-                                                            required>
+                                                            value="{{ old('IdKodeA04') }}" required>
                                                     </div>
                                                     @error('IdKodeA04')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -143,8 +140,7 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="kategoriContainer">
                                                         <input type="text" id="kategoriSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari kategori..." autocomplete="off"
-                                                            value="{{ $dokumenBpjsKesehatan->KategoriDok }}">
+                                                            placeholder="Cari kategori..." autocomplete="off">
 
                                                         <div class="custom-select-dropdown" id="kategoriDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -167,8 +163,7 @@
                                                         </div>
 
                                                         <input type="hidden" name="KategoriDok" id="KategoriDok"
-                                                            value="{{ old('KategoriDok', $dokumenBpjsKesehatan->KategoriDok) }}"
-                                                            required>
+                                                            value="{{ old('KategoriDok') }}" required>
                                                     </div>
                                                     @error('KategoriDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -187,8 +182,7 @@
                                                         style="flex: 1 1 auto; width: 1%;" id="jenisContainer">
                                                         <input type="text" id="jenisSearch"
                                                             class="form-control custom-select-search"
-                                                            placeholder="Cari jenis dokumen..." autocomplete="off"
-                                                            value="{{ $dokumenBpjsKesehatan->JenisDok }}">
+                                                            placeholder="Cari jenis dokumen..." autocomplete="off">
 
                                                         <div class="custom-select-dropdown" id="jenisDropdown">
                                                             <div class="custom-select-search-wrapper">
@@ -206,8 +200,7 @@
                                                         </div>
 
                                                         <input type="hidden" name="JenisDok" id="JenisDok"
-                                                            value="{{ old('JenisDok', $dokumenBpjsKesehatan->JenisDok) }}"
-                                                            required>
+                                                            value="{{ old('JenisDok') }}" required>
                                                     </div>
                                                     @error('JenisDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -222,8 +215,7 @@
                                                     <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
                                                     <input type="text"
                                                         class="form-control @error('NoRegDok') is-invalid @enderror"
-                                                        id="NoRegDok" name="NoRegDok"
-                                                        value="{{ old('NoRegDok', $dokumenBpjsKesehatan->NoRegDok) }}"
+                                                        id="NoRegDok" name="NoRegDok" value="{{ old('NoRegDok') }}"
                                                         placeholder="Masukkan nomor registrasi dokumen" required>
                                                     @error('NoRegDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -254,8 +246,7 @@
                                                             <input type="text"
                                                                 class="form-control currency-input @error('UpahKtrKry') is-invalid @enderror"
                                                                 id="UpahKtrKry" name="UpahKtrKry"
-                                                                value="{{ old('UpahKtrKry', $dokumenBpjsKesehatan->UpahKtrKry) }}"
-                                                                placeholder="0" required>
+                                                                value="{{ old('UpahKtrKry') }}" placeholder="0" required>
                                                             @error('UpahKtrKry')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -271,8 +262,8 @@
                                                             <input type="text"
                                                                 class="form-control currency-input @error('UpahBrshKry') is-invalid @enderror"
                                                                 id="UpahBrshKry" name="UpahBrshKry"
-                                                                value="{{ old('UpahBrshKry', $dokumenBpjsKesehatan->UpahBrshKry) }}"
-                                                                placeholder="0" required>
+                                                                value="{{ old('UpahBrshKry') }}" placeholder="0"
+                                                                required>
                                                             @error('UpahBrshKry')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -283,86 +274,103 @@
                                         </div>
                                     </div>
 
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="card border-info mb-3">
-                                                <div class="card-header bg-info bg-opacity-25 text-dark">
-                                                    <h6 class="mb-0"><i class="fas fa-building me-2"></i>Iuran
-                                                        Perusahaan</h6>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranPrshPersen" class="form-label fw-bold">Persentase
-                                                            <span class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <input type="number"
-                                                                class="form-control @error('IuranPrshPersen') is-invalid @enderror"
-                                                                id="IuranPrshPersen" name="IuranPrshPersen"
-                                                                value="{{ old('IuranPrshPersen', $dokumenBpjsKesehatan->IuranPrshPersen) }}"
-                                                                min="0" max="100" step="0.01"
-                                                                placeholder="0" required>
-                                                            <span class="input-group-text">%</span>
-                                                            @error('IuranPrshPersen')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranPrshRp" class="form-label fw-bold">Nominal <span
-                                                                class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text">Rp</span>
-                                                            <input type="text"
-                                                                class="form-control currency-input @error('IuranPrshRp') is-invalid @enderror"
-                                                                id="IuranPrshRp" name="IuranPrshRp"
-                                                                value="{{ old('IuranPrshRp', $dokumenBpjsKesehatan->IuranPrshRp) }}"
-                                                                placeholder="0" readonly required>
-                                                            @error('IuranPrshRp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                    <!-- JKK (Jaminan Kecelakaan Kerja) -->
+                                    <div class="card border-info mb-3">
+                                        <div class="card-header bg-info bg-opacity-25 text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-heartbeat me-2"></i>Jaminan Kecelakaan
+                                                Kerja (JKK)</h6>
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="card border-warning mb-3">
-                                                <div class="card-header bg-warning bg-opacity-25 text-dark">
-                                                    <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Iuran Karyawan
-                                                    </h6>
-                                                </div>
-                                                <div class="card-body">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranKryPersen" class="form-label fw-bold">Persentase
-                                                            <span class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <input type="number"
-                                                                class="form-control @error('IuranKryPersen') is-invalid @enderror"
-                                                                id="IuranKryPersen" name="IuranKryPersen"
-                                                                value="{{ old('IuranKryPersen', $dokumenBpjsKesehatan->IuranKryPersen) }}"
-                                                                min="0" max="100" step="0.01"
-                                                                placeholder="0" required>
-                                                            <span class="input-group-text">%</span>
-                                                            @error('IuranKryPersen')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-building me-2"></i>Iuran
+                                                                Perusahaan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkkPrshPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJkkPrshPersen') is-invalid @enderror"
+                                                                        id="IuranJkkPrshPersen" name="IuranJkkPrshPersen"
+                                                                        value="{{ old('IuranJkkPrshPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0" required>
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJkkPrshPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkkPrshRp"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJkkPrshRp') is-invalid @enderror"
+                                                                        id="IuranJkkPrshRp" name="IuranJkkPrshRp"
+                                                                        value="{{ old('IuranJkkPrshRp', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IuranJkkPrshRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Iuran
+                                                                Karyawan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkkKryPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJkkKryPersen') is-invalid @enderror"
+                                                                        id="IuranJkkKryPersen" name="IuranJkkKryPersen"
+                                                                        value="{{ old('IuranJkkKryPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0">
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJkkKryPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
 
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranKryRp" class="form-label fw-bold">Nominal <span
-                                                                class="text-danger">*</span></label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text">Rp</span>
-                                                            <input type="text"
-                                                                class="form-control currency-input @error('IuranKryRp') is-invalid @enderror"
-                                                                id="IuranKryRp" name="IuranKryRp"
-                                                                value="{{ old('IuranKryRp', $dokumenBpjsKesehatan->IuranKryRp) }}"
-                                                                placeholder="0" readonly required>
-                                                            @error('IuranKryRp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkkKryRp"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJkkKryRp') is-invalid @enderror"
+                                                                        id="IuranJkkKryRp" name="IuranJkkKryRp"
+                                                                        value="{{ old('IuranJkkKryRp', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IuranJkkKryRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -370,61 +378,307 @@
                                         </div>
                                     </div>
 
-                                    <div class="card border-secondary mb-4">
-                                        <div class="card-header bg-secondary bg-opacity-25 text-dark">
-                                            <h5 class="mb-0"><i class="fas fa-money-check-alt me-2"></i>Iuran Tambahan
-                                            </h5>
+                                    <!-- JKM (Jaminan Kematian) -->
+                                    <div class="card border-warning mb-3">
+                                        <div class="card-header bg-warning bg-opacity-25 text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-procedures me-2"></i>Jaminan Kematian
+                                                (JKM)</h6>
                                         </div>
                                         <div class="card-body">
                                             <div class="row">
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranKry1Rp" class="form-label fw-bold">Iuran Karyawan
-                                                            1 (Opsional)</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text">Rp</span>
-                                                            <input type="text"
-                                                                class="form-control currency-input @error('IuranKry1Rp') is-invalid @enderror"
-                                                                id="IuranKry1Rp" name="IuranKry1Rp"
-                                                                value="{{ old('IuranKry1Rp', $dokumenBpjsKesehatan->IuranKry1Rp) }}"
-                                                                placeholder="0">
-                                                            @error('IuranKry1Rp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-building me-2"></i>Iuran
+                                                                Perusahaan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkmPrshPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJkmPrshPersen') is-invalid @enderror"
+                                                                        id="IuranJkmPrshPersen" name="IuranJkmPrshPersen"
+                                                                        value="{{ old('IuranJkmPrshPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0" required>
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJkmPrshPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkmPrshRp"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJkmPrshRp') is-invalid @enderror"
+                                                                        id="IuranJkmPrshRp" name="IuranJkmPrshRp"
+                                                                        value="{{ old('IuranJkmPrshRp', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IuranJkmPrshRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranKry2Rp" class="form-label fw-bold">Iuran Karyawan
-                                                            2 (Opsional)</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text">Rp</span>
-                                                            <input type="text"
-                                                                class="form-control currency-input @error('IuranKry2Rp') is-invalid @enderror"
-                                                                id="IuranKry2Rp" name="IuranKry2Rp"
-                                                                value="{{ old('IuranKry2Rp', $dokumenBpjsKesehatan->IuranKry2Rp) }}"
-                                                                placeholder="0">
-                                                            @error('IuranKry2Rp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Iuran
+                                                                Karyawan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkmKryPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJkmKryPersen') is-invalid @enderror"
+                                                                        id="IuranJkmKryPersen" name="IuranJkmKryPersen"
+                                                                        value="{{ old('IuranJkmKryPersen', '0') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0" >
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJkmKryPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJkmKryRP"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJkmKryRP') is-invalid @enderror"
+                                                                        id="IuranJkmKryRP" name="IuranJkmKryRP"
+                                                                        value="{{ old('IuranJkmKryRP', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IuranJkmKryRP')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4">
-                                                    <div class="form-group mb-3">
-                                                        <label for="IuranKry3Rp" class="form-label fw-bold">Iuran Karyawan
-                                                            3 (Opsional)</label>
-                                                        <div class="input-group">
-                                                            <span class="input-group-text">Rp</span>
-                                                            <input type="text"
-                                                                class="form-control currency-input @error('IuranKry3Rp') is-invalid @enderror"
-                                                                id="IuranKry3Rp" name="IuranKry3Rp"
-                                                                value="{{ old('IuranKry3Rp', $dokumenBpjsKesehatan->IuranKry3Rp) }}"
-                                                                placeholder="0">
-                                                            @error('IuranKry3Rp')
-                                                                <div class="invalid-feedback">{{ $message }}</div>
-                                                            @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- JHT (Jaminan Hari Tua) -->
+                                    <div class="card border-danger mb-3">
+                                        <div class="card-header bg-danger bg-opacity-25 text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-hand-holding-usd me-2"></i>Jaminan Hari
+                                                Tua (JHT)</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-building me-2"></i>Iuran
+                                                                Perusahaan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJhtPrshPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJhtPrshPersen') is-invalid @enderror"
+                                                                        id="IuranJhtPrshPersen" name="IuranJhtPrshPersen"
+                                                                        value="{{ old('IuranJhtPrshPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0" required>
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJhtPrshPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IursanJhtPrshRp"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IursanJhtPrshRp') is-invalid @enderror"
+                                                                        id="IursanJhtPrshRp" name="IursanJhtPrshRp"
+                                                                        value="{{ old('IursanJhtPrshRp', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IursanJhtPrshRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Iuran
+                                                                Karyawan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IursanJhtKryPersen"
+                                                                    class="form-label fw-bold">Persentase
+                                                                    <span class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IursanJhtKryPersen') is-invalid @enderror"
+                                                                        id="IursanJhtKryPersen" name="IursanJhtKryPersen"
+                                                                        value="{{ old('IursanJhtKryPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0" required>
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IursanJhtKryPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IursanJhtKryRp"
+                                                                    class="form-label fw-bold">Nominal <span
+                                                                        class="text-danger">*</span></label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IursanJhtKryRp') is-invalid @enderror"
+                                                                        id="IursanJhtKryRp" name="IursanJhtKryRp"
+                                                                        value="{{ old('IursanJhtKryRp', '0') }}"
+                                                                        placeholder="0" readonly required>
+                                                                    @error('IursanJhtKryRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- JP (Jaminan Pensiun) -->
+                                    <div class="card border-primary mb-3">
+                                        <div class="card-header bg-primary bg-opacity-25 text-dark">
+                                            <h6 class="mb-0"><i class="fas fa-umbrella me-2"></i>Jaminan Pensiun (JP)
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-building me-2"></i>Iuran
+                                                                Perusahaan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJpPrshPersen"
+                                                                    class="form-label fw-bold">Persentase</label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJpPrshPersen') is-invalid @enderror"
+                                                                        id="IuranJpPrshPersen" name="IuranJpPrshPersen"
+                                                                        value="{{ old('IuranJpPrshPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0">
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJpPrshPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJpPrshRp"
+                                                                    class="form-label fw-bold">Nominal</label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJpPrshRp') is-invalid @enderror"
+                                                                        id="IuranJpPrshRp" name="IuranJpPrshRp"
+                                                                        value="{{ old('IuranJpPrshRp', '0') }}"
+                                                                        placeholder="0" readonly>
+                                                                    @error('IuranJpPrshRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card border-secondary mb-3">
+                                                        <div class="card-header bg-secondary bg-opacity-10 text-dark">
+                                                            <h6 class="mb-0"><i class="fas fa-user-tie me-2"></i>Iuran
+                                                                Karyawan</h6>
+                                                        </div>
+                                                        <div class="card-body">
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJpKryPersen"
+                                                                    class="form-label fw-bold">Persentase</label>
+                                                                <div class="input-group">
+                                                                    <input type="number"
+                                                                        class="form-control @error('IuranJpKryPersen') is-invalid @enderror"
+                                                                        id="IuranJpKryPersen" name="IuranJpKryPersen"
+                                                                        value="{{ old('IuranJpKryPersen') }}"
+                                                                        min="0" max="100" step="0.01"
+                                                                        placeholder="0">
+                                                                    <span class="input-group-text">%</span>
+                                                                    @error('IuranJpKryPersen')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="form-group mb-3">
+                                                                <label for="IuranJpKryRp"
+                                                                    class="form-label fw-bold">Nominal</label>
+                                                                <div class="input-group">
+                                                                    <span class="input-group-text">Rp</span>
+                                                                    <input type="text"
+                                                                        class="form-control currency-input @error('IuranJpKryRp') is-invalid @enderror"
+                                                                        id="IuranJpKryRp" name="IuranJpKryRp"
+                                                                        value="{{ old('IuranJpKryRp', '0') }}"
+                                                                        placeholder="0" readonly>
+                                                                    @error('IuranJpKryRp')
+                                                                        <div class="invalid-feedback">{{ $message }}
+                                                                        </div>
+                                                                    @enderror
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -447,8 +701,8 @@
                                                             <input type="text"
                                                                 class="form-control currency-input @error('JmlPrshRp') is-invalid @enderror"
                                                                 id="JmlPrshRp" name="JmlPrshRp"
-                                                                value="{{ old('JmlPrshRp', $dokumenBpjsKesehatan->JmlPrshRp) }}"
-                                                                placeholder="0" readonly required>
+                                                                value="{{ old('JmlPrshRp', '0') }}" placeholder="0"
+                                                                readonly required>
                                                             @error('JmlPrshRp')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -464,8 +718,8 @@
                                                             <input type="text"
                                                                 class="form-control currency-input @error('JmlKryRp') is-invalid @enderror"
                                                                 id="JmlKryRp" name="JmlKryRp"
-                                                                value="{{ old('JmlKryRp', $dokumenBpjsKesehatan->JmlKryRp) }}"
-                                                                placeholder="0" readonly required>
+                                                                value="{{ old('JmlKryRp', '0') }}" placeholder="0"
+                                                                readonly required>
                                                             @error('JmlKryRp')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -474,16 +728,16 @@
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="form-group mb-3">
-                                                        <label for="TotIuran" class="form-label fw-bold">Total Iuran <span
-                                                                class="text-danger">*</span></label>
+                                                        <label for="TotSetoran" class="form-label fw-bold">Total Setoran
+                                                            <span class="text-danger">*</span></label>
                                                         <div class="input-group">
                                                             <span class="input-group-text">Rp</span>
                                                             <input type="text"
-                                                                class="form-control currency-input @error('TotIuran') is-invalid @enderror"
-                                                                id="TotIuran" name="TotIuran"
-                                                                value="{{ old('TotIuran', $dokumenBpjsKesehatan->TotIuran) }}"
-                                                                placeholder="0" readonly required>
-                                                            @error('TotIuran')
+                                                                class="form-control currency-input @error('TotSetoran') is-invalid @enderror"
+                                                                id="TotSetoran" name="TotSetoran"
+                                                                value="{{ old('TotSetoran', '0') }}" placeholder="0"
+                                                                readonly required>
+                                                            @error('TotSetoran')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
                                                         </div>
@@ -515,8 +769,7 @@
                                                             <input type="date"
                                                                 class="form-control tanggal-input @error('TglTerbitDok') is-invalid @enderror"
                                                                 id="TglTerbitDok" name="TglTerbitDok"
-                                                                value="{{ old('TglTerbitDok', $dokumenBpjsKesehatan->TglTerbitDok ? date('Y-m-d', strtotime($dokumenBpjsKesehatan->TglTerbitDok)) : '') }}"
-                                                                required>
+                                                                value="{{ old('TglTerbitDok') }}" required>
                                                             @error('TglTerbitDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -533,7 +786,7 @@
                                                             <input type="date"
                                                                 class="form-control tanggal-input @error('TglBerakhirDok') is-invalid @enderror"
                                                                 id="TglBerakhirDok" name="TglBerakhirDok"
-                                                                value="{{ old('TglBerakhirDok', $dokumenBpjsKesehatan->TglBerakhirDok ? date('Y-m-d', strtotime($dokumenBpjsKesehatan->TglBerakhirDok)) : '') }}">
+                                                                value="{{ old('TglBerakhirDok') }}">
                                                             @error('TglBerakhirDok')
                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                             @enderror
@@ -545,8 +798,7 @@
                                             <div class="form-group mb-3">
                                                 <label for="MasaBerlaku" class="form-label fw-bold">Masa Berlaku</label>
                                                 <input type="text" class="form-control bg-light" id="MasaBerlaku"
-                                                    name="MasaBerlaku"
-                                                    value="{{ old('MasaBerlaku', $dokumenBpjsKesehatan->MasaBerlaku) }}"
+                                                    name="MasaBerlaku" value="{{ old('MasaBerlaku', 'Tetap') }}"
                                                     readonly>
                                                 <div class="form-text text-muted">
                                                     <i class="fas fa-info-circle me-1"></i>Masa berlaku akan dihitung
@@ -582,46 +834,6 @@
                                                 </div>
                                             </div>
 
-                                            <!-- Current file info -->
-                                            @if ($dokumenBpjsKesehatan->FileDok)
-                                                <div class="mb-3">
-                                                    <div class="card border-success">
-                                                        <div class="card-body p-2">
-                                                            <div class="d-flex align-items-center">
-                                                                <div class="me-2">
-                                                                    @php
-                                                                        $fileExt = pathinfo(
-                                                                            $dokumenBpjsKesehatan->FileDok,
-                                                                            PATHINFO_EXTENSION,
-                                                                        );
-                                                                        $iconClass = 'fas fa-file fa-2x text-secondary';
-                                                                        if ($fileExt === 'pdf') {
-                                                                            $iconClass =
-                                                                                'fas fa-file-pdf fa-2x text-danger';
-                                                                        } elseif (
-                                                                            in_array($fileExt, ['jpg', 'jpeg', 'png'])
-                                                                        ) {
-                                                                            $iconClass =
-                                                                                'fas fa-file-image fa-2x text-primary';
-                                                                        }
-                                                                    @endphp
-                                                                    <i class="{{ $iconClass }}"></i>
-                                                                </div>
-                                                                <div class="flex-grow-1">
-                                                                    <h6 class="mb-0 text-truncate">
-                                                                        {{ $dokumenBpjsKesehatan->FileDok }}</h6>
-                                                                    <small class="text-muted">File saat ini</small>
-                                                                </div>
-                                                                {{-- <a href="{{ route('dokumen-bpjs-kesehatan.download', $dokumenBpjsKesehatan->id) }}"
-                                                                    class="btn btn-sm btn-primary ms-2">
-                                                                    <i class="fas fa-download"></i>
-                                                                </a> --}}
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endif
-
                                             <!-- File preview container -->
                                             <div id="filePreviewContainer" class="mb-3 d-none">
                                                 <div class="card border-secondary">
@@ -643,7 +855,6 @@
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div class="form-group mb-3">
                                                 <label for="KetDok" class="form-label fw-bold">Keterangan
                                                     Dokumen</label>
@@ -651,7 +862,7 @@
                                                     <span class="input-group-text"><i
                                                             class="fas fa-align-left"></i></span>
                                                     <textarea class="form-control @error('KetDok') is-invalid @enderror" id="KetDok" name="KetDok" rows="3"
-                                                        placeholder="Masukkan keterangan dokumen">{{ old('KetDok', $dokumenBpjsKesehatan->KetDok) }}</textarea>
+                                                        placeholder="Masukkan keterangan dokumen">{{ old('KetDok') }}</textarea>
                                                     @error('KetDok')
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
@@ -673,7 +884,7 @@
                                                             class="form-check-input @error('StatusDok') is-invalid @enderror"
                                                             type="radio" name="StatusDok" id="berlaku"
                                                             value="Berlaku"
-                                                            {{ old('StatusDok', $dokumenBpjsKesehatan->StatusDok) == 'Berlaku' ? 'checked' : '' }}
+                                                            {{ old('StatusDok', 'Berlaku') == 'Berlaku' ? 'checked' : '' }}
                                                             required>
                                                         <label class="form-check-label" for="berlaku">
                                                             <i class="fas fa-check-circle text-success me-1"></i>Berlaku
@@ -684,7 +895,7 @@
                                                             class="form-check-input @error('StatusDok') is-invalid @enderror"
                                                             type="radio" name="StatusDok" id="tidak_berlaku"
                                                             value="Tidak Berlaku"
-                                                            {{ old('StatusDok', $dokumenBpjsKesehatan->StatusDok) == 'Tidak Berlaku' ? 'checked' : '' }}>
+                                                            {{ old('StatusDok') == 'Tidak Berlaku' ? 'checked' : '' }}>
                                                         <label class="form-check-label" for="tidak_berlaku">
                                                             <i class="fas fa-times-circle text-danger me-1"></i>Tidak
                                                             Berlaku
@@ -701,7 +912,6 @@
                             </div>
 
                             <!-- Tombol navigasi tab -->
-                            <!-- Tombol navigasi tab -->
                             <div class="d-flex justify-content-between mt-4">
                                 <button type="button" id="prevTabBtn" class="btn btn-secondary" style="display: none;">
                                     <i class="fas fa-arrow-left me-1"></i> Sebelumnya
@@ -712,7 +922,7 @@
                                     </button>
                                     <button type="submit" id="submitBtn" class="btn btn-success"
                                         style="display: none;">
-                                        <i class="fas fa-save me-1"></i> Simpan Perubahan
+                                        <i class="fas fa-save me-1"></i> Simpan Data
                                     </button>
                                 </div>
                             </div>
@@ -729,12 +939,12 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Simpan Perubahan</h5>
+                    <h5 class="modal-title" id="confirmationModalLabel">Konfirmasi Simpan Data</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                         aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menyimpan perubahan pada dokumen BPJS Kesehatan ini?</p>
+                    <p>Apakah Anda yakin ingin menyimpan data dokumen BPJS Tenaga Kerja ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -999,51 +1209,90 @@
                 });
             });
 
-            // Calculate all values
+            // Calculate all BPJS values
             function calculateAll() {
-                // Get raw values
+                // Get upah bersih (base for all calculations)
                 const upahBersih = parseCurrency(document.getElementById('UpahBrshKry').value);
-                const iuranPrshPersen = parseFloat(document.getElementById('IuranPrshPersen').value) || 0;
-                const iuranKryPersen = parseFloat(document.getElementById('IuranKryPersen').value) || 0;
 
-                // Calculate iuran perusahaan in rupiah (whole number, no decimals)
-                const iuranPrshRp = Math.round(upahBersih * iuranPrshPersen / 100);
-                document.getElementById('IuranPrshRp').value = formatCurrency(iuranPrshRp.toString());
-                document.getElementById('IuranPrshRp_raw').value = iuranPrshRp;
+                // JKK calculations
+                const iuranJkkPrshPersen = parseFloat(document.getElementById('IuranJkkPrshPersen').value) || 0;
+                const iuranJkkKryPersen = parseFloat(document.getElementById('IuranJkkKryPersen').value) || 0;
 
-                // Calculate iuran karyawan in rupiah (whole number, no decimals)
-                const iuranKryRp = Math.round(upahBersih * iuranKryPersen / 100);
-                document.getElementById('IuranKryRp').value = formatCurrency(iuranKryRp.toString());
-                document.getElementById('IuranKryRp_raw').value = iuranKryRp;
+                const iuranJkkPrshRp = Math.round(upahBersih * iuranJkkPrshPersen / 100);
+                const iuranJkkKryRp = Math.round(upahBersih * iuranJkkKryPersen / 100);
 
-                // Get optional iuran values
-                const iuranKry1Rp = parseCurrency(document.getElementById('IuranKry1Rp').value);
-                const iuranKry2Rp = parseCurrency(document.getElementById('IuranKry2Rp').value);
-                const iuranKry3Rp = parseCurrency(document.getElementById('IuranKry3Rp').value);
+                document.getElementById('IuranJkkPrshRp').value = formatCurrency(iuranJkkPrshRp.toString());
+                document.getElementById('IuranJkkKryRp').value = formatCurrency(iuranJkkKryRp.toString());
+                document.getElementById('IuranJkkPrshRp_raw').value = iuranJkkPrshRp;
+                document.getElementById('IuranJkkKryRp_raw').value = iuranJkkKryRp;
 
-                // Calculate totals
-                const jmlPrshRp = iuranPrshRp; // Jumlah iuran perusahaan = iuran perusahaan
-                const jmlKryRp = iuranKryRp + iuranKry1Rp + iuranKry2Rp + iuranKry3Rp; // Jumlah iuran karyawan
-                const totIuran = jmlPrshRp + jmlKryRp; // Total iuran
+                // JKM calculations
+                const iuranJkmPrshPersen = parseFloat(document.getElementById('IuranJkmPrshPersen').value) || 0;
+                const iuranJkmKryPersen = parseFloat(document.getElementById('IuranJkmKryPersen').value) || 0;
 
-                // Update display fields
+                const iuranJkmPrshRp = Math.round(upahBersih * iuranJkmPrshPersen / 100);
+                const iuranJkmKryRp = Math.round(upahBersih * iuranJkmKryPersen / 100);
+
+                document.getElementById('IuranJkmPrshRp').value = formatCurrency(iuranJkmPrshRp.toString());
+                document.getElementById('IuranJkmKryRP').value = formatCurrency(iuranJkmKryRp.toString());
+                document.getElementById('IuranJkmPrshRp_raw').value = iuranJkmPrshRp;
+                document.getElementById('IuranJkmKryRP_raw').value = iuranJkmKryRp;
+
+                // JHT calculations
+                const iuranJhtPrshPersen = parseFloat(document.getElementById('IuranJhtPrshPersen').value) || 0;
+                const iuranJhtKryPersen = parseFloat(document.getElementById('IursanJhtKryPersen').value) || 0;
+
+                const iuranJhtPrshRp = Math.round(upahBersih * iuranJhtPrshPersen / 100);
+                const iuranJhtKryRp = Math.round(upahBersih * iuranJhtKryPersen / 100);
+
+                document.getElementById('IursanJhtPrshRp').value = formatCurrency(iuranJhtPrshRp.toString());
+                document.getElementById('IursanJhtKryRp').value = formatCurrency(iuranJhtKryRp.toString());
+                document.getElementById('IursanJhtPrshRp_raw').value = iuranJhtPrshRp;
+                document.getElementById('IursanJhtKryRp_raw').value = iuranJhtKryRp;
+
+                // JP calculations
+                const iuranJpPrshPersen = parseFloat(document.getElementById('IuranJpPrshPersen').value) || 0;
+                const iuranJpKryPersen = parseFloat(document.getElementById('IuranJpKryPersen').value) || 0;
+
+                const iuranJpPrshRp = Math.round(upahBersih * iuranJpPrshPersen / 100);
+                const iuranJpKryRp = Math.round(upahBersih * iuranJpKryPersen / 100);
+
+                document.getElementById('IuranJpPrshRp').value = formatCurrency(iuranJpPrshRp.toString());
+                document.getElementById('IuranJpKryRp').value = formatCurrency(iuranJpKryRp.toString());
+                document.getElementById('IuranJpPrshRp_raw').value = iuranJpPrshRp;
+                document.getElementById('IuranJpKryRp_raw').value = iuranJpKryRp;
+
+                // Calculate total contributions
+                const jmlPrshRp = iuranJkkPrshRp + iuranJkmPrshRp + iuranJhtPrshRp + iuranJpPrshRp;
+                const jmlKryRp = iuranJkkKryRp + iuranJkmKryRp + iuranJhtKryRp + iuranJpKryRp;
+                const totSetoran = jmlPrshRp + jmlKryRp;
+
                 document.getElementById('JmlPrshRp').value = formatCurrency(jmlPrshRp.toString());
                 document.getElementById('JmlKryRp').value = formatCurrency(jmlKryRp.toString());
-                document.getElementById('TotIuran').value = formatCurrency(totIuran.toString());
-
-                // Update hidden fields
+                document.getElementById('TotSetoran').value = formatCurrency(totSetoran.toString());
                 document.getElementById('JmlPrshRp_raw').value = jmlPrshRp;
                 document.getElementById('JmlKryRp_raw').value = jmlKryRp;
-                document.getElementById('TotIuran_raw').value = totIuran;
+                document.getElementById('TotSetoran_raw').value = totSetoran;
             }
 
-            // Add event listeners for calculation fields
+            // Add event listeners for fields that affect calculations
             document.getElementById('UpahBrshKry').addEventListener('input', calculateAll);
-            document.getElementById('IuranPrshPersen').addEventListener('input', calculateAll);
-            document.getElementById('IuranKryPersen').addEventListener('input', calculateAll);
-            document.getElementById('IuranKry1Rp').addEventListener('input', calculateAll);
-            document.getElementById('IuranKry2Rp').addEventListener('input', calculateAll);
-            document.getElementById('IuranKry3Rp').addEventListener('input', calculateAll);
+
+            // JKK percentages
+            document.getElementById('IuranJkkPrshPersen').addEventListener('input', calculateAll);
+            document.getElementById('IuranJkkKryPersen').addEventListener('input', calculateAll);
+
+            // JKM percentages
+            document.getElementById('IuranJkmPrshPersen').addEventListener('input', calculateAll);
+            document.getElementById('IuranJkmKryPersen').addEventListener('input', calculateAll);
+
+            // JHT percentages
+            document.getElementById('IuranJhtPrshPersen').addEventListener('input', calculateAll);
+            document.getElementById('IursanJhtKryPersen').addEventListener('input', calculateAll);
+
+            // JP percentages
+            document.getElementById('IuranJpPrshPersen').addEventListener('input', calculateAll);
+            document.getElementById('IuranJpKryPersen').addEventListener('input', calculateAll);
 
             fileInput.addEventListener('change', function() {
                 // Clear previous validation messages
@@ -1322,20 +1571,16 @@
                 const jenisSearch = document.getElementById('jenisSearch');
                 const jenisHiddenInput = document.getElementById('JenisDok');
 
-                // Store current value before clearing
-                const currentValue = jenisHiddenInput.value;
-
                 // Keep the empty option
                 const emptyOption = jenisOptions.querySelector('.empty-option');
                 jenisOptions.innerHTML = '';
                 jenisOptions.appendChild(emptyOption);
 
-                if (!kategoriId) {
-                    // Reset if no category selected
-                    jenisHiddenInput.value = '';
-                    jenisSearch.value = '';
-                    return;
-                }
+                // Reset jenis value
+                jenisHiddenInput.value = '';
+                jenisSearch.value = '';
+
+                if (!kategoriId) return;
 
                 // Get dokumen list for selected kategori
                 const dokumenList = jenisDokumenByKategori[kategoriId] || [];
@@ -1373,21 +1618,21 @@
                     jenisOptions.appendChild(option);
                 });
 
-                // Restore current value if it's in the new options
-                if (currentValue) {
-                    const option = Array.from(jenisOptions.querySelectorAll('.custom-select-option')).find(
-                        opt => opt.dataset.value === currentValue
-                    );
+                // Check if there's an old value to restore
+                const oldJenisDok = "{{ old('JenisDok') }}";
+                if (oldJenisDok) {
+                    dokumenList.forEach(dokumen => {
+                        if (dokumen.JenisDok === oldJenisDok) {
+                            jenisHiddenInput.value = oldJenisDok;
+                            jenisSearch.value = oldJenisDok;
 
-                    if (option) {
-                        jenisHiddenInput.value = currentValue;
-                        jenisSearch.value = option.dataset.display;
-                        option.classList.add('selected');
-                    } else if (dokumenList.length > 0) {
-                        // If current value is not in the new options, reset it
-                        jenisHiddenInput.value = '';
-                        jenisSearch.value = '';
-                    }
+                            const option = jenisOptions.querySelector(
+                                `.custom-select-option[data-value="${oldJenisDok}"]`);
+                            if (option) {
+                                option.classList.add('selected');
+                            }
+                        }
+                    });
                 }
             }
 
@@ -1441,27 +1686,29 @@
 
             // Function to validate file input
             function validateFileInput() {
-                if (fileInput.files && fileInput.files.length > 0) {
-                    const file = fileInput.files[0];
-                    const fileExt = file.name.split('.').pop().toLowerCase();
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    fileInput.classList.add('is-invalid');
+                    fileValidationMessage.textContent = 'Silakan pilih file dokumen';
+                    fileValidationMessage.classList.remove('d-none');
 
-                    // Validate file type
-                    const validTypes = ['pdf', 'jpg', 'jpeg', 'png'];
-                    if (!validTypes.includes(fileExt)) {
-                        fileInput.classList.add('is-invalid');
-                        fileValidationMessage.textContent =
-                            'Format file tidak valid. Gunakan PDF, JPG, JPEG, atau PNG.';
-                        fileValidationMessage.classList.remove('d-none');
-                        return false;
-                    }
+                    // Animate the file input
+                    fileInput.classList.add('animate__animated', 'animate__shakeX');
+                    setTimeout(() => {
+                        fileInput.classList.remove('animate__shakeX');
+                    }, 1000);
+
+                    return false;
+                } else {
+                    fileInput.classList.remove('is-invalid');
+                    fileValidationMessage.classList.add('d-none');
+                    return true;
                 }
-
-                // File input is optional in edit mode since there may already be a file
-                return true;
             }
 
             // Function to highlight missing fields
             function highlightMissingFields() {
+                const invalidFieldsList = [];
+
                 document.querySelectorAll('[required]').forEach(function(input) {
                     if (!input.value) {
                         input.classList.add('is-invalid');
@@ -1482,6 +1729,15 @@
                             }
                         }
 
+                        // Get field label for error message
+                        let fieldName = "";
+                        const label = input.closest('.form-group').querySelector('label');
+                        if (label) {
+                            fieldName = label.textContent.replace('*', '').trim();
+                        }
+
+                        invalidFieldsList.push(fieldName);
+
                         // Create error message if it doesn't exist
                         if (!input.nextElementSibling || !input.nextElementSibling.classList.contains(
                                 'invalid-feedback')) {
@@ -1500,6 +1756,8 @@
                         element.classList.remove('animate__shakeX');
                     }, 1000);
                 });
+
+                return invalidFieldsList;
             }
 
             // Add event listeners for dates
@@ -1509,96 +1767,6 @@
                         hitungMasaBerlaku();
                     }
                 });
-            });
-
-            // Form validation and submission
-            const form = document.getElementById('dokumenBpjsKesehatanForm');
-            form.addEventListener('submit', function(event) {
-                // Validate file input if one is chosen
-                const fileIsValid = validateFileInput();
-
-                if (!fileIsValid || !form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    // Close any open dropdowns
-                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
-                        portal.classList.remove('active');
-                    });
-                    document.querySelectorAll('.custom-select-container').forEach(container => {
-                        container.classList.remove('open');
-                    });
-
-                    // Add alert for validation errors
-                    const errorAlert = document.createElement('div');
-                    errorAlert.className = 'alert alert-danger alert-dismissible fade show mt-3';
-                    errorAlert.innerHTML = `
-                <h5 class="alert-heading"><i class="fas fa-exclamation-triangle me-1"></i> Formulir belum lengkap!</h5>
-                <p>Silakan periksa kembali dan lengkapi semua field yang diperlukan.</p>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            `;
-
-                    // Insert alert at top of form
-                    const firstElement = form.firstElementChild;
-                    form.insertBefore(errorAlert, firstElement);
-
-                    // Scroll to alert
-                    errorAlert.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-
-                    // Highlight missing fields
-                    highlightMissingFields();
-                } else {
-                    // Ensure all raw values are properly set before submission
-                    document.querySelectorAll('.currency-input').forEach(function(input) {
-                        const hiddenField = document.getElementById(input.id + '_raw');
-                        if (hiddenField) {
-                            hiddenField.value = parseCurrency(input.value);
-                        }
-                    });
-                }
-            });
-
-            // Initialize
-            createPortals();
-            createHiddenFields();
-
-            // Initialize each select
-            initCustomSelect('karyawan', 'IdKodeA04');
-            initCustomSelect('kategori', 'KategoriDok');
-            initCustomSelect('jenis', 'JenisDok');
-
-            // Initialize form state
-            hitungMasaBerlaku();
-
-            // Kategori change handler untuk update jenis dokumen
-            document.getElementById('KategoriDok').addEventListener('change', function() {
-                updateJenisDokumen(this.value);
-            });
-
-            // Initialize jenis dokumen if kategori is selected
-            const oldKategori = document.getElementById('KategoriDok').value;
-            if (oldKategori) {
-                updateJenisDokumen(oldKategori);
-            }
-
-            // Initialize periods
-            if (document.getElementById('TglTerbitDok').value && document.getElementById('TglBerakhirDok').value) {
-                hitungMasaBerlaku();
-            }
-
-            // Add global escape key handler
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
-                        portal.classList.remove('active');
-                    });
-                    document.querySelectorAll('.custom-select-container').forEach(container => {
-                        container.classList.remove('open');
-                    });
-                }
             });
 
             // Tab navigation variables
@@ -1732,40 +1900,15 @@
             const confirmSubmitBtn = document.getElementById('confirmSubmit');
 
             // Form validation and submission
+            const form = document.getElementById('dokumenBpjsTenagaKerjaForm');
             const validationAlert = document.getElementById('validationAlert');
             const validationMessages = document.getElementById('validationMessages');
 
             submitBtn.addEventListener('click', function(event) {
                 // Validate all required fields
-                const invalidFieldsList = [];
+                const invalidFieldsList = highlightMissingFields();
 
-                document.querySelectorAll('[required]').forEach(function(input) {
-                    if (!input.value) {
-                        input.classList.add('is-invalid');
-
-                        // Handle custom select validation
-                        if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id
-                                .includes('Dok'))) {
-                            const containerId = input.id.replace('IdKode', '').replace('Dok', '') +
-                                'Container';
-                            const container = document.getElementById(containerId);
-                            if (container) {
-                                container.classList.add('is-invalid');
-                            }
-                        }
-
-                        // Get field label for error message
-                        let fieldName = "";
-                        const label = input.closest('.form-group').querySelector('label');
-                        if (label) {
-                            fieldName = label.textContent.replace('*', '').trim();
-                        }
-
-                        invalidFieldsList.push(fieldName);
-                    }
-                });
-
-                // File validation - optional in edit mode
+                // Validate file input
                 const fileIsValid = validateFileInput();
 
                 if (invalidFieldsList.length > 0 || !fileIsValid) {
@@ -1778,6 +1921,12 @@
                             li.textContent = field;
                             validationMessages.appendChild(li);
                         });
+                    }
+
+                    if (!fileIsValid) {
+                        const li = document.createElement('li');
+                        li.textContent = 'File Dokumen';
+                        validationMessages.appendChild(li);
                     }
 
                     validationAlert.style.display = 'block';
@@ -1818,6 +1967,95 @@
                 });
 
                 form.submit();
+            });
+
+            // Remove invalid class when input changes
+            document.querySelectorAll('input, select, textarea').forEach(function(input) {
+                input.addEventListener('input', function() {
+                    if (this.hasAttribute('required') && this.value) {
+                        this.classList.remove('is-invalid');
+
+                        // Handle custom select
+                        if (this.id === 'IdKodeA04' || this.id === 'KategoriDok' || this.id ===
+                            'JenisDok') {
+                            const containerId = this.id.replace('IdKode', '').replace('Dok', '') +
+                                'Container';
+                            const container = document.getElementById(containerId);
+                            if (container) {
+                                container.classList.remove('is-invalid');
+                            }
+                        }
+                    }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
+                    }
+                });
+
+                input.addEventListener('change', function() {
+                    if (this.hasAttribute('required') && this.value) {
+                        this.classList.remove('is-invalid');
+
+                        // Handle custom select
+                        if (this.id === 'IdKodeA04' || this.id === 'KategoriDok' || this.id ===
+                            'JenisDok') {
+                            const containerId = this.id.replace('IdKode', '').replace('Dok', '') +
+                                'Container';
+                            const container = document.getElementById(containerId);
+                            if (container) {
+                                container.classList.remove('is-invalid');
+                            }
+                        }
+                    }
+
+                    // Check if all invalid fields are now valid
+                    const invalidFields = document.querySelectorAll('.is-invalid');
+                    if (invalidFields.length === 0) {
+                        validationAlert.style.display = 'none';
+                    }
+                });
+            });
+
+            // Initialize
+            createPortals();
+            createHiddenFields();
+
+            // Initialize each select
+            initCustomSelect('karyawan', 'IdKodeA04');
+            initCustomSelect('kategori', 'KategoriDok');
+            initCustomSelect('jenis', 'JenisDok');
+
+            // Initialize form state
+            hitungMasaBerlaku();
+
+            // Kategori change handler untuk update jenis dokumen
+            document.getElementById('KategoriDok').addEventListener('change', function() {
+                updateJenisDokumen(this.value);
+            });
+
+            // Initialize jenis dokumen if kategori is selected
+            const oldKategori = document.getElementById('KategoriDok').value;
+            if (oldKategori) {
+                updateJenisDokumen(oldKategori);
+            }
+
+            // Initialize periods
+            if (document.getElementById('TglTerbitDok').value && document.getElementById('TglBerakhirDok').value) {
+                hitungMasaBerlaku();
+            }
+
+            // Add global escape key handler
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    document.querySelectorAll('.dropdown-portal').forEach(portal => {
+                        portal.classList.remove('active');
+                    });
+                    document.querySelectorAll('.custom-select-container').forEach(container => {
+                        container.classList.remove('open');
+                    });
+                }
             });
 
             // Initialize currency formatting for all values
