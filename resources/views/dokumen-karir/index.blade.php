@@ -935,6 +935,7 @@
             );
 
             // Inisialisasi DataTable
+            // Inisialisasi DataTable
             var table = $('#dokumenKarirTable').DataTable({
                 responsive: true,
                 language: indonesianLanguage,
@@ -983,7 +984,9 @@
                     }
                 ],
                 order: [
-                    [10, 'asc'], // Mengurutkan berdasarkan status terlebih dahulu
+                    [10,
+                        'asc'
+                    ], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
                     [1, 'asc'] // Kemudian berdasarkan No. Reg
                 ],
                 buttons: [{
