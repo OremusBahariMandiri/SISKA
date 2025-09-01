@@ -78,7 +78,7 @@
                                         <tr data-tgl-pengingat="{{ $dokumen->TglPengingat ? \Carbon\Carbon::parse($dokumen->TglPengingat)->format('Y-m-d') : '' }}"
                                             data-tgl-berakhir="{{ $dokumen->TglBerakhirDok ? \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->format('Y-m-d') : '' }}">
                                             <td>{{ $index + 1 }}</td>
-                                            <td>{{ $dokumen->NrkKry }}</td>
+                                            <td>{{ $dokumen->karyawan->NrkKry }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
