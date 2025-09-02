@@ -79,7 +79,9 @@
                                                                 @foreach ($karyawan as $employee)
                                                                     <div class="custom-select-option"
                                                                         data-value="{{ $employee->IdKode }}"
-                                                                        data-display="{{ $employee->NamaKry }} - {{ $employee->NrkKry ?? '' }}">
+                                                                        data-display="{{ $employee->NamaKry }} - {{ $employee->NrkKry ?? '' }}"
+                                                                        data-tglmsk="{{ $employee->TglMsk ? $employee->TglMsk->format('Y-m-d') : '' }}"
+                                                                        data-masakerja="{{ $employee->masa_kerja ?? '' }}">
                                                                         {{ $employee->NamaKry }} -
                                                                         {{ $employee->NrkKry ?? '' }}
                                                                     </div>
@@ -97,6 +99,35 @@
                                                 </div>
                                             </div>
 
+                                            <!-- Tanggal Masuk dan Masa Kerja Row -->
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="TglMsk" class="form-label fw-bold">Tanggal
+                                                            Masuk</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-calendar-check"></i></span>
+                                                            <input type="date" class="form-control bg-light"
+                                                                id="TglMsk" name="TglMsk"
+                                                                value="{{ $dokumenKontrak->karyawan && $dokumenKontrak->karyawan->TglMsk ? $dokumenKontrak->karyawan->TglMsk->format('Y-m-d') : '' }}"
+                                                                readonly disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label for="MasaKerja" class="form-label fw-bold">Masa Kerja</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-business-time"></i></span>
+                                                            <input type="text" class="form-control bg-light"
+                                                                id="MasaKerja" name="MasaKerja" value="-" readonly
+                                                                disabled>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
 
                                             <div class="form-group mb-3">
                                                 <label for="NamaPrsh" class="form-label fw-bold">Perusahaan <span
@@ -684,6 +715,12 @@
             const removeFileBtn = document.getElementById('removeFile');
             const fileValidationMessage = document.getElementById('fileValidationMessage');
 
+            // Initialize Masa Kerja field with karyawan data when page loads
+            const tglMskValue = document.getElementById('TglMsk').value;
+            if (tglMskValue) {
+                calculateMasaKerja(tglMskValue);
+            }
+
             fileInput.addEventListener('change', function() {
                 // Clear previous validation messages
                 fileInput.classList.remove('is-invalid');
@@ -802,10 +839,15 @@
                 const initialValue = hiddenInput.value;
                 if (initialValue) {
                     const selectedOption = Array.from(options).find(option => option.dataset.value ===
-                        initialValue);
+                    initialValue);
                     if (selectedOption) {
                         searchInput.value = selectedOption.dataset.display;
                         selectedOption.classList.add('selected');
+
+                        // For karyawan, populate related fields
+                        if (prefix === 'karyawan') {
+                            populateKaryawanInfo(selectedOption);
+                        }
                     }
                 }
 
@@ -844,8 +886,7 @@
 
                 // Close dropdown when clicking outside
                 document.addEventListener('click', function(e) {
-                    if (!e.target.closest(`#${prefix}Container`) &&
-                        !e.target.closest(`#${prefix}Portal`)) {
+                    if (!e.target.closest(`#${prefix}Container`) && !e.target.closest(`#${prefix}Portal`)) {
                         portal.classList.remove('active');
                         container.classList.remove('open');
                     }
@@ -858,7 +899,7 @@
                         options.forEach(option => {
                             const text = option.textContent.toLowerCase();
                             if (text.includes(filter) || option.classList.contains(
-                                    'empty-option')) {
+                                'empty-option')) {
                                 option.classList.remove('hidden');
                             } else {
                                 option.classList.add('hidden');
@@ -900,6 +941,8 @@
                         // Specific actions for certain fields
                         if (prefix === 'kategori') {
                             updateJenisDokumen(value);
+                        } else if (prefix === 'karyawan') {
+                            populateKaryawanInfo(this);
                         }
                     });
                 });
@@ -959,6 +1002,81 @@
                         }
                     });
                 }
+            }
+
+            // Function to populate karyawan-related fields
+            function populateKaryawanInfo(option) {
+                const tglMsk = option.dataset.tglmsk || '';
+
+                // Populate tanggal masuk field
+                const tglMskField = document.getElementById('TglMsk');
+                if (tglMskField) {
+                    tglMskField.value = tglMsk;
+                }
+
+                // Always calculate masa kerja directly from the date
+                if (tglMsk) {
+                    calculateMasaKerja(tglMsk);
+                } else {
+                    document.getElementById('MasaKerja').value = '-';
+                }
+            }
+
+            // Function to calculate masa kerja from tanggal masuk
+            // Function to calculate masa kerja from tanggal masuk
+            function calculateMasaKerja(tglMsk) {
+                if (!tglMsk) {
+                    document.getElementById('MasaKerja').value = '-';
+                    return;
+                }
+
+                const today = new Date();
+                const joinDate = new Date(tglMsk);
+
+                // Set time to midnight to avoid time-of-day issues
+                today.setHours(0, 0, 0, 0);
+                joinDate.setHours(0, 0, 0, 0);
+
+                // Get years difference
+                let years = today.getFullYear() - joinDate.getFullYear();
+
+                // Create a date with the same month and day from the join date but in the current year
+                const currentYearJoinDate = new Date(today.getFullYear(), joinDate.getMonth(), joinDate.getDate());
+
+                // If the anniversary hasn't occurred yet this year, subtract a year
+                // But only if years is greater than 0 to avoid negative years
+                if (today < currentYearJoinDate && years > 0) {
+                    years--;
+                }
+
+                // Calculate months
+                let months = today.getMonth() - joinDate.getMonth();
+                if (months < 0) {
+                    months += 12;
+                }
+
+                // Adjust for day of month
+                if (today.getDate() < joinDate.getDate()) {
+                    months--;
+                    if (months < 0) {
+                        months += 12;
+                        // Only decrement years if it would not make years negative
+                        if (years > 0) {
+                            years--;
+                        }
+                    }
+                }
+
+                // Calculate remaining days
+                let days = today.getDate() - joinDate.getDate();
+                if (days < 0) {
+                    // Get the last day of the previous month
+                    const lastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+                    days += lastMonth.getDate();
+                }
+
+                // Format: "X tahun Y bulan Z hari"
+                document.getElementById('MasaKerja').value = `${years} tahun ${months} bulan ${days} hari`;
             }
 
             // Function to update jenis dokumen options based on selected kategori
@@ -1184,8 +1302,7 @@
                         if (input.type === 'hidden' && (input.id.includes('IdKode') || input.id.includes(
                                 'Dok') || input.id === 'NamaPrsh')) {
                             const containerId = input.id.replace('IdKode', '').replace('Dok', '').replace(
-                                    'Nama', '') +
-                                'Container';
+                                'Nama', '') + 'Container';
                             const container = document.getElementById(containerId);
 
                             if (container) {
