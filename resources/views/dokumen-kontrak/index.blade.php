@@ -61,6 +61,8 @@
                                         <th width="5%">No</th>
                                         <th>NRK</th>
                                         <th>Nama Karyawan</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Masa Kerja</th>
                                         <th>No Registrasi</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
@@ -80,6 +82,29 @@
                                             <td>{{ $index + 1 }}</td>
                                             <td>{{ $dokumen->karyawan->NrkKry }}</td>
                                             <td>{{ $dokumen->karyawan->NamaKry ?? '-' }}</td>
+                                            <td>
+                                                @if ($dokumen->karyawan->TglMsk)
+                                                    {{ \Carbon\Carbon::parse($dokumen->karyawan->TglMsk)->format('d/m/Y') }}
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if ($dokumen->karyawan->TglMsk)
+                                                    @php
+                                                        $tglMasuk = \Carbon\Carbon::parse($dokumen->karyawan->TglMsk);
+                                                        $now = \Carbon\Carbon::now();
+                                                        $years = $now->diffInYears($tglMasuk);
+                                                        $months = $now
+                                                            ->copy()
+                                                            ->subYears($years)
+                                                            ->diffInMonths($tglMasuk);
+                                                    @endphp
+                                                    {{ $years }} thn {{ $months }} bln
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
@@ -646,7 +671,7 @@
                     const row = $(this);
 
                     // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-                    const statusText = row.find('td:eq(11)').text().trim();
+                    const statusText = row.find('td:eq(13)').text().trim();
 
                     if (statusText.includes("Tidak Berlaku")) {
                         row.addClass('highlight-gray');
@@ -654,7 +679,7 @@
                     }
 
                     // Logic untuk TglBerakhir (prioritas kedua)
-                    const tglBerakhir = row.find('td:eq(6)').text().trim();
+                    const tglBerakhir = row.find('td:eq(8)').text().trim();
                     if (tglBerakhir !== '-') {
                         const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
                         const today = moment();
@@ -715,7 +740,7 @@
                     let isWarning = false;
 
                     // Cek status dokumen terlebih dahulu
-                    const statusText = row.find('td:eq(11)').text().trim();
+                    const statusText = row.find('td:eq(13)').text().trim();
 
                     // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
                     if (statusText.includes("Tidak Berlaku")) {
@@ -724,7 +749,7 @@
                     }
 
                     // Logic untuk TglBerakhir (prioritas kedua)
-                    const tglBerakhir = row.find('td:eq(6)').text().trim();
+                    const tglBerakhir = row.find('td:eq(8)').text().trim();
                     if (tglBerakhir !== '-') {
                         const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
                         const today = moment();
@@ -837,7 +862,7 @@
                     // Tanggal terbit filter
                     let terbitFrom = $('#filter_tgl_terbit_from').val();
                     let terbitTo = $('#filter_tgl_terbit_to').val();
-                    let terbitDate = data[5] !== '-' ? moment(data[5], 'DD/MM/YYYY') : null;
+                    let terbitDate = data[7] !== '-' ? moment(data[7], 'DD/MM/YYYY') : null;
 
                     if (terbitDate === null) {
                         if (terbitFrom === '' && terbitTo === '') {
@@ -855,7 +880,7 @@
                         // Tanggal berakhir filter
                         let berakhirFrom = $('#filter_tgl_berakhir_from').val();
                         let berakhirTo = $('#filter_tgl_berakhir_to').val();
-                        let berakhirDate = data[6] !== '-' ? moment(data[6], 'DD/MM/YYYY') : null;
+                        let berakhirDate = data[8] !== '-' ? moment(data[8], 'DD/MM/YYYY') : null;
 
                         if (berakhirDate === null) {
                             if (berakhirFrom === '' && berakhirTo === '') {
@@ -875,7 +900,7 @@
                             if (status === '') {
                                 return true;
                             } else if (status === 'Valid') {
-                                return data[11].includes("Berlaku") &&
+                                return data[13].includes("Berlaku") &&
                                     (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
                             } else if (status === 'Warning') {
                                 return berakhirDate &&
@@ -899,32 +924,32 @@
                 columnDefs: [{
                         // Prioritas tertinggi untuk kolom yang paling penting
                         responsivePriority: 1,
-                        targets: [0, 1, 2, 11] // No, No.Reg, Nama Karyawan, Status
+                        targets: [0, 1, 2, 13] // No, NRK, Nama Karyawan, Status
                     },
                     {
                         // Prioritas kedua untuk kolom penting lainnya
                         responsivePriority: 2,
-                        targets: [3, 4] // Jenis, Perusahaan
+                        targets: [6, 3] // Jenis, Tanggal Masuk
                     },
                     {
                         // Prioritas ketiga untuk kolom tanggal
                         responsivePriority: 3,
-                        targets: [5, 6, 7, 8] // Tgl Terbit, Tgl Berakhir, Tgl Pengingat, Peringatan
+                        targets: [7, 8, 9, 10] // Tgl Terbit, Tgl Berakhir, Tgl Peringatan, Peringatan
                     },
                     {
                         // Prioritas keempat untuk kolom yang tidak terlalu penting
                         responsivePriority: 4,
-                        targets: [9, 10, 12] // Catatan, File, Aksi
+                        targets: [11, 12, 14] // Catatan, File, Aksi
                     },
                     {
                         // Kolom yang tidak bisa di-sort
                         orderable: false,
-                        targets: [0, 12] // No dan Aksi
+                        targets: [0, 14] // No dan Aksi
                     },
                     {
-                        // Custom sorting untuk kolom Status (kolom 11)
+                        // Custom sorting untuk kolom Status (kolom 13)
                         // Memastikan dokumen "Tidak Berlaku" selalu di bawah
-                        targets: 11,
+                        targets: 13,
                         type: 'string',
                         render: function(data, type, row, meta) {
                             // Untuk tipe display, tampilkan data asli
@@ -941,9 +966,9 @@
                     }
                 ],
                 order: [
-                    [11,
+                    [13,
                     'asc'], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
-                    [1, 'asc'] // Kemudian berdasarkan No. Reg
+                    [1, 'asc'] // Kemudian berdasarkan NRK
                 ],
                 buttons: [{
                         extend: 'excel',
@@ -1006,10 +1031,13 @@
             // Modifikasi event handler untuk tombol Apply Filter
             $('#applyFilter').on('click', function() {
                 // Terapkan filter untuk kolom-kolom
-                table.column(1).search($('#filter_noreg').val()); // No Reg
+                table.column(5).search($('#filter_noreg').val()); // No Reg
                 table.column(2).search($('#filter_karyawan').val()); // Karyawan
-                table.column(3).search($('#filter_jenis').val()); // Jenis
-                table.column(4).search($('#filter_kategori').val()); // Kategori
+                table.column(6).search($('#filter_jenis').val()); // Jenis
+                // Jika ada filter kategori
+                if ($('#filter_kategori').length) {
+                    table.column(4).search($('#filter_kategori').val()); // Kategori jika tersedia
+                }
 
                 // Refresh table untuk menerapkan semua filter
                 table.draw();
@@ -1097,7 +1125,7 @@
                 $('#dokumenNameToDelete').text(name);
 
                 // Set form action URL
-                $('#deleteForm').attr('action', "{{ url('dokumen-kontrak') }}/" + id);
+                $('#deleteForm').attr('action', "/dokumen-kontrak/" + id);
 
                 // Show the delete confirmation modal
                 deleteConfirmationModal.show();
@@ -1112,13 +1140,10 @@
                 }
 
                 // Check if user has detail access before redirecting
-                @if (auth()->user()->is_admin || ($userPermissions['detail'] ?? false))
-                    // Dapatkan URL detail
-                    var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                    if (detailLink) {
-                        window.location.href = detailLink;
-                    }
-                @endif
+                var detailLink = $(this).find('a[title="Detail"]').attr('href');
+                if (detailLink) {
+                    window.location.href = detailLink;
+                }
             });
 
             // Tambahkan efek flash saat baris di-hover
