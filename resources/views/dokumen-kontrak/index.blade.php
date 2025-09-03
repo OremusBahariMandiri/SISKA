@@ -660,6 +660,8 @@
                 $('#dokumenKontrakTable').DataTable().destroy();
             }
 
+            
+
             // Fungsi untuk highlighting baris yang terlihat saja
             function applyVisibleRowHighlighting() {
                 // Reset semua highlight di baris yang terlihat
@@ -686,7 +688,29 @@
 
                         if (berakhirDate.isBefore(today)) {
                             row.addClass('highlight-red');
+
+                            // Add a data attribute for masa peringatan
+                            row.attr('data-masa-peringatan', 'Expired');
                             return; // Stop di sini - merah memiliki prioritas
+                        }
+
+                        // Check warning levels based on days remaining
+                        const daysRemaining = berakhirDate.diff(today, 'days');
+
+                        if (daysRemaining <= 3) {
+                            row.addClass('highlight-red');
+                            row.attr('data-masa-peringatan', 'Kurang dari 3 hari');
+                            return;
+                        } else if (daysRemaining <= 7) {
+                            row.addClass('highlight-yellow');
+                            row.attr('data-masa-peringatan', 'Kurang dari 7 hari');
+                            return;
+                        } else if (daysRemaining <= 30) {
+                            row.addClass('highlight-orange');
+                            row.attr('data-masa-peringatan', 'Kurang dari 30 hari');
+                            return;
+                        } else {
+                            row.attr('data-masa-peringatan', 'Lebih dari 30 hari');
                         }
                     }
 
@@ -700,24 +724,20 @@
                         if (diffDays < 0 || diffDays === 0) {
                             // Tanggal pengingat sudah lewat atau hari ini
                             row.addClass('highlight-red');
+                            row.attr('data-masa-peringatan', 'Waktu pengingat telah tiba');
                             return; // Stop di sini - merah memiliki prioritas
+                        } else if (diffDays <= 3) {
+                            row.addClass('highlight-red');
+                            row.attr('data-masa-peringatan', 'Kurang dari 3 hari');
+                            return;
                         } else if (diffDays <= 7) {
                             row.addClass('highlight-yellow');
-                            return; // Stop di sini - kuning memiliki prioritas selanjutnya
+                            row.attr('data-masa-peringatan', 'Kurang dari 7 hari');
+                            return;
                         } else if (diffDays <= 30) {
                             row.addClass('highlight-orange');
-                            return; // Stop di sini
-                        }
-                    }
-
-                    // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
-                                'days'))) {
-                            row.addClass('highlight-yellow');
+                            row.attr('data-masa-peringatan', 'Kurang dari 30 hari');
+                            return;
                         }
                     }
                 });
@@ -859,61 +879,101 @@
             // Format tanggal untuk filter
             $.fn.dataTable.ext.search.push(
                 function(settings, data, dataIndex) {
+                    // Make sure we're only processing the correct table
+                    if (settings.nTable.id !== 'dokumenKontrakTable') return true;
+
                     // Tanggal terbit filter
                     let terbitFrom = $('#filter_tgl_terbit_from').val();
                     let terbitTo = $('#filter_tgl_terbit_to').val();
-                    let terbitDate = data[7] !== '-' ? moment(data[7], 'DD/MM/YYYY') : null;
 
-                    if (terbitDate === null) {
+                    // Get the date text from column 7 (Tgl Terbit)
+                    let terbitText = data[7].trim();
+                    // Skip processing if it's just a dash or empty
+                    if (terbitText === '-' || terbitText === '<span class="text-muted">-</span>') {
                         if (terbitFrom === '' && terbitTo === '') {
+                            // No date filter applied, include this row
                             return true;
                         } else {
+                            // Date filter applied but this row has no date, exclude it
                             return false;
                         }
                     }
 
-                    if ((terbitFrom === '' && terbitTo === '') ||
-                        (terbitFrom === '' && terbitDate.isSameOrBefore(moment(terbitTo))) ||
-                        (terbitTo === '' && terbitDate.isSameOrAfter(moment(terbitFrom))) ||
-                        (terbitDate.isBetween(moment(terbitFrom), moment(terbitTo), null, '[]'))) {
+                    // Clean the text from any HTML tags
+                    terbitText = terbitText.replace(/<[^>]*>/g, '').trim();
 
-                        // Tanggal berakhir filter
-                        let berakhirFrom = $('#filter_tgl_berakhir_from').val();
-                        let berakhirTo = $('#filter_tgl_berakhir_to').val();
-                        let berakhirDate = data[8] !== '-' ? moment(data[8], 'DD/MM/YYYY') : null;
+                    // Convert the date text to a moment object (format: DD/MM/YYYY)
+                    let terbitDate = moment(terbitText, 'DD/MM/YYYY');
 
-                        if (berakhirDate === null) {
-                            if (berakhirFrom === '' && berakhirTo === '') {
-                                return true;
-                            } else {
-                                return false;
-                            }
-                        }
+                    // Check if this date passes the filter
+                    let passesTermitFilter =
+                        (terbitFrom === '' && terbitTo === '') || // No filter
+                        (terbitFrom !== '' && terbitTo === '' && terbitDate.isSameOrAfter(moment(
+                            terbitFrom))) || // Only from filter
+                        (terbitFrom === '' && terbitTo !== '' && terbitDate.isSameOrBefore(moment(terbitTo))) ||
+                        // Only to filter
+                        (terbitFrom !== '' && terbitTo !== '' && terbitDate.isBetween(moment(terbitFrom),
+                            moment(terbitTo), 'day', '[]')); // Both filters
 
-                        if ((berakhirFrom === '' && berakhirTo === '') ||
-                            (berakhirFrom === '' && berakhirDate.isSameOrBefore(moment(berakhirTo))) ||
-                            (berakhirTo === '' && berakhirDate.isSameOrAfter(moment(berakhirFrom))) ||
-                            (berakhirDate.isBetween(moment(berakhirFrom), moment(berakhirTo), null, '[]'))) {
-
-                            // Filter status dokumen
-                            let status = $('#filter_status').val();
-                            if (status === '') {
-                                return true;
-                            } else if (status === 'Valid') {
-                                return data[13].includes("Berlaku") &&
-                                    (!berakhirDate || berakhirDate.isAfter(moment().add(30, 'days')));
-                            } else if (status === 'Warning') {
-                                return berakhirDate &&
-                                    berakhirDate.isAfter(moment()) &&
-                                    berakhirDate.isBefore(moment().add(30, 'days'));
-                            } else if (status === 'Expired') {
-                                return berakhirDate && berakhirDate.isBefore(moment());
-                            }
-                            return true;
-                        }
+                    if (!passesTermitFilter) {
                         return false;
                     }
-                    return false;
+
+                    // Tanggal berakhir filter (column 8)
+                    let berakhirFrom = $('#filter_tgl_berakhir_from').val();
+                    let berakhirTo = $('#filter_tgl_berakhir_to').val();
+
+                    let berakhirText = data[8].trim();
+                    // Handle extra HTML in the cell (remove any HTML tags)
+                    berakhirText = berakhirText.replace(/<[^>]*>/g, '').trim();
+
+                    if (berakhirText === '-') {
+                        if (berakhirFrom === '' && berakhirTo === '') {
+                            // No filter for tanggal berakhir
+                            return true;
+                        } else {
+                            // Filter applied but this row has no end date
+                            return false;
+                        }
+                    }
+
+                    let berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
+
+                    let passesBerakhirFilter =
+                        (berakhirFrom === '' && berakhirTo === '') || // No filter
+                        (berakhirFrom !== '' && berakhirTo === '' && berakhirDate.isSameOrAfter(moment(
+                            berakhirFrom))) || // Only from filter
+                        (berakhirFrom === '' && berakhirTo !== '' && berakhirDate.isSameOrBefore(moment(
+                            berakhirTo))) || // Only to filter
+                        (berakhirFrom !== '' && berakhirTo !== '' && berakhirDate.isBetween(moment(
+                            berakhirFrom), moment(berakhirTo), 'day', '[]')); // Both filters
+
+                    if (!passesBerakhirFilter) {
+                        return false;
+                    }
+
+                    // Filter status dokumen
+                    let status = $('#filter_status').val();
+                    if (status === '') {
+                        return true; // No status filter applied
+                    } else if (status === 'Berlaku') {
+                        // Directly check if StatusDok column (index 13) contains "Berlaku"
+                        return data[13].includes("Berlaku");
+                    } else if (status === 'Tidak Berlaku') {
+                        // Directly check if StatusDok column (index 13) contains "Tidak Berlaku"
+                        return data[13].includes("Tidak Berlaku");
+                    } else if (status === 'Warning') {
+                        // For "Warning" status - documents that will expire soon but are still valid
+                        return data[13].includes("Berlaku") && berakhirDate &&
+                            berakhirDate.isAfter(moment()) &&
+                            berakhirDate.isBefore(moment().add(30, 'days'));
+                    } else if (status === 'Expired') {
+                        // For "Expired" status - documents past their expiration date but still marked as valid
+                        return data[13].includes("Berlaku") && berakhirDate &&
+                            berakhirDate.isBefore(moment());
+                    }
+
+                    return true;
                 }
             );
 
@@ -967,7 +1027,8 @@
                 ],
                 order: [
                     [13,
-                    'asc'], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
+                        'asc'
+                    ], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
                     [1, 'asc'] // Kemudian berdasarkan NRK
                 ],
                 buttons: [{
@@ -1030,24 +1091,74 @@
 
             // Modifikasi event handler untuk tombol Apply Filter
             $('#applyFilter').on('click', function() {
-                // Terapkan filter untuk kolom-kolom
-                table.column(5).search($('#filter_noreg').val()); // No Reg
-                table.column(2).search($('#filter_karyawan').val()); // Karyawan
-                table.column(6).search($('#filter_jenis').val()); // Jenis
-                // Jika ada filter kategori
-                if ($('#filter_kategori').length) {
-                    table.column(4).search($('#filter_kategori').val()); // Kategori jika tersedia
+                // Clear existing search filters
+                table.search('').columns().search('');
+
+                // Apply each filter individually
+                if ($('#filter_noreg').val()) {
+                    table.column(5).search($('#filter_noreg').val()); // No Registrasi
                 }
 
-                // Refresh table untuk menerapkan semua filter
-                table.draw();
-                filterModal.hide();
+                if ($('#filter_karyawan').val()) {
+                    table.column(2).search($('#filter_karyawan').val()); // Nama Karyawan
+                }
 
-                // Highlight filter button jika ada filter aktif
+                if ($('#filter_kategori').val()) {
+                    // If you have a category column, filter by it
+                    // Column index might need adjustment based on your table
+                    const kategoriIndex = table.column('KategoriDok:name').index();
+                    if (kategoriIndex !== undefined) {
+                        table.column(kategoriIndex).search($('#filter_kategori').val());
+                    }
+                }
+
+                if ($('#filter_jenis').val()) {
+                    table.column(6).search($('#filter_jenis').val()); // Jenis Dokumen
+                }
+
+                // Special handling for the new warning period filter
+                const statusFilter = $('#filter_status').val();
+                if (statusFilter) {
+                    if (statusFilter === 'Berlaku' || statusFilter === 'Tidak Berlaku') {
+                        // These are handled by the existing search.push function above
+                    } else if (statusFilter === 'Warning30' || statusFilter === 'Warning7' ||
+                        statusFilter === 'Warning3' || statusFilter === 'Expired') {
+                        // Custom filtering for warning periods
+                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                            const row = $(table.row(dataIndex).node());
+                            const warningPeriod = row.attr('data-masa-peringatan');
+
+                            if (statusFilter === 'Warning30' && warningPeriod ===
+                                'Kurang dari 30 hari') return true;
+                            if (statusFilter === 'Warning7' && warningPeriod ===
+                                'Kurang dari 7 hari') return true;
+                            if (statusFilter === 'Warning3' && warningPeriod ===
+                                'Kurang dari 3 hari') return true;
+                            if (statusFilter === 'Expired' && warningPeriod === 'Expired')
+                                return true;
+
+                            return false;
+                        });
+                    }
+                }
+
+                // Refresh table to apply all filters
+                table.draw();
+
+                // Hide the filter modal
+                $('#filterModal').modal('hide');
+
+                // Highlight filter button if any filter is active
                 highlightFilterButton();
 
-                // Refresh statistik setelah filter diterapkan
+                // Update statistics after filtering
                 updateDocumentStats();
+
+                // Clear the custom filter functions after table is drawn
+                if (statusFilter && ['Warning30', 'Warning7', 'Warning3', 'Expired'].includes(
+                        statusFilter)) {
+                    $.fn.dataTable.ext.search.pop();
+                }
             });
 
             // Modify the Reset Filter event handler
