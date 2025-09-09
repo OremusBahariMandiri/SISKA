@@ -63,6 +63,7 @@
                                         <th>Nama Karyawan</th>
                                         <th>Tanggal Masuk</th>
                                         <th>Masa Kerja</th>
+                                        <th>Perusahaan</th>
                                         <th>No Registrasi</th>
                                         <th>Jenis</th>
                                         <th>Tgl Terbit</th>
@@ -105,6 +106,7 @@
                                                     <span class="text-muted">-</span>
                                                 @endif
                                             </td>
+                                            <td>{{ $dokumen->perusahaan->NamaPrsh ?? '-' }}</td>
                                             <td>{{ $dokumen->NoRegDok }}</td>
                                             <td>{{ $dokumen->JenisDok }}</td>
                                             <td>
@@ -206,7 +208,7 @@
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="filterModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header text-white" style="background-color: #04786e">
                     <h5 class="modal-title" id="filterModalLabel">
                         <i class="fas fa-filter me-2"></i>Filter Dokumen Kontrak
                     </h5>
@@ -236,6 +238,18 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    <label for="filter_perusahaan" class="form-label">Perusahaan</label>
+                                    <select class="form-select select2" id="filter_perusahaan">
+                                        <option value="">Semua Perusahaan</option>
+                                        @foreach ($dokumenKontrak->pluck('perusahaan.NamaPrsh')->unique() as $namaPrsh)
+                                            @if ($namaPrsh)
+                                                <option value="{{ $namaPrsh }}">{{ $namaPrsh }}</option>
+                                            @endif
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                {{-- <div class="mb-3">
                                     <label for="filter_kategori" class="form-label">Kategori</label>
                                     <select class="form-select select2" id="filter_kategori">
                                         <option value="">Semua Kategori</option>
@@ -245,7 +259,7 @@
                                             @endif
                                         @endforeach
                                     </select>
-                                </div>
+                                </div> --}}
 
                                 <div class="mb-3">
                                     <label for="filter_jenis" class="form-label">Jenis Dokumen</label>
@@ -310,7 +324,7 @@
     <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
+                <div class="modal-header text-white" style="background-color: #04786e">
                     <h5 class="modal-title" id="exportModalLabel">
                         <i class="fas fa-download me-2"></i>Ekspor Data
                     </h5>
@@ -339,7 +353,7 @@
         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header bg-danger text-white">
+                <div class="modal-header text-white" style="background-color: #04786e">
                     <h5 class="modal-title" id="deleteConfirmationModalLabel">
                         <i class="fas fa-exclamation-triangle me-2"></i>Konfirmasi Hapus
                     </h5>
@@ -598,680 +612,658 @@
     <!-- Select2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Initialize modals
-            var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
-            var exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
-            var deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
+$(document).ready(function() {
+    // Initialize modals
+    var filterModal = new bootstrap.Modal(document.getElementById('filterModal'));
+    var exportModal = new bootstrap.Modal(document.getElementById('exportModal'));
+    var deleteConfirmationModal = new bootstrap.Modal(document.getElementById('deleteConfirmationModal'));
 
-            // Indonesian language configuration for DataTables
-            const indonesianLanguage = {
-                "emptyTable": "Tidak ada data yang tersedia pada tabel ini",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
-                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
-                "infoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
-                "lengthMenu": "Tampilkan _MENU_ entri",
-                "loadingRecords": "Sedang memuat...",
-                "processing": "Sedang memproses...",
-                "search": "Cari:",
-                "zeroRecords": "Tidak ditemukan data yang sesuai",
-                "paginate": {
-                    "first": "Pertama",
-                    "last": "Terakhir",
-                    "next": "Selanjutnya",
-                    "previous": "Sebelumnya"
-                },
-                "aria": {
-                    "sortAscending": ": aktifkan untuk mengurutkan kolom ke atas",
-                    "sortDescending": ": aktifkan untuk mengurutkan kolom ke bawah"
+    // Indonesian language configuration for DataTables
+    const indonesianLanguage = {
+        "emptyTable": "Tidak ada data yang tersedia pada tabel ini",
+        "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+        "infoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+        "infoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+        "lengthMenu": "Tampilkan _MENU_ entri",
+        "loadingRecords": "Sedang memuat...",
+        "processing": "Sedang memproses...",
+        "search": "Cari:",
+        "zeroRecords": "Tidak ditemukan data yang sesuai",
+        "paginate": {
+            "first": "Pertama",
+            "last": "Terakhir",
+            "next": "Selanjutnya",
+            "previous": "Sebelumnya"
+        },
+        "aria": {
+            "sortAscending": ": aktifkan untuk mengurutkan kolom ke atas",
+            "sortDescending": ": aktifkan untuk mengurutkan kolom ke bawah"
+        }
+    };
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    // Initialize Select2 for filter dropdowns
+    setTimeout(function() {
+        $('.select2').select2({
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownParent: $('#filterModal .modal-body'),
+            placeholder: 'Pilih filter...',
+            allowClear: true
+        });
+    }, 500);
+
+    // Event listener for filter button
+    $('#filterButton').on('click', function() {
+        filterModal.show();
+    });
+
+    // Event listener for export button
+    $('#exportButton').on('click', function() {
+        exportModal.show();
+    });
+
+    // Prevent DataTables reinit error
+    if ($.fn.dataTable.isDataTable('#dokumenKontrakTable')) {
+        // Destroy existing instance if it exists
+        $('#dokumenKontrakTable').DataTable().destroy();
+    }
+
+    /**
+     * UNIFIED DOCUMENT STATUS FUNCTIONS
+     * These functions use consistent logic for document status calculation
+     */
+
+    // Calculate document statistics (expired and warning counts)
+    function updateDocumentStats() {
+        // Reset counts
+        let expiredCount = 0;
+        let warningCount = 0;
+
+        // Get all rows, not just visible ones
+        const allRows = table.rows().nodes();
+        const today = moment().startOf('day');
+        const warningThreshold = 30; // Days before expiry to show warning
+
+        $(allRows).each(function() {
+            const row = $(this);
+
+            // 1. Check document status first - skip inactive documents
+            const statusText = row.find('td:eq(14)').text().trim();
+            if (statusText.includes("Tidak Berlaku")) {
+                return true; // continue to next iteration
+            }
+
+            // 2. Check if expired based on TglBerakhir
+            const tglBerakhirCell = row.find('td:eq(9)').text().trim();
+            let isExpired = false;
+
+            if (tglBerakhirCell !== '-' && !tglBerakhirCell.includes('span class="text-muted"')) {
+                // Extract date from any HTML content
+                const berakhirText = tglBerakhirCell.replace(/<[^>]*>/g, '').trim();
+                const berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
+
+                if (berakhirDate.isValid() && berakhirDate.isBefore(today)) {
+                    expiredCount++;
+                    isExpired = true;
+                    return true; // Skip to next row as we've counted this document
                 }
-            };
-
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
-            var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl)
-            });
-
-            // Initialize Select2 for filter dropdowns
-            setTimeout(function() {
-                $('.select2').select2({
-                    theme: 'bootstrap-5',
-                    width: '100%',
-                    dropdownParent: $('#filterModal .modal-body'),
-                    placeholder: 'Pilih filter...',
-                    allowClear: true
-                });
-            }, 500);
-
-            // Event listener for filter button
-            $('#filterButton').on('click', function() {
-                filterModal.show();
-            });
-
-            // Event listener for export button
-            $('#exportButton').on('click', function() {
-                exportModal.show();
-            });
-
-            // Prevent DataTables reinit error
-            if ($.fn.dataTable.isDataTable('#dokumenKontrakTable')) {
-                // Destroy existing instance if it exists
-                $('#dokumenKontrakTable').DataTable().destroy();
             }
 
-            
+            // 3. Check TglPengingat for warning/expired status
+            const tglPengingatStr = row.data('tgl-pengingat');
+            if (tglPengingatStr) {
+                const tglPengingat = moment(tglPengingatStr);
 
-            // Fungsi untuk highlighting baris yang terlihat saja
-            function applyVisibleRowHighlighting() {
-                // Reset semua highlight di baris yang terlihat
-                $('#dokumenKontrakTable tbody tr').removeClass(
-                    'highlight-red highlight-yellow highlight-orange highlight-gray');
-
-                // Apply highlighting untuk baris yang terlihat saja
-                $('#dokumenKontrakTable tbody tr').each(function() {
-                    const row = $(this);
-
-                    // Cek status dokumen terlebih dahulu (prioritas tertinggi)
-                    const statusText = row.find('td:eq(13)').text().trim();
-
-                    if (statusText.includes("Tidak Berlaku")) {
-                        row.addClass('highlight-gray');
-                        return; // Stop di sini - abu-abu memiliki prioritas tertinggi
-                    }
-
-                    // Logic untuk TglBerakhir (prioritas kedua)
-                    const tglBerakhir = row.find('td:eq(8)').text().trim();
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isBefore(today)) {
-                            row.addClass('highlight-red');
-
-                            // Add a data attribute for masa peringatan
-                            row.attr('data-masa-peringatan', 'Expired');
-                            return; // Stop di sini - merah memiliki prioritas
-                        }
-
-                        // Check warning levels based on days remaining
-                        const daysRemaining = berakhirDate.diff(today, 'days');
-
-                        if (daysRemaining <= 3) {
-                            row.addClass('highlight-red');
-                            row.attr('data-masa-peringatan', 'Kurang dari 3 hari');
-                            return;
-                        } else if (daysRemaining <= 7) {
-                            row.addClass('highlight-yellow');
-                            row.attr('data-masa-peringatan', 'Kurang dari 7 hari');
-                            return;
-                        } else if (daysRemaining <= 30) {
-                            row.addClass('highlight-orange');
-                            row.attr('data-masa-peringatan', 'Kurang dari 30 hari');
-                            return;
-                        } else {
-                            row.attr('data-masa-peringatan', 'Lebih dari 30 hari');
-                        }
-                    }
-
-                    // Logic untuk TglPengingat (prioritas ketiga)
-                    const tglPengingatStr = row.data('tgl-pengingat');
-                    if (tglPengingatStr) {
-                        const tglPengingat = moment(tglPengingatStr);
-                        const today = moment();
-                        const diffDays = tglPengingat.diff(today, 'days');
-
-                        if (diffDays < 0 || diffDays === 0) {
-                            // Tanggal pengingat sudah lewat atau hari ini
-                            row.addClass('highlight-red');
-                            row.attr('data-masa-peringatan', 'Waktu pengingat telah tiba');
-                            return; // Stop di sini - merah memiliki prioritas
-                        } else if (diffDays <= 3) {
-                            row.addClass('highlight-red');
-                            row.attr('data-masa-peringatan', 'Kurang dari 3 hari');
-                            return;
-                        } else if (diffDays <= 7) {
-                            row.addClass('highlight-yellow');
-                            row.attr('data-masa-peringatan', 'Kurang dari 7 hari');
-                            return;
-                        } else if (diffDays <= 30) {
-                            row.addClass('highlight-orange');
-                            row.attr('data-masa-peringatan', 'Kurang dari 30 hari');
-                            return;
-                        }
-                    }
-                });
-            }
-
-            // Fungsi untuk mendapatkan statistik dokumen
-            function updateDocumentStats() {
-                // Hapus kelas highlight terlebih dahulu untuk memastikan penghitungan yang bersih
-                $('#dokumenKontrakTable tbody tr').removeClass(
-                    'highlight-red highlight-yellow highlight-orange highlight-gray');
-
-                // Inisialisasi counter
-                let expiredCount = 0;
-                let warningCount = 0;
-
-                // Periksa setiap baris tabel untuk menentukan status
-                $('#dokumenKontrakTable tbody tr').each(function() {
-                    const row = $(this);
-                    let isExpired = false;
-                    let isWarning = false;
-
-                    // Cek status dokumen terlebih dahulu
-                    const statusText = row.find('td:eq(13)').text().trim();
-
-                    // Jika status "Tidak Berlaku", baris dilewati untuk penghitungan expired/warning
-                    if (statusText.includes("Tidak Berlaku")) {
-                        row.addClass('highlight-gray');
-                        return; // Lanjut ke baris berikutnya
-                    }
-
-                    // Logic untuk TglBerakhir (prioritas kedua)
-                    const tglBerakhir = row.find('td:eq(8)').text().trim();
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isBefore(today)) {
-                            row.addClass('highlight-red');
-                            isExpired = true;
-                            expiredCount++;
-                            return; // Lanjut ke baris berikutnya
-                        }
-                    }
-
-                    // Logic untuk TglPengingat
-                    const tglPengingatStr = row.data('tgl-pengingat');
-                    if (tglPengingatStr) {
-                        const tglPengingat = moment(tglPengingatStr);
-                        const today = moment();
-                        const diffDays = tglPengingat.diff(today, 'days');
-
-                        if (diffDays < 0 || diffDays === 0) {
-                            // Tanggal pengingat sudah lewat atau hari ini
-                            row.addClass('highlight-red');
-                            if (!isExpired) {
-                                expiredCount++;
-                                isExpired = true;
-                            }
-                            return; // Lanjut ke baris berikutnya
-                        } else if (diffDays <= 7) {
-                            row.addClass('highlight-yellow');
-                            if (!isExpired) {
-                                warningCount++;
-                                isWarning = true;
-                            }
-                            return; // Lanjut ke baris berikutnya
-                        } else if (diffDays <= 30) {
-                            row.addClass('highlight-orange');
-                            if (!isExpired && !isWarning) {
-                                warningCount++;
-                            }
-                            return; // Lanjut ke baris berikutnya
-                        }
-                    }
-
-                    // Logic untuk TglBerakhir dalam 30 hari (prioritas terakhir)
-                    if (tglBerakhir !== '-') {
-                        const berakhirDate = moment(tglBerakhir, 'DD/MM/YYYY');
-                        const today = moment();
-
-                        if (berakhirDate.isAfter(today) && berakhirDate.isBefore(moment().add(30,
-                                'days'))) {
-                            row.addClass('highlight-yellow');
-                            if (!isExpired && !isWarning) {
-                                warningCount++;
-                            }
-                        }
-                    }
-                });
-
-                // Update counter badges dengan data yang dihitung
-                $('#expiredDocsCount').text(expiredCount);
-                $('#warningDocsCount').text(warningCount);
-
-                // Selalu tampilkan badges terlepas dari jumlahnya
-                $('#expiredDocsBadge').show();
-                $('#warningDocsBadge').show();
-            }
-
-            // Fungsi untuk memperbarui teks masa peringatan
-            function updateMasaPengingatText() {
-                const today = moment();
-
-                $('#dokumenKontrakTable tbody tr').each(function() {
-                    const tglPengingatStr = $(this).data('tgl-pengingat');
-                    const $masaPengingatCol = $(this).find('.sisa-peringatan-col');
-
-                    // Jika tidak ada tanggal pengingat, lewati baris ini
-                    if (!tglPengingatStr) {
-                        $masaPengingatCol.text('-');
-                        return;
-                    }
-
-                    // Parse tanggal pengingat
-                    const tglPengingat = moment(tglPengingatStr);
-
-                    // Hitung selisih dalam hari
+                if (tglPengingat.isValid()) {
                     const diffDays = tglPengingat.diff(today, 'days');
 
-                    // Menentukan teks yang akan ditampilkan di kolom masa peringatan
-                    let masaPengingatText = '';
-
-                    if (diffDays < 0) {
-                        // Tanggal pengingat sudah lewat
-                        masaPengingatText = 'Terlambat ' + Math.abs(diffDays) + ' hari';
-                    } else if (diffDays === 0) {
-                        // Tanggal pengingat hari ini
-                        masaPengingatText = 'Hari ini';
-                    } else {
-                        // Tanggal pengingat di masa depan
-                        masaPengingatText = diffDays + ' hari lagi';
-                    }
-
-                    // Update teks masa peringatan
-                    $masaPengingatCol.text(masaPengingatText);
-                });
-            }
-
-            // Format tanggal untuk filter
-            $.fn.dataTable.ext.search.push(
-                function(settings, data, dataIndex) {
-                    // Make sure we're only processing the correct table
-                    if (settings.nTable.id !== 'dokumenKontrakTable') return true;
-
-                    // Tanggal terbit filter
-                    let terbitFrom = $('#filter_tgl_terbit_from').val();
-                    let terbitTo = $('#filter_tgl_terbit_to').val();
-
-                    // Get the date text from column 7 (Tgl Terbit)
-                    let terbitText = data[7].trim();
-                    // Skip processing if it's just a dash or empty
-                    if (terbitText === '-' || terbitText === '<span class="text-muted">-</span>') {
-                        if (terbitFrom === '' && terbitTo === '') {
-                            // No date filter applied, include this row
-                            return true;
-                        } else {
-                            // Date filter applied but this row has no date, exclude it
-                            return false;
+                    if (diffDays <= 0) {
+                        // Reminder date has passed
+                        if (!isExpired) {
+                            expiredCount++;
+                            isExpired = true;
                         }
-                    }
-
-                    // Clean the text from any HTML tags
-                    terbitText = terbitText.replace(/<[^>]*>/g, '').trim();
-
-                    // Convert the date text to a moment object (format: DD/MM/YYYY)
-                    let terbitDate = moment(terbitText, 'DD/MM/YYYY');
-
-                    // Check if this date passes the filter
-                    let passesTermitFilter =
-                        (terbitFrom === '' && terbitTo === '') || // No filter
-                        (terbitFrom !== '' && terbitTo === '' && terbitDate.isSameOrAfter(moment(
-                            terbitFrom))) || // Only from filter
-                        (terbitFrom === '' && terbitTo !== '' && terbitDate.isSameOrBefore(moment(terbitTo))) ||
-                        // Only to filter
-                        (terbitFrom !== '' && terbitTo !== '' && terbitDate.isBetween(moment(terbitFrom),
-                            moment(terbitTo), 'day', '[]')); // Both filters
-
-                    if (!passesTermitFilter) {
-                        return false;
-                    }
-
-                    // Tanggal berakhir filter (column 8)
-                    let berakhirFrom = $('#filter_tgl_berakhir_from').val();
-                    let berakhirTo = $('#filter_tgl_berakhir_to').val();
-
-                    let berakhirText = data[8].trim();
-                    // Handle extra HTML in the cell (remove any HTML tags)
-                    berakhirText = berakhirText.replace(/<[^>]*>/g, '').trim();
-
-                    if (berakhirText === '-') {
-                        if (berakhirFrom === '' && berakhirTo === '') {
-                            // No filter for tanggal berakhir
-                            return true;
-                        } else {
-                            // Filter applied but this row has no end date
-                            return false;
+                        return true; // Skip to next row
+                    } else if (diffDays <= warningThreshold) {
+                        // Within warning threshold
+                        if (!isExpired) {
+                            warningCount++;
                         }
+                        return true; // Skip to next row
                     }
-
-                    let berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
-
-                    let passesBerakhirFilter =
-                        (berakhirFrom === '' && berakhirTo === '') || // No filter
-                        (berakhirFrom !== '' && berakhirTo === '' && berakhirDate.isSameOrAfter(moment(
-                            berakhirFrom))) || // Only from filter
-                        (berakhirFrom === '' && berakhirTo !== '' && berakhirDate.isSameOrBefore(moment(
-                            berakhirTo))) || // Only to filter
-                        (berakhirFrom !== '' && berakhirTo !== '' && berakhirDate.isBetween(moment(
-                            berakhirFrom), moment(berakhirTo), 'day', '[]')); // Both filters
-
-                    if (!passesBerakhirFilter) {
-                        return false;
-                    }
-
-                    // Filter status dokumen
-                    let status = $('#filter_status').val();
-                    if (status === '') {
-                        return true; // No status filter applied
-                    } else if (status === 'Berlaku') {
-                        // Directly check if StatusDok column (index 13) contains "Berlaku"
-                        return data[13].includes("Berlaku");
-                    } else if (status === 'Tidak Berlaku') {
-                        // Directly check if StatusDok column (index 13) contains "Tidak Berlaku"
-                        return data[13].includes("Tidak Berlaku");
-                    } else if (status === 'Warning') {
-                        // For "Warning" status - documents that will expire soon but are still valid
-                        return data[13].includes("Berlaku") && berakhirDate &&
-                            berakhirDate.isAfter(moment()) &&
-                            berakhirDate.isBefore(moment().add(30, 'days'));
-                    } else if (status === 'Expired') {
-                        // For "Expired" status - documents past their expiration date but still marked as valid
-                        return data[13].includes("Berlaku") && berakhirDate &&
-                            berakhirDate.isBefore(moment());
-                    }
-
-                    return true;
-                }
-            );
-
-            // Inisialisasi DataTable
-            var table = $('#dokumenKontrakTable').DataTable({
-                responsive: true,
-                language: indonesianLanguage,
-                columnDefs: [{
-                        // Prioritas tertinggi untuk kolom yang paling penting
-                        responsivePriority: 1,
-                        targets: [0, 1, 2, 13] // No, NRK, Nama Karyawan, Status
-                    },
-                    {
-                        // Prioritas kedua untuk kolom penting lainnya
-                        responsivePriority: 2,
-                        targets: [6, 3] // Jenis, Tanggal Masuk
-                    },
-                    {
-                        // Prioritas ketiga untuk kolom tanggal
-                        responsivePriority: 3,
-                        targets: [7, 8, 9, 10] // Tgl Terbit, Tgl Berakhir, Tgl Peringatan, Peringatan
-                    },
-                    {
-                        // Prioritas keempat untuk kolom yang tidak terlalu penting
-                        responsivePriority: 4,
-                        targets: [11, 12, 14] // Catatan, File, Aksi
-                    },
-                    {
-                        // Kolom yang tidak bisa di-sort
-                        orderable: false,
-                        targets: [0, 14] // No dan Aksi
-                    },
-                    {
-                        // Custom sorting untuk kolom Status (kolom 13)
-                        // Memastikan dokumen "Tidak Berlaku" selalu di bawah
-                        targets: 13,
-                        type: 'string',
-                        render: function(data, type, row, meta) {
-                            // Untuk tipe display, tampilkan data asli
-                            if (type === 'display') {
-                                return data;
-                            }
-                            // Untuk sorting, taruh "Tidak Berlaku" di paling akhir
-                            // dengan menambahkan prefix 'z' (akan selalu di akhir alfabet)
-                            if (type === 'sort') {
-                                return data.includes('Tidak Berlaku') ? 'z' + data : 'a' + data;
-                            }
-                            return data;
-                        }
-                    }
-                ],
-                order: [
-                    [13,
-                        'asc'
-                    ], // Mengurutkan berdasarkan status terlebih dahulu (Tidak Berlaku di akhir)
-                    [1, 'asc'] // Kemudian berdasarkan NRK
-                ],
-                buttons: [{
-                        extend: 'excel',
-                        text: 'Excel',
-                        className: 'btn btn-sm btn-success d-none excel-export-btn',
-                        exportOptions: {
-                            columns: ':not(:last-child)'
-                        }
-                    },
-                    {
-                        extend: 'pdf',
-                        text: 'PDF',
-                        className: 'btn btn-sm btn-danger d-none pdf-export-btn',
-                        exportOptions: {
-                            columns: ':not(:last-child)'
-                        }
-                    },
-                    {
-                        extend: 'print',
-                        text: 'Print',
-                        className: 'btn btn-sm btn-secondary d-none print-export-btn',
-                        exportOptions: {
-                            columns: ':not(:last-child)'
-                        }
-                    }
-                ],
-                // Atur agar nomor selalu mulai dari 1 pada tiap halaman
-                drawCallback: function() {
-                    // Mengupdate nomor urut setiap kali tabel digambar ulang
-                    this.api().column(0, {
-                        page: 'current'
-                    }).nodes().each(function(cell, i) {
-                        cell.innerHTML = i + 1;
-                    });
-
-                    // Apply highlighting untuk baris yang terlihat
-                    applyVisibleRowHighlighting();
-
-                    // Update text untuk masa peringatan
-                    updateMasaPengingatText();
-                },
-                initComplete: function() {
-                    // Force style search input box
-                    $('.dataTables_filter input').addClass('form-control');
-
-                    // Apply initial highlighting
-                    applyVisibleRowHighlighting();
-
-                    // Update text untuk masa peringatan
-                    updateMasaPengingatText();
-
-                    // Tunggu sampai tabel selesai diinisialisasi dan semua data dimuat
-                    setTimeout(function() {
-                        // Hitung stats dari SEMUA data, bukan hanya yang terlihat di halaman saat ini
-                        updateDocumentStats();
-                    }, 500);
-                }
-            });
-
-            // Modifikasi event handler untuk tombol Apply Filter
-            $('#applyFilter').on('click', function() {
-                // Clear existing search filters
-                table.search('').columns().search('');
-
-                // Apply each filter individually
-                if ($('#filter_noreg').val()) {
-                    table.column(5).search($('#filter_noreg').val()); // No Registrasi
-                }
-
-                if ($('#filter_karyawan').val()) {
-                    table.column(2).search($('#filter_karyawan').val()); // Nama Karyawan
-                }
-
-                if ($('#filter_kategori').val()) {
-                    // If you have a category column, filter by it
-                    // Column index might need adjustment based on your table
-                    const kategoriIndex = table.column('KategoriDok:name').index();
-                    if (kategoriIndex !== undefined) {
-                        table.column(kategoriIndex).search($('#filter_kategori').val());
-                    }
-                }
-
-                if ($('#filter_jenis').val()) {
-                    table.column(6).search($('#filter_jenis').val()); // Jenis Dokumen
-                }
-
-                // Special handling for the new warning period filter
-                const statusFilter = $('#filter_status').val();
-                if (statusFilter) {
-                    if (statusFilter === 'Berlaku' || statusFilter === 'Tidak Berlaku') {
-                        // These are handled by the existing search.push function above
-                    } else if (statusFilter === 'Warning30' || statusFilter === 'Warning7' ||
-                        statusFilter === 'Warning3' || statusFilter === 'Expired') {
-                        // Custom filtering for warning periods
-                        $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
-                            const row = $(table.row(dataIndex).node());
-                            const warningPeriod = row.attr('data-masa-peringatan');
-
-                            if (statusFilter === 'Warning30' && warningPeriod ===
-                                'Kurang dari 30 hari') return true;
-                            if (statusFilter === 'Warning7' && warningPeriod ===
-                                'Kurang dari 7 hari') return true;
-                            if (statusFilter === 'Warning3' && warningPeriod ===
-                                'Kurang dari 3 hari') return true;
-                            if (statusFilter === 'Expired' && warningPeriod === 'Expired')
-                                return true;
-
-                            return false;
-                        });
-                    }
-                }
-
-                // Refresh table to apply all filters
-                table.draw();
-
-                // Hide the filter modal
-                $('#filterModal').modal('hide');
-
-                // Highlight filter button if any filter is active
-                highlightFilterButton();
-
-                // Update statistics after filtering
-                updateDocumentStats();
-
-                // Clear the custom filter functions after table is drawn
-                if (statusFilter && ['Warning30', 'Warning7', 'Warning3', 'Expired'].includes(
-                        statusFilter)) {
-                    $.fn.dataTable.ext.search.pop();
-                }
-            });
-
-            // Modify the Reset Filter event handler
-            $('#resetFilter').on('click', function() {
-                // Reset the form fields
-                $('#filterForm')[0].reset();
-
-                // Reset Select2 fields specifically
-                $('#filter_karyawan, #filter_kategori, #filter_jenis, #filter_status').val(null).trigger(
-                    'change');
-
-                // Remove active class from filter button
-                $('#filterButton').removeClass('filter-active');
-
-                // Reset table filters
-                table.search('').columns().search('').draw();
-
-                // Refresh statistik setelah filter direset
-                updateDocumentStats();
-            });
-
-            // Event listener untuk table draw event
-            table.on('draw.dt', function() {
-                // Update text untuk baris yang terlihat
-                updateMasaPengingatText();
-
-                // Update highlight untuk baris yang terlihat
-                applyVisibleRowHighlighting();
-            });
-
-            // Highlight filter button jika ada filter aktif
-            function highlightFilterButton() {
-                if ($('#filter_noreg').val() ||
-                    $('#filter_karyawan').val() ||
-                    $('#filter_kategori').val() ||
-                    $('#filter_jenis').val() ||
-                    $('#filter_tgl_terbit_from').val() ||
-                    $('#filter_tgl_terbit_to').val() ||
-                    $('#filter_tgl_berakhir_from').val() ||
-                    $('#filter_tgl_berakhir_to').val() ||
-                    $('#filter_status').val()) {
-                    $('#filterButton').addClass('filter-active');
-                } else {
-                    $('#filterButton').removeClass('filter-active');
                 }
             }
 
-            // Export buttons
-            $('#exportExcel').on('click', function() {
-                $('.excel-export-btn').trigger('click');
-                exportModal.hide();
-            });
+            // 4. Check if approaching expiry based on TglBerakhir
+            if (tglBerakhirCell !== '-' && !tglBerakhirCell.includes('span class="text-muted"')) {
+                const berakhirText = tglBerakhirCell.replace(/<[^>]*>/g, '').trim();
+                const berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
 
-            $('#exportPdf').on('click', function() {
-                $('.pdf-export-btn').trigger('click');
-                exportModal.hide();
-            });
+                if (berakhirDate.isValid()) {
+                    const diffDays = berakhirDate.diff(today, 'days');
 
-            $('#exportPrint').on('click', function() {
-                $('.print-export-btn').trigger('click');
-                exportModal.hide();
-            });
-
-            // Handle Delete Confirmation
-            $(document).on('click', '.delete-confirm', function(e) {
-                // Prevent any default action
-                e.preventDefault();
-                e.stopPropagation();
-
-                // Get document ID and name
-                var id = $(this).data('id');
-                var name = $(this).data('name');
-
-                // Set the document name in the modal
-                $('#dokumenNameToDelete').text(name);
-
-                // Set form action URL
-                $('#deleteForm').attr('action', "/dokumen-kontrak/" + id);
-
-                // Show the delete confirmation modal
-                deleteConfirmationModal.show();
-            });
-
-            // Tambahkan efek klik pada baris tabel untuk menuju halaman detail
-            $('#dokumenKontrakTable tbody').on('click', 'tr', function(e) {
-                // Jangan ikuti link jika yang diklik adalah tombol atau link di dalam baris
-                if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
-                    $(e.target).closest('button').length || $(e.target).closest('a').length) {
-                    return;
+                    if (diffDays > 0 && diffDays <= warningThreshold) {
+                        if (!isExpired) {
+                            warningCount++;
+                        }
+                    }
                 }
-
-                // Check if user has detail access before redirecting
-                var detailLink = $(this).find('a[title="Detail"]').attr('href');
-                if (detailLink) {
-                    window.location.href = detailLink;
-                }
-            });
-
-            // Tambahkan efek flash saat baris di-hover
-            $('#dokumenKontrakTable tbody').on('mouseenter', 'tr', function() {
-                $(this).addClass('row-hover-active');
-            }).on('mouseleave', 'tr', function() {
-                $(this).removeClass('row-hover-active');
-            });
-
-            // Auto-hide alerts after 5 seconds
-            setTimeout(function() {
-                $(".alert").fadeOut("slow");
-            }, 5000);
-
-            // Inisialisasi awal
-            updateMasaPengingatText();
-            updateDocumentStats();
+            }
         });
+
+        // Update counter badges
+        $('#expiredDocsCount').text(expiredCount);
+        $('#warningDocsCount').text(warningCount);
+
+        // Always show badges regardless of count
+        $('#expiredDocsBadge').show();
+        $('#warningDocsBadge').show();
+    }
+
+    // Apply row highlighting based on document status
+    function applyRowHighlighting() {
+        // Reset all highlights
+        $('#dokumenKontrakTable tbody tr').removeClass(
+            'highlight-red highlight-yellow highlight-orange highlight-gray');
+
+        const today = moment().startOf('day');
+        const warningThreshold = 30; // Days before expiry for warning
+        const urgentThreshold = 7; // Days before expiry for urgent warning
+        const criticalThreshold = 3; // Days before expiry for critical warning
+
+        // Apply highlighting to each row
+        $('#dokumenKontrakTable tbody tr').each(function() {
+            const row = $(this);
+
+            // 1. Check document status first (highest priority)
+            const statusText = row.find('td:eq(14)').text().trim();
+            if (statusText.includes("Tidak Berlaku")) {
+                row.addClass('highlight-gray');
+                row.attr('data-status', 'inactive');
+                return true; // continue to next iteration
+            }
+
+            // 2. Check if expired based on TglBerakhir
+            const tglBerakhirCell = row.find('td:eq(9)').text().trim();
+
+            if (tglBerakhirCell !== '-' && !tglBerakhirCell.includes('span class="text-muted"')) {
+                // Extract date from any HTML content
+                const berakhirText = tglBerakhirCell.replace(/<[^>]*>/g, '').trim();
+                const berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
+
+                if (berakhirDate.isValid() && berakhirDate.isBefore(today)) {
+                    row.addClass('highlight-red');
+                    row.attr('data-status', 'expired');
+                    row.attr('data-masa-peringatan', 'Expired');
+                    return true; // Stop processing this row
+                }
+            }
+
+            // 3. Check TglPengingat for warning/expired status
+            const tglPengingatStr = row.data('tgl-pengingat');
+            if (tglPengingatStr) {
+                const tglPengingat = moment(tglPengingatStr);
+
+                if (tglPengingat.isValid()) {
+                    const diffDays = tglPengingat.diff(today, 'days');
+
+                    if (diffDays <= 0) {
+                        // Reminder date has passed
+                        row.addClass('highlight-red');
+                        row.attr('data-status', 'reminder-expired');
+                        row.attr('data-masa-peringatan', 'Waktu pengingat telah tiba');
+                        return true; // Stop processing this row
+                    } else if (diffDays <= criticalThreshold) {
+                        row.addClass('highlight-red');
+                        row.attr('data-status', 'critical');
+                        row.attr('data-masa-peringatan', 'Kurang dari ' + criticalThreshold + ' hari');
+                        return true; // Stop processing this row
+                    } else if (diffDays <= urgentThreshold) {
+                        row.addClass('highlight-yellow');
+                        row.attr('data-status', 'urgent');
+                        row.attr('data-masa-peringatan', 'Kurang dari ' + urgentThreshold + ' hari');
+                        return true; // Stop processing this row
+                    } else if (diffDays <= warningThreshold) {
+                        row.addClass('highlight-orange');
+                        row.attr('data-status', 'warning');
+                        row.attr('data-masa-peringatan', 'Kurang dari ' + warningThreshold + ' hari');
+                        return true; // Stop processing this row
+                    }
+                }
+            }
+
+            // 4. Check if approaching expiry based on TglBerakhir
+            if (tglBerakhirCell !== '-' && !tglBerakhirCell.includes('span class="text-muted"')) {
+                const berakhirText = tglBerakhirCell.replace(/<[^>]*>/g, '').trim();
+                const berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
+
+                if (berakhirDate.isValid()) {
+                    const diffDays = berakhirDate.diff(today, 'days');
+
+                    if (diffDays > 0) {
+                        if (diffDays <= criticalThreshold) {
+                            row.addClass('highlight-red');
+                            row.attr('data-status', 'critical');
+                            row.attr('data-masa-peringatan', 'Kurang dari ' + criticalThreshold + ' hari');
+                        } else if (diffDays <= urgentThreshold) {
+                            row.addClass('highlight-yellow');
+                            row.attr('data-status', 'urgent');
+                            row.attr('data-masa-peringatan', 'Kurang dari ' + urgentThreshold + ' hari');
+                        } else if (diffDays <= warningThreshold) {
+                            row.addClass('highlight-orange');
+                            row.attr('data-status', 'warning');
+                            row.attr('data-masa-peringatan', 'Kurang dari ' + warningThreshold + ' hari');
+                        } else {
+                            // Valid document with no warnings
+                            row.attr('data-status', 'valid');
+                            row.attr('data-masa-peringatan', 'Lebih dari ' + warningThreshold + ' hari');
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // Update masa peringatan text for each row
+    function updateMasaPengingatText() {
+        const today = moment().startOf('day');
+
+        $('#dokumenKontrakTable tbody tr').each(function() {
+            const tglPengingatStr = $(this).data('tgl-pengingat');
+            const $masaPengingatCol = $(this).find('.sisa-peringatan-col');
+
+            // Skip if no reminder date
+            if (!tglPengingatStr) {
+                $masaPengingatCol.text('-');
+                return true;
+            }
+
+            // Parse reminder date
+            const tglPengingat = moment(tglPengingatStr);
+
+            // Skip if invalid date
+            if (!tglPengingat.isValid()) {
+                $masaPengingatCol.text('-');
+                return true;
+            }
+
+            // Calculate days difference
+            const diffDays = tglPengingat.diff(today, 'days');
+            let masaPengingatText = '';
+
+            if (diffDays < 0) {
+                // Reminder date has passed
+                masaPengingatText = 'Terlambat ' + Math.abs(diffDays) + ' hari';
+            } else if (diffDays === 0) {
+                // Reminder date is today
+                masaPengingatText = 'Hari ini';
+            } else {
+                // Reminder date is in the future
+                masaPengingatText = diffDays + ' hari lagi';
+            }
+
+            // Update the text
+            $masaPengingatCol.text(masaPengingatText);
+        });
+    }
+
+    // Format date for filters
+    $.fn.dataTable.ext.search.push(
+        function(settings, data, dataIndex) {
+            // Make sure we're only processing the correct table
+            if (settings.nTable.id !== 'dokumenKontrakTable') return true;
+
+            // Tanggal terbit filter
+            let terbitFrom = $('#filter_tgl_terbit_from').val();
+            let terbitTo = $('#filter_tgl_terbit_to').val();
+
+            // Get the date text from column 8 (Tgl Terbit)
+            let terbitText = data[8].trim();
+            // Skip processing if it's just a dash or empty
+            if (terbitText === '-' || terbitText === '<span class="text-muted">-</span>') {
+                if (terbitFrom === '' && terbitTo === '') {
+                    // No date filter applied, include this row
+                    return true;
+                } else {
+                    // Date filter applied but this row has no date, exclude it
+                    return false;
+                }
+            }
+
+            // Clean the text from any HTML tags
+            terbitText = terbitText.replace(/<[^>]*>/g, '').trim();
+
+            // Convert the date text to a moment object (format: DD/MM/YYYY)
+            let terbitDate = moment(terbitText, 'DD/MM/YYYY');
+
+            // Check if this date passes the filter
+            let passesTermitFilter =
+                (terbitFrom === '' && terbitTo === '') || // No filter
+                (terbitFrom !== '' && terbitTo === '' && terbitDate.isSameOrAfter(moment(
+                    terbitFrom))) || // Only from filter
+                (terbitFrom === '' && terbitTo !== '' && terbitDate.isSameOrBefore(moment(terbitTo))) ||
+                // Only to filter
+                (terbitFrom !== '' && terbitTo !== '' && terbitDate.isBetween(moment(terbitFrom),
+                    moment(terbitTo), 'day', '[]')); // Both filters
+
+            if (!passesTermitFilter) {
+                return false;
+            }
+
+            // Tanggal berakhir filter (column 9)
+            let berakhirFrom = $('#filter_tgl_berakhir_from').val();
+            let berakhirTo = $('#filter_tgl_berakhir_to').val();
+
+            let berakhirText = data[9].trim();
+            // Handle extra HTML in the cell (remove any HTML tags)
+            berakhirText = berakhirText.replace(/<[^>]*>/g, '').trim();
+
+            if (berakhirText === '-') {
+                if (berakhirFrom === '' && berakhirTo === '') {
+                    // No filter for tanggal berakhir
+                    return true;
+                } else {
+                    // Filter applied but this row has no end date
+                    return false;
+                }
+            }
+
+            let berakhirDate = moment(berakhirText, 'DD/MM/YYYY');
+
+            let passesBerakhirFilter =
+                (berakhirFrom === '' && berakhirTo === '') || // No filter
+                (berakhirFrom !== '' && berakhirTo === '' && berakhirDate.isSameOrAfter(moment(
+                    berakhirFrom))) || // Only from filter
+                (berakhirFrom === '' && berakhirTo !== '' && berakhirDate.isSameOrBefore(moment(
+                    berakhirTo))) || // Only to filter
+                (berakhirFrom !== '' && berakhirTo !== '' && berakhirDate.isBetween(moment(
+                    berakhirFrom), moment(berakhirTo), 'day', '[]')); // Both filters
+
+            if (!passesBerakhirFilter) {
+                return false;
+            }
+
+            // Filter status dokumen
+            let status = $('#filter_status').val();
+            if (status === '') {
+                return true; // No status filter applied
+            } else if (status === 'Berlaku') {
+                // Directly check if StatusDok column (index 14) contains "Berlaku"
+                return data[14].includes("Berlaku");
+            } else if (status === 'Tidak Berlaku') {
+                // Directly check if StatusDok column (index 14) contains "Tidak Berlaku"
+                return data[14].includes("Tidak Berlaku");
+            } else if (status === 'Warning') {
+                // For "Warning" status - documents that will expire soon but are still valid
+                const row = $(table.row(dataIndex).node());
+                return row.hasClass('highlight-yellow') || row.hasClass('highlight-orange');
+            } else if (status === 'Expired') {
+                // For "Expired" status - documents past their expiration date but still marked as valid
+                const row = $(table.row(dataIndex).node());
+                return row.hasClass('highlight-red');
+            }
+
+            return true;
+        }
+    );
+
+    // Initialize DataTable
+    var table = $('#dokumenKontrakTable').DataTable({
+        responsive: true,
+        language: indonesianLanguage,
+        columnDefs: [{
+                // Highest priority for most important columns
+                responsivePriority: 1,
+                targets: [0, 1, 2, 14] // No, NRK, Nama Karyawan, Status
+            },
+            {
+                // Second priority for other important columns
+                responsivePriority: 2,
+                targets: [5, 7, 3] // Perusahaan, Jenis, Tanggal Masuk
+            },
+            {
+                // Third priority for date columns
+                responsivePriority: 3,
+                targets: [8, 9, 10, 11] // Tgl Terbit, Tgl Berakhir, Tgl Peringatan, Peringatan
+            },
+            {
+                // Fourth priority for less important columns
+                responsivePriority: 4,
+                targets: [12, 13, 15] // Catatan, File, Aksi
+            },
+            {
+                // Non-sortable columns
+                orderable: false,
+                targets: [0, 15] // No dan Aksi
+            },
+            {
+                // Custom sorting for Status column (column 14)
+                // Ensures "Tidak Berlaku" documents always appear at bottom
+                targets: 14,
+                type: 'string',
+                render: function(data, type, row, meta) {
+                    // For display, show original data
+                    if (type === 'display') {
+                        return data;
+                    }
+                    // For sorting, prefix "Tidak Berlaku" with 'z' (will always be at end of alphabet)
+                    if (type === 'sort') {
+                        return data.includes('Tidak Berlaku') ? 'z' + data : 'a' + data;
+                    }
+                    return data;
+                }
+            }
+        ],
+        order: [
+            [14, 'asc'], // Sort by status first (Tidak Berlaku at end)
+            [1, 'asc'] // Then by NRK
+        ],
+        buttons: [{
+                extend: 'excel',
+                text: 'Excel',
+                className: 'btn btn-sm btn-success d-none excel-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'pdf',
+                text: 'PDF',
+                className: 'btn btn-sm btn-danger d-none pdf-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            },
+            {
+                extend: 'print',
+                text: 'Print',
+                className: 'btn btn-sm btn-secondary d-none print-export-btn',
+                exportOptions: {
+                    columns: ':not(:last-child)'
+                }
+            }
+        ],
+        // Update numbering and highlighting when table is redrawn
+        drawCallback: function() {
+            // Update row numbers on each page
+            this.api().column(0, {
+                page: 'current'
+            }).nodes().each(function(cell, i) {
+                cell.innerHTML = i + 1;
+            });
+
+            // Apply highlighting for visible rows
+            applyRowHighlighting();
+
+            // Update masa peringatan text
+            updateMasaPengingatText();
+        },
+        initComplete: function() {
+            // Style search input box
+            $('.dataTables_filter input').addClass('form-control');
+
+            // Apply initial highlighting
+            applyRowHighlighting();
+
+            // Update masa peringatan text
+            updateMasaPengingatText();
+
+            // Calculate document statistics after table is fully initialized
+            setTimeout(function() {
+                updateDocumentStats();
+            }, 500);
+        }
+    });
+
+    // Apply Filter button handler
+    $('#applyFilter').on('click', function() {
+        // Clear existing search filters
+        table.search('').columns().search('');
+
+        // Apply each filter individually
+        if ($('#filter_noreg').val()) {
+            table.column(6).search($('#filter_noreg').val()); // No Registrasi
+        }
+
+        if ($('#filter_karyawan').val()) {
+            table.column(2).search($('#filter_karyawan').val()); // Nama Karyawan
+        }
+
+        if ($('#filter_perusahaan').val()) {
+            table.column(5).search($('#filter_perusahaan').val()); // Perusahaan
+        }
+
+        if ($('#filter_kategori').val()) {
+            // If you have a category column, filter by it
+            const kategoriIndex = table.column('KategoriDok:name').index();
+            if (kategoriIndex !== undefined) {
+                table.column(kategoriIndex).search($('#filter_kategori').val());
+            }
+        }
+
+        if ($('#filter_jenis').val()) {
+            table.column(7).search($('#filter_jenis').val()); // Jenis Dokumen
+        }
+
+        // Date filters and status filter are handled by the custom search function
+
+        // Refresh table to apply all filters
+        table.draw();
+
+        // Hide the filter modal
+        filterModal.hide();
+
+        // Highlight filter button if any filter is active
+        highlightFilterButton();
+    });
+
+    // Reset Filter button handler
+    $('#resetFilter').on('click', function() {
+        // Reset form fields
+        $('#filterForm')[0].reset();
+
+        // Reset Select2 fields
+        $('#filter_karyawan, #filter_kategori, #filter_jenis, #filter_status, #filter_perusahaan').val(null).trigger('change');
+
+        // Remove active class from filter button
+        $('#filterButton').removeClass('filter-active');
+
+        // Reset table filters
+        table.search('').columns().search('').draw();
+    });
+
+    // Table draw event - update highlighting and text
+    table.on('draw.dt', function() {
+        updateMasaPengingatText();
+        applyRowHighlighting();
+    });
+
+    // Highlight filter button if any filter is active
+    function highlightFilterButton() {
+        if ($('#filter_noreg').val() ||
+            $('#filter_karyawan').val() ||
+            $('#filter_perusahaan').val() ||
+            $('#filter_kategori').val() ||
+            $('#filter_jenis').val() ||
+            $('#filter_tgl_terbit_from').val() ||
+            $('#filter_tgl_terbit_to').val() ||
+            $('#filter_tgl_berakhir_from').val() ||
+            $('#filter_tgl_berakhir_to').val() ||
+            $('#filter_status').val()) {
+            $('#filterButton').addClass('filter-active');
+        } else {
+            $('#filterButton').removeClass('filter-active');
+        }
+    }
+
+    // Export buttons
+    $('#exportExcel').on('click', function() {
+        $('.excel-export-btn').trigger('click');
+        exportModal.hide();
+    });
+
+    $('#exportPdf').on('click', function() {
+        $('.pdf-export-btn').trigger('click');
+        exportModal.hide();
+    });
+
+    $('#exportPrint').on('click', function() {
+        $('.print-export-btn').trigger('click');
+        exportModal.hide();
+    });
+
+    // Delete Confirmation handler
+    $(document).on('click', '.delete-confirm', function(e) {
+        // Prevent default action
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Get document ID and name
+        var id = $(this).data('id');
+        var name = $(this).data('name');
+
+        // Set document name in modal
+        $('#dokumenNameToDelete').text(name);
+
+        // Set form action URL
+        $('#deleteForm').attr('action', "/dokumen-kontrak/" + id);
+
+        // Show confirmation modal
+        deleteConfirmationModal.show();
+    });
+
+    // Row click handler for navigation to detail page
+    $('#dokumenKontrakTable tbody').on('click', 'tr', function(e) {
+        // Don't follow link if clicking on button or link inside row
+        if ($(e.target).is('button') || $(e.target).is('a') || $(e.target).is('i') ||
+            $(e.target).closest('button').length || $(e.target).closest('a').length) {
+            return;
+        }
+
+        // Check if user has detail access before redirecting
+        var detailLink = $(this).find('a[title="Detail"]').attr('href');
+        if (detailLink) {
+            window.location.href = detailLink;
+        }
+    });
+
+    // Row hover effects
+    $('#dokumenKontrakTable tbody').on('mouseenter', 'tr', function() {
+        $(this).addClass('row-hover-active');
+    }).on('mouseleave', 'tr', function() {
+        $(this).removeClass('row-hover-active');
+    });
+
+    // Auto-hide alerts after 5 seconds
+    setTimeout(function() {
+        $(".alert").fadeOut("slow");
+    }, 5000);
+});
     </script>
 @endpush
