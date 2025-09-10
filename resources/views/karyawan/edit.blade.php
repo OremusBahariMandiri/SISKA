@@ -658,6 +658,37 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                @if ($karyawan->FileDokKry)
+                                                @php
+                                                    $fileExtension = pathinfo(
+                                                        storage_path('app/public/' . $karyawan->FileDokKry),
+                                                        PATHINFO_EXTENSION,
+                                                    );
+                                                    $isImage = in_array(strtolower($fileExtension), [
+                                                        'jpg',
+                                                        'jpeg',
+                                                        'png',
+                                                        'gif',
+                                                    ]);
+                                                @endphp
+
+                                                @if ($isImage)
+                                                    <div class="col-md-12">
+                                                        <div class="form-group mb-4">
+                                                            <label class="form-label fw-bold">Foto Karyawan Saat
+                                                                Ini</label>
+                                                            <div class="card">
+                                                                <div class="card-body text-center">
+                                                                    <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
+                                                                        alt="Foto {{ $karyawan->NamaKry }}"
+                                                                        class="img-fluid img-thumbnail"
+                                                                        style="max-height: 250px;">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endif
+                                            @endif
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
                                                         <label for="StsKaryawan" class="form-label fw-bold">Status
@@ -721,37 +752,7 @@
                                                 </div>
                                             </div>
 
-                                            @if ($karyawan->FileDokKry)
-                                                @php
-                                                    $fileExtension = pathinfo(
-                                                        storage_path('app/public/' . $karyawan->FileDokKry),
-                                                        PATHINFO_EXTENSION,
-                                                    );
-                                                    $isImage = in_array(strtolower($fileExtension), [
-                                                        'jpg',
-                                                        'jpeg',
-                                                        'png',
-                                                        'gif',
-                                                    ]);
-                                                @endphp
 
-                                                @if ($isImage)
-                                                    <div class="col-md-12">
-                                                        <div class="form-group mb-4">
-                                                            <label class="form-label fw-bold">Foto Karyawan Saat
-                                                                Ini</label>
-                                                            <div class="card">
-                                                                <div class="card-body text-center">
-                                                                    <img src="{{ asset('storage/' . $karyawan->FileDokKry) }}"
-                                                                        alt="Foto {{ $karyawan->NamaKry }}"
-                                                                        class="img-fluid img-thumbnail"
-                                                                        style="max-height: 250px;">
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                @endif
-                                            @endif
 
                                             <div class="col-md-12">
                                                 <div class="form-group mb-3">
