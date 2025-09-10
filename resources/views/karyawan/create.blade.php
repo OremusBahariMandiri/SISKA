@@ -619,6 +619,21 @@
                                             <div class="row">
                                                 <div class="col-md-12">
                                                     <div class="form-group mb-3">
+                                                        <label for="FileDokKry" class="form-label fw-bold">Unggah
+                                                            Dokumen</label>
+                                                        <div class="input-group">
+                                                            <span class="input-group-text"><i
+                                                                    class="fas fa-file-pdf"></i></span>
+                                                            <input type="file" class="form-control" id="FileDokKry"
+                                                                name="FileDokKry">
+                                                        </div>
+                                                        <div class="form-text text-muted"><i
+                                                                class="fas fa-info-circle me-1"></i>Format file: PDF, JPG,
+                                                            PNG</div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-12">
+                                                    <div class="form-group mb-3">
                                                         <label for="StsKaryawan" class="form-label fw-bold">Status
                                                             Karyawan <span class="text-danger">*</span></label>
                                                         <div class="input-group">
@@ -677,21 +692,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-12">
-                                                <div class="form-group mb-3">
-                                                    <label for="FileDokKry" class="form-label fw-bold">Unggah
-                                                        Dokumen</label>
-                                                    <div class="input-group">
-                                                        <span class="input-group-text"><i
-                                                                class="fas fa-file-pdf"></i></span>
-                                                        <input type="file" class="form-control" id="FileDokKry"
-                                                            name="FileDokKry">
-                                                    </div>
-                                                    <div class="form-text text-muted"><i
-                                                            class="fas fa-info-circle me-1"></i>Format file: PDF, JPG,
-                                                        PNG</div>
-                                                </div>
-                                            </div>
+                                           
                                             <div class="col-md-12">
                                                 <div class="form-group mb-3">
                                                     <label for="Catatan" class="form-label fw-bold">Catatan</label>
