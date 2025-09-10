@@ -97,12 +97,13 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('dokumen-karyawan', DokumenKaryawanController::class);
     Route::get('/dokumen-karyawan/get-jenis-by-kategori/{kategoriId}', [DokumenKaryawanController::class, 'getJenisByKategori'])->name('dokumen-karyawan.get-jenis-by-kategori');
     Route::get('dokumen-karyawan/{dokumenKaryawan}/viewdocumentkaryawan', [DokumenKaryawanController::class, 'viewDocument'])->name('viewdocumentkaryawan');
-    Route::post('/dokumen-karyawan/export-excel', [DokumenKaryawanController::class, 'exportExcel'])->name('dokumen-karyawan.export-excel');
+    Route::post('/dokumen-karyawan/export-excel', [App\Http\Controllers\DokumenKaryawanController::class, 'exportExcel'])->name('dokumen-karyawan.export-excel');
 
     //Dokumen Kontrak Route
     Route::resource('dokumen-kontrak', DokumenKontrakController::class);
     Route::post('/dokumen-kontrak/export-excel', [DokumenKontrakController::class, 'exportExcel'])->name('dokumen-kontrak.export-excel');
     Route::get('dokumen-kontrak/{dokumenKontrak}/view-document', [DokumenKontrakController::class, 'viewDocument'])->name('dokumen-kontrak.viewDocument');
+    Route::post('/dokumen-kontrak/export-excel', [App\Http\Controllers\DokumenKontrakController::class, 'exportExcel'])->name('dokumen-kontrak.export-excel');
 
     //Dokumen Karir Route
     Route::resource('dokumen-karir', DokumenKarirController::class);
