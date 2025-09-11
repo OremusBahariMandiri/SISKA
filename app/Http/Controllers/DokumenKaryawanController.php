@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DokumenKaryawanExport;
 use App\Models\DokumenKaryawan;
 use App\Models\Karyawan;
 use App\Models\KategoriDokumen;
@@ -13,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DokumenKaryawanController extends Controller
 {
@@ -748,4 +750,119 @@ class DokumenKaryawanController extends Controller
 
         return response()->json($jenisDokumen);
     }
+
+    public function exportExcel(Request $request)
+{
+    // Ambil parameter filter
+    $filters = [
+        'noreg' => $request->filter_noreg,
+        'karyawan' => $request->filter_karyawan,
+        'jenis' => $request->filter_jenis,
+        'tgl_terbit_from' => $request->filter_tgl_terbit_from,
+        'tgl_terbit_to' => $request->filter_tgl_terbit_to,
+        'tgl_berakhir_from' => $request->filter_tgl_berakhir_from,
+        'tgl_berakhir_to' => $request->filter_tgl_berakhir_to,
+        'status' => $request->filter_status,
+    ];
+
+    // Query data berdasarkan filter
+    $query = DokumenKaryawan::with(['karyawan']);
+
+    // Filter No Registrasi
+    if ($request->filled('filter_noreg')) {
+        $query->where('NoRegDok', 'like', '%' . $request->filter_noreg . '%');
+    }
+
+    // Filter Karyawan (nama)
+    if ($request->filled('filter_karyawan')) {
+        $query->whereHas('karyawan', function($q) use ($request) {
+            $q->where('NamaKry', 'like', '%' . $request->filter_karyawan . '%');
+        });
+    }
+
+    // Filter Jenis Dokumen
+    if ($request->filled('filter_jenis')) {
+        $query->where('JenisDok', $request->filter_jenis);
+    }
+
+    // Filter Tanggal Terbit
+    if ($request->filled('filter_tgl_terbit_from')) {
+        $query->where('TglTerbitDok', '>=', $request->filter_tgl_terbit_from);
+    }
+    if ($request->filled('filter_tgl_terbit_to')) {
+        $query->where('TglTerbitDok', '<=', $request->filter_tgl_terbit_to);
+    }
+
+    // Filter Tanggal Berakhir
+    if ($request->filled('filter_tgl_berakhir_from')) {
+        $query->where('TglBerakhirDok', '>=', $request->filter_tgl_berakhir_from);
+    }
+    if ($request->filled('filter_tgl_berakhir_to')) {
+        $query->where('TglBerakhirDok', '<=', $request->filter_tgl_berakhir_to);
+    }
+
+    // Filter Status Dokumen
+    if ($request->filled('filter_status')) {
+        $statusValue = $request->filter_status;
+
+        if ($statusValue === 'Berlaku') {
+            $query->where('StatusDok', 'Berlaku');
+        }
+        else if ($statusValue === 'Tidak Berlaku') {
+            $query->where('StatusDok', 'Tidak Berlaku');
+        }
+        else if ($statusValue === 'Warning' || $statusValue === 'Expired') {
+            // For Warning and Expired, we need more complex logic
+            // First, select documents with status "Berlaku"
+            $query->where('StatusDok', 'Berlaku');
+
+            // Then apply additional date conditions
+            if ($statusValue === 'Warning') {
+                // Documents that will expire within 30 days
+                $query->where(function($q) {
+                    $thirtyDaysFromNow = now()->addDays(30);
+                    $q->whereNotNull('TglBerakhirDok')
+                      ->where('TglBerakhirDok', '>', now())
+                      ->where('TglBerakhirDok', '<=', $thirtyDaysFromNow);
+                });
+            } else if ($statusValue === 'Expired') {
+                // Documents that are already expired
+                $query->where(function($q) {
+                    $q->whereNotNull('TglBerakhirDok')
+                      ->where('TglBerakhirDok', '<', now());
+                });
+            }
+        }
+    }
+
+    // Get jenis dokumen with their GolDok values
+    $jenisDokList = DB::table('A07DmJenisDok')
+        ->select('JenisDok', 'GolDok')
+        ->get()
+        ->keyBy('JenisDok');
+
+    // Execute the query
+    $dokumenKaryawan = $query->get();
+
+    // Process document data to ensure proper date handling and add GolDok
+    $dokumenKaryawan = $dokumenKaryawan->map(function ($item) use ($jenisDokList) {
+        // Add GolDok value if JenisDok exists in jenisDokList
+        if (isset($item->JenisDok) && isset($jenisDokList[$item->JenisDok])) {
+            $item->GolDok = $jenisDokList[$item->JenisDok]->GolDok;
+        } else {
+            $item->GolDok = 999; // Default high value if not found
+        }
+
+        return $item;
+    });
+
+    // Sort by employee and GolDok
+    $dokumenKaryawan = $this->processAndSortDocuments($dokumenKaryawan);
+
+    // Format tanggal untuk nama file
+    $currentDate = now()->format('d-m-Y_H-i-s');
+    $fileName = 'Dokumen_Karyawan_' . $currentDate . '.xlsx';
+
+    return Excel::download(new DokumenKaryawanExport($dokumenKaryawan, $filters), $fileName);
+}
 }
