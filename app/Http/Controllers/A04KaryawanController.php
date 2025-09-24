@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Response;
 
-class KaryawanController extends Controller
+class A04KaryawanController extends Controller
 {
     use GenerateIdTrait;
 
@@ -57,7 +57,7 @@ class KaryawanController extends Controller
             }
         }
 
-        return view('karyawan.index', compact('karyawans', 'userPermissions'));
+        return view('data-master.A04-karyawan.index', compact('karyawans', 'userPermissions'));
     }
 
     public function create()
@@ -65,7 +65,7 @@ class KaryawanController extends Controller
         // Generate automatic ID
         $newId = $this->generateId('A04', 'A04DmKaryawan');
 
-        return view('karyawan.create', compact('newId'));
+        return view('data-master.A04-karyawan.create', compact('newId'));
     }
 
     public function store(Request $request)
@@ -151,13 +151,13 @@ class KaryawanController extends Controller
     public function show($id)
     {
         $karyawan = Karyawan::findOrFail($id);
-        return view('karyawan.show', compact('karyawan'));
+        return view('data-master.A04-karyawan.show', compact('karyawan'));
     }
 
     public function edit($id)
     {
         $karyawan = Karyawan::findOrFail($id);
-        return view('karyawan.edit', compact('karyawan'));
+        return view('data-master.A04-karyawan.edit', compact('karyawan'));
     }
 
     public function update(Request $request, $id)

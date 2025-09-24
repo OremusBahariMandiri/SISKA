@@ -6,7 +6,7 @@ use App\Models\Jabatan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
-class JabatanController extends Controller
+class A08JabatanController extends Controller
 {
     use GenerateIdTrait;
 
@@ -58,7 +58,7 @@ class JabatanController extends Controller
             }
         }
 
-        return view('jabatan.index', compact('jabatan', 'userPermissions'));
+        return view('data-master.a08-jabatan.index', compact('jabatan', 'userPermissions'));
     }
 
     /**
@@ -69,7 +69,7 @@ class JabatanController extends Controller
         // Generate automatic ID
         $newId = $this->generateId('A08', 'A08DmJabatan');
 
-        return view('jabatan.create', compact('newId'));
+        return view('data-master.a08-jabatan.create', compact('newId'));
     }
 
     /**
@@ -107,7 +107,7 @@ class JabatanController extends Controller
     public function show($id)
     {
         $jabatan = Jabatan::findOrFail($id);
-        return view('jabatan.show', compact('jabatan'));
+        return view('data-master.a08-jabatan.show', compact('jabatan'));
     }
 
     /**
@@ -116,7 +116,7 @@ class JabatanController extends Controller
     public function edit($id)
     {
         $jabatan = Jabatan::findOrFail($id);
-        return view('jabatan.edit', compact('jabatan'));
+        return view('data-master.a08-jabatan.edit', compact('jabatan'));
     }
 
     /**

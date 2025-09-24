@@ -7,7 +7,7 @@ use App\Models\Karyawan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
-class KeluargaKaryawanController extends Controller
+class A05KeluargaKaryawanController extends Controller
 {
     use GenerateIdTrait;
 
@@ -55,7 +55,7 @@ class KeluargaKaryawanController extends Controller
             }
         }
 
-        return view('keluarga-karyawan.index', compact('keluargaKaryawans', 'userPermissions'));
+        return view('data-master.a05-keluarga-karyawan.index', compact('keluargaKaryawans', 'userPermissions'));
     }
 
     public function create()
@@ -93,7 +93,7 @@ class KeluargaKaryawanController extends Controller
             'S3' => 'S3'
         ];
 
-        return view('keluarga-karyawan.create', compact(
+        return view('data-master.a05-keluarga-karyawan.create', compact(
             'newId',
             'karyawans',
             'statusKeluargaOptions',
@@ -179,7 +179,7 @@ class KeluargaKaryawanController extends Controller
     public function show($id)
     {
         $keluargaKaryawan = KeluargaKaryawan::with(['karyawan', 'createdBy', 'updatedBy'])->findOrFail($id);
-        return view('keluarga-karyawan.show', compact('keluargaKaryawan'));
+        return view('data-master.a05-keluarga-karyawan.show', compact('keluargaKaryawan'));
     }
 
     public function edit($id)
@@ -214,7 +214,7 @@ class KeluargaKaryawanController extends Controller
             'S3' => 'S3'
         ];
 
-        return view('keluarga-karyawan.edit', compact(
+        return view('data-master.a05-keluarga-karyawan.edit', compact(
             'keluargaKaryawan',
             'karyawans',
             'statusKeluargaOptions',

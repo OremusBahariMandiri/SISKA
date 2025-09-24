@@ -7,7 +7,7 @@ use App\Models\KategoriDokumen;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
-class JenisDokumenController extends Controller
+class A07JenisDokumenController extends Controller
 {
     use GenerateIdTrait;
 
@@ -58,7 +58,7 @@ class JenisDokumenController extends Controller
             }
         }
 
-        return view('jenis-dokumen.index', compact('jenisDokumens', 'userPermissions'));
+        return view('data-master.a07-jenis-dokumen.index', compact('jenisDokumens', 'userPermissions'));
     }
 
     public function create()
@@ -69,7 +69,7 @@ class JenisDokumenController extends Controller
         // Get all kategori dokumen for dropdown
         $kategoriDokumens = KategoriDokumen::orderBy('KategoriDok')->get();
 
-        return view('jenis-dokumen.create', compact('newId', 'kategoriDokumens'));
+        return view('data-master.a07-jenis-dokumen.create', compact('newId', 'kategoriDokumens'));
     }
 
     public function store(Request $request)
@@ -108,14 +108,14 @@ class JenisDokumenController extends Controller
     public function show($id)
     {
         $jenisDokumen = JenisDokumen::with(['kategoriDokumen', 'createdBy', 'updatedBy'])->findOrFail($id);
-        return view('jenis-dokumen.show', compact('jenisDokumen'));
+        return view('data-master.a07-jenis-dokumen.show', compact('jenisDokumen'));
     }
 
     public function edit($id)
     {
         $jenisDokumen = JenisDokumen::findOrFail($id);
         $kategoriDokumens = KategoriDokumen::orderBy('KategoriDok')->get();
-        return view('jenis-dokumen.edit', compact('jenisDokumen', 'kategoriDokumens'));
+        return view('data-master.a07-jenis-dokumen.edit', compact('jenisDokumen', 'kategoriDokumens'));
     }
 
     public function update(Request $request, $id)
