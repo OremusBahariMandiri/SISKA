@@ -6,7 +6,7 @@ use App\Models\Perusahaan;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
-class PerusahaanController extends Controller
+class A03PerusahaanController extends Controller
 {
     use GenerateIdTrait;
 
@@ -54,7 +54,7 @@ class PerusahaanController extends Controller
             }
         }
 
-        return view('perusahaan.index', compact('perusahaans', 'userPermissions'));
+        return view('data-master.a03-perusahaan.index', compact('perusahaans', 'userPermissions'));
     }
 
     public function create()
@@ -62,7 +62,7 @@ class PerusahaanController extends Controller
         // Generate automatic ID
         $newId = $this->generateId('A03', 'A03DmPerusahaan');
 
-        return view('perusahaan.create', compact('newId'));
+        return view('data-master.a03-perusahaan.create', compact('newId'));
     }
 
     public function store(Request $request)
@@ -111,13 +111,13 @@ class PerusahaanController extends Controller
     public function show($id)
     {
         $perusahaan = Perusahaan::findOrFail($id);
-        return view('perusahaan.show', compact('perusahaan'));
+        return view('data-master.a03-perusahaan.show', compact('perusahaan'));
     }
 
     public function edit($id)
     {
         $perusahaan = Perusahaan::findOrFail($id);
-        return view('perusahaan.edit', compact('perusahaan'));
+        return view('data-master.a03-perusahaan.edit', compact('perusahaan'));
     }
 
     public function update(Request $request, $id)

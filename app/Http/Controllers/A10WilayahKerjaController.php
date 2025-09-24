@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\GenerateIdTrait;
 
-class WilayahKerjaController extends Controller
+class A10WilayahKerjaController extends Controller
 {
     use GenerateIdTrait;
 
@@ -27,7 +27,7 @@ class WilayahKerjaController extends Controller
     public function index()
     {
         $wilayahKerjas = WilayahKerja::all();
-        return view('wilayah-kerja.index', compact('wilayahKerjas'));
+        return view('data-master.a10-wilayah-kerja.index', compact('wilayahKerjas'));
     }
 
     /**
@@ -38,7 +38,7 @@ class WilayahKerjaController extends Controller
         // Generate new ID code
         $newId = $this->generateId('A10', 'A10DmWilayahKrj');
 
-        return view('wilayah-kerja.create', compact('newId'));
+        return view('data-master.a10-wilayah-kerja.create', compact('newId'));
     }
 
     /**
@@ -75,7 +75,7 @@ class WilayahKerjaController extends Controller
      */
     public function show(WilayahKerja $wilayahKerja)
     {
-        return view('wilayah-kerja.show', compact('wilayahKerja'));
+        return view('data-master.a10-wilayah-kerja.show', compact('wilayahKerja'));
     }
 
     /**
@@ -83,7 +83,7 @@ class WilayahKerjaController extends Controller
      */
     public function edit(WilayahKerja $wilayahKerja)
     {
-        return view('wilayah-kerja.edit', compact('wilayahKerja'));
+        return view('data-master.a10-wilayah-kerja.edit', compact('wilayahKerja'));
     }
 
     /**

@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\GenerateIdTrait;
 
-class DepartemenController extends Controller
+class A09DepartemenController extends Controller
 {
     use GenerateIdTrait;
 
@@ -58,7 +58,7 @@ class DepartemenController extends Controller
             }
         }
 
-        return view('departemen.index', compact('departemens', 'userPermissions'));
+        return view('data-master.a09-departemen.index', compact('departemens', 'userPermissions'));
     }
 
     /**
@@ -69,7 +69,7 @@ class DepartemenController extends Controller
         // Generate new ID code
         $newId = $this->generateId('A09', 'A09DmDepartemen');
 
-        return view('departemen.create', compact('newId'));
+        return view('data-master.a09-departemen.create', compact('newId'));
     }
 
     /**
@@ -107,7 +107,7 @@ class DepartemenController extends Controller
     public function show($id)
     {
         $departemen = Departemen::findOrFail($id);
-        return view('departemen.show', compact('departemen'));
+        return view('data-master.a09-departemen.show', compact('departemen'));
     }
 
     /**
@@ -116,7 +116,7 @@ class DepartemenController extends Controller
     public function edit($id)
     {
         $departemen = Departemen::findOrFail($id);
-        return view('departemen.edit', compact('departemen'));
+        return view('data-master.a09-departemen.edit', compact('departemen'));
     }
 
     /**

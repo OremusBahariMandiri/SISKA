@@ -8,7 +8,7 @@ use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
-class UserController extends Controller
+class A01UserController extends Controller
 {
     use GenerateIdTrait;
 
@@ -25,7 +25,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('users.index', compact('users'));
+        return view('data-master.a01-users.index', compact('users'));
     }
 
     public function create()
@@ -33,7 +33,7 @@ class UserController extends Controller
         // Generate automatic ID
         $newId = $this->generateId('A01', 'A01DmUser');
 
-        return view('users.create', compact('newId'));
+        return view('data-master.a01-users.create', compact('newId'));
     }
 
     public function store(Request $request)
@@ -73,13 +73,13 @@ class UserController extends Controller
     public function show($id)
     {
         $user = User::findOrFail($id);
-        return view('users.show', compact('user'));
+        return view('data-master.a01-users.show', compact('user'));
     }
 
     public function edit($id)
     {
         $user = User::findOrFail($id);
-        return view('users.edit', compact('user'));
+        return view('data-master.a01-users.edit', compact('user'));
     }
 
     public function update(Request $request, $id)

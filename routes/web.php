@@ -1,5 +1,14 @@
 <?php
 
+use App\Http\Controllers\A01UserController;
+use App\Http\Controllers\A03PerusahaanController;
+use App\Http\Controllers\A04KaryawanController;
+use App\Http\Controllers\A05KeluargaKaryawanController;
+use App\Http\Controllers\A06KategoriDokumenController;
+use App\Http\Controllers\A07JenisDokumenController;
+use App\Http\Controllers\A08JabatanController;
+use App\Http\Controllers\A09DepartemenController;
+use App\Http\Controllers\A10WilayahKerjaController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\BpjsKesehatanController;
 use App\Http\Controllers\DepartemenController;
@@ -52,39 +61,39 @@ Route::middleware(['auth'])->group(function () {
     })->name('home');
 
     // User Route
-    Route::resource('users', UserController::class);
+    Route::resource('users', A01UserController::class);
     Route::get('user-access/{user}', [UserAccessController::class, 'show'])->name('user-access.show');
     Route::get('user-access/{user}/edit', [UserAccessController::class, 'edit'])->name('user-access.edit');
     Route::put('user-access/{user}', [UserAccessController::class, 'update'])->name('user-access.update');
 
     // Perusahaan Route
-    Route::resource('perusahaan', PerusahaanController::class);
+    Route::resource('perusahaan', A03PerusahaanController::class);
 
     //Karyawan Route
-    Route::resource('karyawan', KaryawanController::class);
-    Route::get('karyawan/{id}/view-document', [KaryawanController::class, 'viewDocument'])->name('karyawan.view-document');
-    Route::get('exportexcelkaryawan', [App\Http\Controllers\KaryawanController::class, 'exportExcel'])->name('exportexcelkaryawan');
+    Route::resource('karyawan', A04KaryawanController::class);
+    Route::get('karyawan/{id}/view-document', [A04KaryawanController::class, 'viewDocument'])->name('karyawan.view-document');
+    Route::get('exportexcelkaryawan', [App\Http\Controllers\A04KaryawanController::class, 'exportExcel'])->name('exportexcelkaryawan');
 
     //Keluarga Karyawan Route
-    Route::resource('keluarga-karyawan', KeluargaKaryawanController::class);
-    Route::get('/keluarga-karyawan/get-karyawan-detail/{id}', [KeluargaKaryawanController::class, 'getKaryawanDetail'])
+    Route::resource('keluarga-karyawan', A05KeluargaKaryawanController::class);
+    Route::get('/keluarga-karyawan/get-karyawan-detail/{id}', [A05KeluargaKaryawanController::class, 'getKaryawanDetail'])
         ->name('keluarga-karyawan.get-karyawan-detail');
-    Route::get('/export-excel-keluarga-karyawan', [KeluargaKaryawanController::class, 'exportExcel'])->name('exportexcelkeluargakaryawan');
+    Route::get('/export-excel-keluarga-karyawan', [A05KeluargaKaryawanController::class, 'exportExcel'])->name('exportexcelkeluargakaryawan');
 
     //Kategori Dokumen Route
-    Route::resource('kategori-dokumen', KategoriDokumenController::class);
+    Route::resource('kategori-dokumen', A06KategoriDokumenController::class);
 
     //Jenis Dokumen Route
-    Route::resource('jenis-dokumen', JenisDokumenController::class);
+    Route::resource('jenis-dokumen', A07JenisDokumenController::class);
 
     //Jabatan Route
-    Route::resource('jabatan', JabatanController::class);
+    Route::resource('jabatan', A08JabatanController::class);
 
     //Departemen Route
-    Route::resource('departemen', DepartemenController::class);
+    Route::resource('departemen', A09DepartemenController::class);
 
     //Wilayah Kerja Route
-    Route::resource('wilayah-kerja', WilayahKerjaController::class);
+    Route::resource('wilayah-kerja', A10WilayahKerjaController::class);
 
     // routes/web.php
 

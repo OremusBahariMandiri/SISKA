@@ -6,7 +6,7 @@ use App\Models\KategoriDokumen;
 use App\Traits\GenerateIdTrait;
 use Illuminate\Http\Request;
 
-class KategoriDokumenController extends Controller
+class A06KategoriDokumenController extends Controller
 {
     use GenerateIdTrait;
 
@@ -55,7 +55,7 @@ class KategoriDokumenController extends Controller
             }
         }
 
-        return view('kategori-dokumen.index', compact('kategoriDokumens', 'userPermissions'));
+        return view('data-master.a06-kategori-dokumen.index', compact('kategoriDokumens', 'userPermissions'));
     }
 
     public function create()
@@ -63,7 +63,7 @@ class KategoriDokumenController extends Controller
         // Generate automatic ID
         $newId = $this->generateId('A06', 'A06DmKategoriDok');
 
-        return view('kategori-dokumen.create', compact('newId'));
+        return view('data-master.a06-kategori-dokumen.create', compact('newId'));
     }
 
     public function store(Request $request)
@@ -94,13 +94,13 @@ class KategoriDokumenController extends Controller
     public function show($id)
     {
         $kategoriDokumen = KategoriDokumen::findOrFail($id);
-        return view('kategori-dokumen.show', compact('kategoriDokumen'));
+        return view('data-master.a06-kategori-dokumen.show', compact('kategoriDokumen'));
     }
 
     public function edit($id)
     {
         $kategoriDokumen = KategoriDokumen::findOrFail($id);
-        return view('kategori-dokumen.edit', compact('kategoriDokumen'));
+        return view('data-master.a06-kategori-dokumen.edit', compact('kategoriDokumen'));
     }
 
     public function update(Request $request, $id)
