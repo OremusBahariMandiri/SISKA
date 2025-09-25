@@ -97,9 +97,10 @@ Route::middleware(['auth'])->group(function () {
 
     // routes/web.php
 
+    // FormulirDokumen Routes
     Route::resource('formulir-dokumen', FormulirDokumenController::class);
-    Route::get('formulir-dokumen/{formulirDokumen}/download', [FormulirDokumenController::class, 'download'])->name('formulir-dokumen.download');
-    Route::get('formulir-dokumen/{formulirDokumen}/view-document', [FormulirDokumenController::class, 'viewDocument'])->name('formulir-dokumen.viewDocument');
+    Route::get('formulir-dokumen/{id}/download', [FormulirDokumenController::class, 'download'])->name('formulir-dokumen.download');
+    Route::get('formulir-dokumen/{id}/view-document', [FormulirDokumenController::class, 'viewDocument'])->name('formulir-dokumen.viewDocument');
     Route::get('api/jenis-dokumen/{kategoriId}', [FormulirDokumenController::class, 'getJenisByKategori']);
 
     //Dokumen Karyawan Route

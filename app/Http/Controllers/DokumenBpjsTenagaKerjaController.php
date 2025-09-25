@@ -187,7 +187,7 @@ class DokumenBpjsTenagaKerjaController extends Controller
             'JmlPrshRp' => 'required|numeric|min:0',
             'JmlKryRp' => 'required|numeric|min:0',
             'TotSetoran' => 'required|numeric|min:0',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -213,7 +213,6 @@ class DokumenBpjsTenagaKerjaController extends Controller
             'JmlPrshRp.required' => 'Jumlah Iuran Perusahaan harus diisi',
             'JmlKryRp.required' => 'Jumlah Iuran Karyawan harus diisi',
             'TotSetoran.required' => 'Total Setoran harus diisi',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {
@@ -406,7 +405,7 @@ class DokumenBpjsTenagaKerjaController extends Controller
             'JmlPrshRp' => 'required|numeric|min:0',
             'JmlKryRp' => 'required|numeric|min:0',
             'TotSetoran' => 'required|numeric|min:0',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -432,7 +431,6 @@ class DokumenBpjsTenagaKerjaController extends Controller
             'JmlPrshRp.required' => 'Jumlah Iuran Perusahaan harus diisi',
             'JmlKryRp.required' => 'Jumlah Iuran Karyawan harus diisi',
             'TotSetoran.required' => 'Total Setoran harus diisi',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {

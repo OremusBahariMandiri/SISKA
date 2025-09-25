@@ -569,16 +569,10 @@
                                                             class="fas fa-file-upload"></i></span>
                                                     <input type="file"
                                                         class="form-control @error('FileDok') is-invalid @enderror"
-                                                        id="FileDok" name="FileDok" accept=".pdf,.jpg,.jpeg,.png">
+                                                        id="FileDok" name="FileDok"">
                                                     @error('FileDok')
                                                         <div class="invalid-feedback d-block">{{ $message }}</div>
                                                     @enderror
-                                                </div>
-                                                <div id="fileHelp" class="form-text text-muted">
-                                                    <i class="fas fa-info-circle me-1"></i>Format: PDF, JPG, JPEG, PNG.
-                                                </div>
-                                                <div id="fileValidationMessage" class="invalid-feedback d-none">
-                                                    Silakan pilih file dengan format yang sesuai (PDF, JPG, JPEG, PNG)
                                                 </div>
                                             </div>
 

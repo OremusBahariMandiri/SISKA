@@ -218,7 +218,7 @@ class DokumenKontrakController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'required|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'required',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -235,7 +235,6 @@ class DokumenKontrakController extends Controller
             'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
             'FileDok.required' => 'File Dokumen harus diunggah',
             'FileDok.file' => 'File Dokumen tidak valid',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
             'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
 
@@ -405,7 +404,7 @@ class DokumenKontrakController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
             'KetDok' => 'nullable|string', // Add explicit validation for KetDok
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
@@ -422,7 +421,6 @@ class DokumenKontrakController extends Controller
             'TglBerakhirDok.date' => 'Format Tanggal Berakhir tidak valid',
             'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
             'FileDok.file' => 'File Dokumen tidak valid',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
             'FileDok.max' => 'Ukuran file maksimal 5MB',
         ]);
 
