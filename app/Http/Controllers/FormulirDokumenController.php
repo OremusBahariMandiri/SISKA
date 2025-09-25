@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class FormulirDokumenController extends Controller
 {
@@ -28,8 +30,6 @@ class FormulirDokumenController extends Controller
 
     public function index()
     {
-        $formulirDokumen = FormulirDokumen::with(['kategori'])->get();
-
         // Get user permissions for this menu
         $userPermissions = [];
         if (auth()->check()) {
@@ -60,6 +60,27 @@ class FormulirDokumenController extends Controller
             }
         }
 
+        // Get all jenis dokumen with their GolDok values, if available
+        $jenisDokList = DB::table('A07DmJenisDok')
+            ->select('JenisDok', 'GolDok')
+            ->get()
+            ->keyBy('JenisDok');
+
+        // Retrieve document data with related information
+        $formulirDokumen = FormulirDokumen::with(['kategori'])->get();
+
+        // Process document data
+        $processedDokumen = collect($formulirDokumen)->map(function ($item) use ($jenisDokList) {
+            // Add GolDok value if JenisDok exists in jenisDokList
+            if (isset($item->JenisDok) && isset($jenisDokList[$item->JenisDok])) {
+                $item->GolDok = $jenisDokList[$item->JenisDok]->GolDok;
+            } else {
+                $item->GolDok = 999; // Default high value if not found
+            }
+
+            return $item;
+        });
+
         return view('formulir-dokumen.index', compact('formulirDokumen', 'userPermissions'));
     }
 
@@ -67,7 +88,7 @@ class FormulirDokumenController extends Controller
     {
         $kategoriDokumen = KategoriDokumen::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
-        $perusahaan = Perusahaan::all(); // Add this line
+        $perusahaan = Perusahaan::all();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
         $jenisDokumenByKategori = [];
@@ -89,27 +110,25 @@ class FormulirDokumenController extends Controller
         return view('formulir-dokumen.create', compact('kategoriDokumen', 'jenisDokumen', 'jenisDokumenByKategori', 'newId', 'perusahaan'));
     }
 
-
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:A11DmFormulirDok,NoRegDok',
-            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode', // Add this validation
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
-            'FileDok' => 'required|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'required',
             'StatusDok' => 'required',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
-            'NamaPrsh.required' => 'Perusahaan harus dipilih', // Add this message
-            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid', // Add this message
+            'NamaPrsh.required' => 'Perusahaan harus dipilih',
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid',
             'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
             'JenisDok.required' => 'Jenis Dokumen harus dipilih',
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
             'FileDok.required' => 'File Dokumen harus diunggah',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
             'StatusDok.required' => 'Status Dokumen harus dipilih',
         ]);
 
@@ -185,7 +204,7 @@ class FormulirDokumenController extends Controller
     {
         $formulirDokumen = FormulirDokumen::findOrFail($id);
         $kategoriDokumen = KategoriDokumen::all();
-        $perusahaan = Perusahaan::all(); // Add this line
+        $perusahaan = Perusahaan::all();
         $jenisDokumen = JenisDokumen::with('kategoriDokumen')->get();
 
         // Buat array yang dikelompokkan berdasarkan kategori untuk JavaScript
@@ -211,21 +230,20 @@ class FormulirDokumenController extends Controller
 
         $validator = Validator::make($request->all(), [
             'NoRegDok' => 'required|unique:A11DmFormulirDok,NoRegDok,' . $formulirDokumen->id . ',id',
-            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode', // Add this validation
+            'NamaPrsh' => 'required|exists:A03DmPerusahaan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
             'StatusDok' => 'required',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
-            'NamaPrsh.required' => 'Perusahaan harus dipilih', // Add this message
-            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid', // Add this message
+            'NamaPrsh.required' => 'Perusahaan harus dipilih',
+            'NamaPrsh.exists' => 'Perusahaan yang dipilih tidak valid',
             'KategoriDok.required' => 'Kategori Dokumen harus dipilih',
             'JenisDok.required' => 'Jenis Dokumen harus dipilih',
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
             'StatusDok.required' => 'Status Dokumen harus dipilih',
         ]);
 

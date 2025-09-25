@@ -163,7 +163,7 @@ class DokumenLegalitasController extends Controller
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'FileDok' => 'nullable|file|max:5120',
         ]);
 
         // Generate ID if not present
@@ -338,7 +338,7 @@ class DokumenLegalitasController extends Controller
             'IdKodeA04' => 'required|exists:A04DmKaryawan,IdKode',
             'KategoriDok' => 'required',
             'JenisDok' => 'required',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:5120',
+            'FileDok' => 'nullable|file|max:5120',
         ]);
 
         // Calculate validity period automatically

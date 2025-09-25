@@ -177,7 +177,7 @@ class DokumenBpjsKesehatanController extends Controller
             'JmlPrshRp' => 'required|numeric|min:0',
             'JmlKryRp' => 'required|numeric|min:0',
             'TotIuran' => 'required|numeric|min:0',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -192,7 +192,6 @@ class DokumenBpjsKesehatanController extends Controller
             'IuranPrshRp.required' => 'Nominal Iuran Perusahaan harus diisi',
             'IuranKryPersen.required' => 'Persentase Iuran Karyawan harus diisi',
             'IuranKryRp.required' => 'Nominal Iuran Karyawan harus diisi',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {
@@ -355,7 +354,7 @@ class DokumenBpjsKesehatanController extends Controller
             'JmlPrshRp' => 'required|numeric|min:0',
             'JmlKryRp' => 'required|numeric|min:0',
             'TotIuran' => 'required|numeric|min:0',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -370,7 +369,6 @@ class DokumenBpjsKesehatanController extends Controller
             'IuranPrshRp.required' => 'Nominal Iuran Perusahaan harus diisi',
             'IuranKryPersen.required' => 'Persentase Iuran Karyawan harus diisi',
             'IuranKryRp.required' => 'Nominal Iuran Karyawan harus diisi',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {

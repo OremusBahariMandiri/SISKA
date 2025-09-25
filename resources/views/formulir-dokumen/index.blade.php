@@ -55,7 +55,6 @@
                                         <th>Jenis Dokumen</th>
                                         <th>Tgl Terbit</th>
                                         <th>Catatan</th>
-                                        <th>Lihat Dokumen</th>
                                         <th width="8%" class="text-center">Status</th>
                                         <th width="15%" class="text-center">Aksi</th>
                                     </tr>
@@ -76,19 +75,7 @@
                                                 @endif
                                             </td>
                                             <td>{{ $dokumen->KetDok }}</td>
-                                            <td class="text-center">
-                                                @if ($dokumen->FileDok)
-                                                    <div class="btn-group">
-                                                        <a href="{{ route('formulir-dokumen.viewDocument', $dokumen->id) }}"
-                                                            target="_blank" class="btn btn-sm btn-info"
-                                                            data-bs-toggle="tooltip" title="Lihat Dokumen">
-                                                            <i class="fas fa-eye"></i> Lihat
-                                                        </a>
-                                                    </div>
-                                                @else
-                                                    <span class="text-muted">-</span>
-                                                @endif
-                                            </td>
+
                                             <td class="text-center">
                                                 @if ($dokumen->StatusDok == 'Berlaku')
                                                     <span class="badge" style="background-color: blue">Berlaku</span>

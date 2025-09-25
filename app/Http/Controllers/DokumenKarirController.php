@@ -232,7 +232,7 @@ class DokumenKarirController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -245,7 +245,6 @@ class DokumenKarirController extends Controller
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
             'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
             'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {
@@ -426,7 +425,7 @@ class DokumenKarirController extends Controller
             'JenisDok' => 'required',
             'TglTerbitDok' => 'required|date',
             'TglBerakhirDok' => $request->ValidasiDok == 'Perpanjangan' ? 'required|date|after:TglTerbitDok' : 'nullable|date',
-            'FileDok' => 'nullable|file|mimes:pdf,jpg,jpeg,png',
+            'FileDok' => 'nullable',
         ], [
             'NoRegDok.required' => 'Nomor Registrasi harus diisi',
             'NoRegDok.unique' => 'Nomor Registrasi sudah digunakan',
@@ -439,7 +438,6 @@ class DokumenKarirController extends Controller
             'TglTerbitDok.required' => 'Tanggal Terbit harus diisi',
             'TglBerakhirDok.required' => 'Tanggal Berakhir harus diisi untuk dokumen dengan validasi Perpanjangan',
             'TglBerakhirDok.after' => 'Tanggal Berakhir harus setelah Tanggal Terbit',
-            'FileDok.mimes' => 'Format file harus PDF, JPG, JPEG, atau PNG',
         ]);
 
         if ($validator->fails()) {

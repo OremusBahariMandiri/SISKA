@@ -347,9 +347,6 @@
                                                         <div class="invalid-feedback">{{ $message }}</div>
                                                     @enderror
                                                 </div>
-                                                <div class="form-text text-muted">
-                                                    <i class="fas fa-info-circle me-1"></i>Format: PDF, JPG, JPEG, PNG.
-                                                </div>
                                                 @if ($dokumenLegalitas->FileDok)
                                                     <div class="mt-2">
                                                         <p class="mb-1">File saat ini:</p>
