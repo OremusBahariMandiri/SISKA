@@ -9,81 +9,67 @@ class UserAccess extends Model
 {
     use HasFactory;
 
-    protected $table = 'A02DmUserAccess';
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = 'a02_dm_user_access';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
-        'IdKodeA01',
-        'MenuAcs',
-        'TambahAcs',
-        'UbahAcs',
-        'HapusAcs',
-        'DownloadAcs',
-        'DetailAcs',
-        'MonitoringAcs',
+        'id_kode',
+        'id_kode_a01',
+        'menu_acs',
+        'tambah_acs',
+        'ubah_acs',
+        'hapus_acs',
+        'download_acs',
+        'detail_acs',
+        'monitoring_acs',
         'created_by',
         'updated_by'
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        'TambahAcs' => 'boolean',
-        'UbahAcs' => 'boolean',
-        'HapusAcs' => 'boolean',
-        'DownloadAcs' => 'boolean',
-        'DetailAcs' => 'boolean',
-        'MonitoringAcs' => 'boolean',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
+        'tambah_acs' => 'boolean',
+        'ubah_acs' => 'boolean',
+        'hapus_acs' => 'boolean',
+        'download_acs' => 'boolean',
+        'detail_acs' => 'boolean',
+        'monitoring_acs' => 'boolean',
     ];
 
-    // Relationships
+    /**
+     * Get the user that owns this access right.
+     */
     public function user()
     {
-        return $this->belongsTo(User::class, 'IdKodeA01', 'IdKode');
+        return $this->belongsTo(User::class, 'id_kode_a01', 'id_kode');
     }
 
+    /**
+     * Get the user that created this access right.
+     */
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by', 'IdKode');
+        return $this->belongsTo(User::class, 'created_by', 'id_kode');
     }
 
+    /**
+     * Get the user that updated this access right.
+     */
     public function updatedBy()
     {
-        return $this->belongsTo(User::class, 'updated_by', 'IdKode');
-    }
-
-    // Get menu access value using underscore naming for better access in the controller
-    public function getMenuAcsAttribute()
-    {
-        return $this->attributes['MenuAcs'];
-    }
-
-    public function getTambahAcsAttribute()
-    {
-        return (bool)$this->attributes['TambahAcs'];
-    }
-
-    public function getUbahAcsAttribute()
-    {
-        return (bool)$this->attributes['UbahAcs'];
-    }
-
-    public function getHapusAcsAttribute()
-    {
-        return (bool)$this->attributes['HapusAcs'];
-    }
-
-    public function getDownloadAcsAttribute()
-    {
-        return (bool)$this->attributes['DownloadAcs'];
-    }
-
-    public function getDetailAcsAttribute()
-    {
-        return (bool)$this->attributes['DetailAcs'];
-    }
-
-    public function getMonitoringAcsAttribute()
-    {
-        return (bool)$this->attributes['MonitoringAcs'];
+        return $this->belongsTo(User::class, 'updated_by', 'id_kode');
     }
 }
