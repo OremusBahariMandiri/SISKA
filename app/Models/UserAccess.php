@@ -14,7 +14,7 @@ class UserAccess extends Model
      *
      * @var string
      */
-    protected $table = 'a02_dm_user_access';
+    protected $table = 'a02dmuseraccess';
 
     /**
      * The attributes that are mass assignable.
