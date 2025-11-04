@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use App\Rules\RecaptchaRule;
 use App\Models\User;
 
 class LoginController extends Controller
@@ -23,13 +24,15 @@ class LoginController extends Controller
      */
     public function login(Request $request)
     {
-        // Validasi input
+        // Validasi input termasuk reCAPTCHA
         $request->validate([
             'NikKry' => ['required', 'string'],
             'password' => ['required', 'string'],
+            'g-recaptcha-response' => ['required', new RecaptchaRule],
         ], [
             'NikKry.required' => 'NRK Karyawan wajib diisi.',
             'password.required' => 'Password wajib diisi.',
+            'g-recaptcha-response.required' => 'Silakan centang "Saya bukan robot"',
         ]);
 
         // Cari user berdasarkan NikKry
