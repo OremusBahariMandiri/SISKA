@@ -296,8 +296,7 @@
     <div class="login-container">
         <!-- Left Side - Image -->
         <div class="login-image-container">
-            <img src="{{ asset('images/hrd3.png') }}"
-                alt="Ship Navigation Bridge" class="login-image">
+            <img src="{{ asset('images/hrd3.png') }}" alt="Ship Navigation Bridge" class="login-image">
             <div class="image-overlay">
                 <h1>SISKA</h1>
                 <p>Sistem Informasi Karyawan</p>
@@ -354,6 +353,14 @@
                             </button>
                         </div>
                         @error('password')
+                            <div class="error-message">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        {!! NoCaptcha::renderJs() !!}
+                        {!! NoCaptcha::display(['data-theme' => 'light']) !!}
+                        @error('g-recaptcha-response')
                             <div class="error-message">{{ $message }}</div>
                         @enderror
                     </div>
