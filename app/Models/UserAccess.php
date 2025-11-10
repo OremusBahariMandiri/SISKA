@@ -9,44 +9,29 @@ class UserAccess extends Model
 {
     use HasFactory;
 
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'a02dmuseraccess';
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'id_kode',
-        'id_kode_a01',
-        'menu_acs',
-        'tambah_acs',
-        'ubah_acs',
-        'hapus_acs',
-        'download_acs',
-        'detail_acs',
-        'monitoring_acs',
+        'IdKode',
+        'IdKodeA01',
+        'MenuAcs',
+        'TambahAcs',
+        'UbahAcs',
+        'HapusAcs',
+        'DownloadAcs',
+        'DetailAcs',
+        'MonitoringAcs',
         'created_by',
         'updated_by'
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'tambah_acs' => 'boolean',
-        'ubah_acs' => 'boolean',
-        'hapus_acs' => 'boolean',
-        'download_acs' => 'boolean',
-        'detail_acs' => 'boolean',
-        'monitoring_acs' => 'boolean',
+        'TambahAcs' => 'boolean',
+        'UbahAcs' => 'boolean',
+        'HapusAcs' => 'boolean',
+        'DownloadAcs' => 'boolean',
+        'DetailAcs' => 'boolean',
+        'MonitoringAcs' => 'boolean',
     ];
 
     /**
@@ -54,7 +39,7 @@ class UserAccess extends Model
      */
     public function user()
     {
-        return $this->belongsTo(User::class, 'id_kode_a01', 'id_kode');
+        return $this->belongsTo(User::class, 'IdKodeA01', 'IdKode');
     }
 
     /**
@@ -62,7 +47,7 @@ class UserAccess extends Model
      */
     public function createdBy()
     {
-        return $this->belongsTo(User::class, 'created_by', 'id_kode');
+        return $this->belongsTo(User::class, 'created_by', 'IdKode');
     }
 
     /**
@@ -70,6 +55,6 @@ class UserAccess extends Model
      */
     public function updatedBy()
     {
-        return $this->belongsTo(User::class, 'updated_by', 'id_kode');
+        return $this->belongsTo(User::class, 'updated_by', 'IdKode');
     }
 }
