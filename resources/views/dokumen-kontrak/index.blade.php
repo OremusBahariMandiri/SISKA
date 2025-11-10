@@ -118,12 +118,12 @@
                                             </td>
                                             <td>
                                                 @if ($dokumen->TglBerakhirDok)
-                                                    <span class="{{ $dokumen->is_expired ? 'text-danger fw-bold' : '' }}">
+                                                    <span class="{{ $dokumen->is_expired ? 'text-black' : '' }}">
                                                         {{ \Carbon\Carbon::parse($dokumen->TglBerakhirDok)->format('d/m/Y') }}
-                                                        @if ($dokumen->is_expired)
+                                                        {{-- @if ($dokumen->is_expired)
                                                             <i class="fas fa-exclamation-circle text-danger ms-1"
                                                                 data-bs-toggle="tooltip" title="Sudah kedaluwarsa"></i>
-                                                        @endif
+                                                        @endif --}}
                                                     </span>
                                                 @else
                                                     <span class="text-muted">-</span>
