@@ -22,7 +22,7 @@ class UserAccessController extends Controller
     {
         $user = User::findOrFail($id);
         // Redirect to edit as they have the same view
-        return redirect()->route('user-access.edit', $user->id);
+        return redirect()->route('users.index', $user->id);
     }
 
     /**
@@ -112,7 +112,7 @@ class UserAccessController extends Controller
             }
         }
 
-        return redirect()->route('user-access.edit', $user->id)
+        return redirect()->route('users.index', $user->id)
             ->with('success', 'Hak akses pengguna berhasil diperbarui.');
     }
 }
