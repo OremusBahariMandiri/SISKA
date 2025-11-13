@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'activity_hub' => [
+        'url' => env('ACTIVITY_HUB_URL'),
+        'api_key' => env('ACTIVITY_HUB_API_KEY'),
+    ],
+
 ];
